@@ -1,7 +1,46 @@
-import { Configurator } from "@/components/configurator";
-import { Header } from "@/components/header";
+'use client';
+
+import { useUser } from '@/firebase';
+import { Configurator } from '@/components/configurator';
+import { Header } from '@/components/header';
+import { AuthComponent } from '@/components/auth-component';
+import { Skeleton } from '@/components/ui/skeleton';
+import { Mountain } from 'lucide-react';
 
 export default function Home() {
+  const { user, isUserLoading } = useUser();
+
+  if (isUserLoading) {
+    return (
+      <div className="flex flex-col min-h-dvh bg-background text-foreground">
+        <Header />
+        <main className="flex-1 flex items-center justify-center">
+          <div className="space-y-4">
+            <Skeleton className="h-10 w-48" />
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-4/5" />
+          </div>
+        </main>
+      </div>
+    );
+  }
+
+  if (!user) {
+    return (
+      <div className="flex min-h-dvh flex-col bg-background">
+        <header className="px-4 lg:px-6 h-16 flex items-center border-b shrink-0 bg-card">
+            <div className="flex items-center justify-center gap-2">
+                <Mountain className="h-6 w-6 text-primary" />
+                <span className="text-xl font-semibold text-primary">Aravalli Configurator</span>
+            </div>
+        </header>
+        <main className="flex flex-1 items-center justify-center p-4">
+          <AuthComponent />
+        </main>
+      </div>
+    );
+  }
+
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
       <Header />
