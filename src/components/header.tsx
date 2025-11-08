@@ -1,5 +1,8 @@
+"use client";
+
 import { Mountain } from "lucide-react";
 import Link from "next/link";
+import { AuthButton } from "./auth-button";
 
 export function Header() {
   return (
@@ -9,7 +12,7 @@ export function Header() {
         <span className="text-xl font-semibold text-primary">Aravalli Configurator</span>
       </Link>
       <nav className="ml-auto flex gap-4 sm:gap-6">
-        {/* Future navigation links can go here */}
+        <AuthButton />
       </nav>
     </header>
   );
