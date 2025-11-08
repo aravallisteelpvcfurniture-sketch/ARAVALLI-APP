@@ -3,18 +3,13 @@
 import React from "react";
 import { useAuth, initiateGoogleSignIn, initiateEmailSignUp, initiateEmailSignIn } from "@/firebase";
 import { Button } from "@/components/ui/button";
-import {
-  DialogHeader,
-  DialogTitle,
-  DialogDescription,
-} from "@/components/ui/dialog";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
-import { Card, CardContent } from "./ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "./ui/card";
 
 const signUpSchema = z.object({
   email: z.string().email(),
@@ -42,32 +37,37 @@ export function AuthComponent() {
 
 
   const handleGoogleSignIn = () => {
-    initiateGoogleSignIn(auth);
+    if (auth) {
+      initiateGoogleSignIn(auth);
+    }
   };
 
   const handleEmailSignUp = (values: z.infer<typeof signUpSchema>) => {
-    initiateEmailSignUp(auth, values.email, values.password);
+    if (auth) {
+      initiateEmailSignUp(auth, values.email, values.password);
+    }
   };
   
   const handleEmailSignIn = (values: z.infer<typeof signInSchema>) => {
-    initiateEmailSignIn(auth, values.email, values.password);
+    if (auth) {
+      initiateEmailSignIn(auth, values.email, values.password);
+    }
   };
   
   return (
       <Card className="w-full max-w-md">
+        <CardHeader className="text-center">
+            <CardTitle className="text-2xl">Welcome</CardTitle>
+            <CardDescription>
+                Sign in or create an account to save your configurations.
+            </CardDescription>
+        </CardHeader>
         <CardContent className="p-6">
         <Tabs defaultValue="signin">
-            <DialogHeader>
-            <DialogTitle className="text-center text-2xl">Welcome</DialogTitle>
-            <DialogDescription className="text-center">
-                Sign in or create an account to save your configurations.
-            </DialogDescription>
             <TabsList className="grid w-full grid-cols-2">
                 <TabsTrigger value="signin">Sign In</TabsTrigger>
                 <TabsTrigger value="signup">Sign Up</TabsTrigger>
             </TabsList>
-            </DialogHeader>
-
             <TabsContent value="signin">
             <div className="space-y-4 py-4">
                 <Button variant="outline" className="w-full" onClick={handleGoogleSignIn}>
