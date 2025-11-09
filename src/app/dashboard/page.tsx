@@ -20,7 +20,7 @@ const tools = [
   {
     name: 'Greetings',
     icon: Hand,
-    href: '#',
+    href: '/greetings',
   },
   {
     name: 'Visitors',
