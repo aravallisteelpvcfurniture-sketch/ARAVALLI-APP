@@ -3,7 +3,7 @@
 import { Header } from '@/components/header';
 import { BottomNav } from '@/components/bottom-nav';
 import { Card, CardContent } from '@/components/ui/card';
-import { Wrench, FileText, Users } from 'lucide-react';
+import { Wrench, FileText, Users, Hand } from 'lucide-react';
 import Link from 'next/link';
 
 const tools = [
@@ -18,7 +18,12 @@ const tools = [
     href: '#',
   },
   {
-    name: 'Greetings Visitors',
+    name: 'Greetings',
+    icon: Hand,
+    href: '#',
+  },
+  {
+    name: 'Visitors',
     icon: Users,
     href: '#',
   },
