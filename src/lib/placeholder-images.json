@@ -2,39 +2,39 @@
   "placeholderImages": [
     {
       "id": "festival-1",
-      "description": "Diwali Greeting",
-      "imageUrl": "https://images.unsplash.com/photo-1745739193791-c2d4153f5e9c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw3fHxmZXN0aXZhbCUyMGNlbGVicmF0aW9ufGVufDB8fHx8MTc2MjY3MTUwNnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "festival celebration"
+      "description": "Happy Diwali",
+      "imageUrl": "https://images.unsplash.com/photo-1604205262827-11158c2d257a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxkaXdhbGklMjBsYW1wc3xlbnwwfHx8fDE3MjE4MzY3Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "festival diwali"
     },
     {
       "id": "festival-2",
-      "description": "Holi Greeting",
-      "imageUrl": "https://images.unsplash.com/photo-1648200046522-71311cb3be52?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxmZXN0aXZhbCUyMGNvbG9yc3xlbnwwfHx8fDE3NjI2NzE1MDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "festival colors"
+      "description": "Happy Holi",
+      "imageUrl": "https://images.unsplash.com/photo-1581333499496-d62f55831c63?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob2xpJTIwZmVzdGl2YWx8ZW58MHx8fHwxNzIxODM2NzUxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "festival holi"
     },
     {
       "id": "festival-3",
-      "description": "Christmas Greeting",
-      "imageUrl": "https://images.unsplash.com/photo-1577550722256-faa28b311970?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw5fHxmZXN0aXZhbCUyMHdpbnRlcnxlbnwwfHx8fDE3NjI2NzE1MDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "festival winter"
+      "description": "Happy Janmashtami",
+      "imageUrl": "https://images.unsplash.com/photo-1692224716124-55535359a117?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxsb3JkJTIwa3Jpc2huYXxlbnwwfHx8fDE3MjE4MzY3NzN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "festival janmashtami"
     },
     {
       "id": "festival-4",
-      "description": "Eid Greeting",
-      "imageUrl": "https://images.unsplash.com/photo-1701359764372-27529f02f4eb?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxmZXN0aXZhbCUyMGxpZ2h0fGVufDB8fHx8MTc2MjY3MTUwNnww&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "festival light"
+      "description": "Happy Ganesh Chaturthi",
+      "imageUrl": "https://images.unsplash.com/photo-1604513728921-355933a2e347?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxsb3JkJTIwZ2FuZXNoYXxlbnwwfHx8fDE3MjE4MzY4MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "festival ganesha"
     },
     {
       "id": "festival-5",
-      "description": "New Year Greeting",
-      "imageUrl": "https://images.unsplash.com/photo-1679542023336-a30cc71c2aac?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxMHx8ZmVzdGl2YWwlMjBmaXJld29ya3N8ZW58MHx8fHwxNzYyNjcxNTA2fDA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "festival fireworks"
+      "description": "Happy Dussehra",
+      "imageUrl": "https://images.unsplash.com/photo-1603788034264-b5a45b8535b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkYW5kaXlhJTIwZGFuY2V8ZW58MHx8fHwxNzIxODM2ODQyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "festival navratri"
     },
     {
       "id": "festival-6",
-      "description": "Easter Greeting",
-      "imageUrl": "https://images.unsplash.com/photo-1725354486711-0dd71261926c?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw2fHxmZXN0aXZhbCUyMHNwcmluZ3xlbnwwfHx8fDE3NjI2NzE1MDZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
-      "imageHint": "festival spring"
+      "description": "Happy Raksha Bandhan",
+      "imageUrl": "https://images.unsplash.com/photo-1596577884325-13931b2383c2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyYWtoaSUyMGZlc3RpdmFsfGVufDB8fHx8MTcyMTgzNjg2Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "festival rakhi"
     }
   ]
 }
