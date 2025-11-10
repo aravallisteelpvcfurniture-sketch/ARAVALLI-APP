@@ -1,6 +1,12 @@
 {
   "placeholderImages": [
     {
+      "id": "festival-7",
+      "description": "Happy Diwali Poster",
+      "imageUrl": "https://storage.googleapis.com/aif-stg-prompt-gallery/93984e41-01f4-42b7-b049-7b3b421a1172.png",
+      "imageHint": "festival diwali"
+    },
+    {
       "id": "festival-1",
       "description": "Happy Diwali",
       "imageUrl": "https://images.unsplash.com/photo-1604205262827-11158c2d257a?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHw1fHxkaXdhbGklMjBsYW1wc3xlbnwwfHx8fDE3MjE4MzY3Mjd8MA&ixlib=rb-4.1.0&q=80&w=1080",
@@ -21,7 +27,7 @@
     {
       "id": "festival-4",
       "description": "Happy Ganesh Chaturthi",
-      "imageUrl": "https://images.unsplash.com/photo-1604513728921-355933a2e347?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxsb3JkJTIwZ2FuZXNoYXxlbnwwfHx8fDE3MjE4MzY4MTZ8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1604513728921-355933a2e347?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxsb3JkJTIwZ2FuZXNoYXxlbnwwfHx8fDE3MjE4MzY4MTZ8MA&ixlibrb-4.1.0&q=80&w=1080",
       "imageHint": "festival ganesha"
     },
     {
@@ -33,7 +39,7 @@
     {
       "id": "festival-6",
       "description": "Happy Raksha Bandhan",
-      "imageUrl": "https://images.unsplash.com/photo-1596577884325-13931b2383c2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyYWtoaSUyMGZlc3RpdmFsfGVufDB8fHx8MTcyMTgzNjg2Nnww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1596577884325-13931b2383c2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxyYWtoaSUyMGZlc3RpdmFsfGVufDB8fHx8MTcyMTgzNjg2Nnww&ixlib.rb-4.1.0&q=80&w=1080",
       "imageHint": "festival rakhi"
     }
   ]
