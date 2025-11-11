@@ -55,6 +55,12 @@ export default function GreetingsPage() {
       {selectedImage && (
          <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
             <DialogContent className="max-w-5xl p-4">
+              <DialogHeader>
+                <DialogTitle>Greeting Card Editor</DialogTitle>
+                <DialogDescription>
+                  Drag your company details to the desired position on the image. Click download when you're done.
+                </DialogDescription>
+              </DialogHeader>
               <GreetingEditor image={selectedImage} />
             </DialogContent>
          </Dialog>
