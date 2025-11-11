@@ -46,9 +46,6 @@ export default function GreetingsPage() {
                   className="object-cover aspect-video w-full transition-transform duration-300 group-hover:scale-105"
                   data-ai-hint={image.imageHint}
                 />
-                 <div className="absolute inset-0 bg-black/20 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-4">
-                   <Edit className="h-10 w-10 text-white drop-shadow-lg" />
-                </div>
               </CardContent>
             </Card>
           ))}
