@@ -33,6 +33,12 @@ const nextConfig: NextConfig = {
         hostname: 'storage.googleapis.com',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'minimum-purple-royb13jjzh.edgeone.app',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
