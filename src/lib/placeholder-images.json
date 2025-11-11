@@ -1,6 +1,12 @@
 {
   "placeholderImages": [
     {
+      "id": "festival-8",
+      "description": "Happy Holi Festival of Colors",
+      "imageUrl": "https://storage.googleapis.com/aif-stg-prompt-gallery/8e1f0e9b-4b1e-4b6b-8b5e-8e1f0e9b4b1e.png",
+      "imageHint": "festival holi"
+    },
+    {
       "id": "festival-7",
       "description": "Happy Diwali Poster",
       "imageUrl": "https://storage.googleapis.com/aif-stg-prompt-gallery/93984e41-01f4-42b7-b049-7b3b421a1172.png",
