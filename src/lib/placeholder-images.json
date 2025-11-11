@@ -1,6 +1,18 @@
 {
   "placeholderImages": [
     {
+      "id": "festival-10",
+      "description": "Indian flag for Independence Day",
+      "imageUrl": "https://images.unsplash.com/photo-1628782396185-484b3979540b?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxpbmRpYW4lMjBpbmRlcGVuZGVuY2UlMjBkYXl8ZW58MHx8fHwxNzIxOTIzNDg1fDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "festival independence day"
+    },
+    {
+      "id": "festival-9-1",
+      "description": "Happy Holi wishes with vibrant colors",
+      "imageUrl": "https://storage.googleapis.com/aif-stg-prompt-gallery/633d7348-2b81-423b-85a7-95e26941e777.png",
+      "imageHint": "festival holi"
+    },
+    {
       "id": "festival-9",
       "description": "Happy Holi wishes with colors",
       "imageUrl": "https://storage.googleapis.com/aif-stg-prompt-gallery/e64ea9b2-30f5-46c5-a81d-e64ea9b230f5.png",
@@ -27,13 +39,13 @@
     {
       "id": "festival-2",
       "description": "Happy Holi",
-      "imageUrl": "https://images.unsplash.com/photo-1581333499496-d62f55831c63?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob2xpJTIwZmVzdGl2YWx8ZW58MHx8fHwxNzIxODM2NzUxfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1581333499496-d62f55831c63?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxob2xpJTIwZmVzdGl2YWx8ZW58MHx8fHwxNzIxODM2NzUxfDA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "festival holi"
     },
     {
       "id": "festival-3",
       "description": "Happy Janmashtami",
-      "imageUrl": "https://images.unsplash.com/photo-1692224716124-55535359a117?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxsb3JkJTIwa3Jpc2huYXxlbnwwfHx8fDE3MjE4MzY3NzN8MA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1692224716124-55535359a117?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxsb3JkJTIwa3Jpc2huYXxlbnwwfHx8fDE3MjE4MzY3NzN8MA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "festival janmashtami"
     },
     {
