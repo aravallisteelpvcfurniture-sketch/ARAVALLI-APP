@@ -19,17 +19,8 @@ export default function GreetingsPage() {
     }));
   } catch (error) {
     console.error("Could not read the poster directory:", error);
-    // You can decide how to handle the error, maybe show a message
-    return (
-        <div className="flex flex-col min-h-dvh bg-background text-foreground">
-            <main className="flex-1 flex items-center justify-center p-4">
-                <div className="text-center">
-                    <h1 className="text-2xl font-bold">Error</h1>
-                    <p className="text-muted-foreground">Could not load greeting images. Make sure the 'public/poster' directory exists.</p>
-                </div>
-            </main>
-        </div>
-    );
+    // Gracefully handle the error if the directory doesn't exist
+    // The client page will show a message.
   }
 
   return <GreetingsClientPage images={posterImages} />;

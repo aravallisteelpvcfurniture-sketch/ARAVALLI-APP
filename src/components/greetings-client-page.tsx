@@ -61,9 +61,10 @@ export function GreetingsClientPage({ images }: GreetingsClientPageProps) {
             ))}
           </div>
         ) : (
-            <div className="flex flex-col items-center justify-center text-center text-muted-foreground h-64">
-                <p>No images found in the 'public/poster' directory.</p>
-                <p className="text-sm">Please add some images to see them here.</p>
+            <div className="flex flex-col items-center justify-center text-center text-muted-foreground h-64 border-2 border-dashed rounded-lg">
+                <p className="font-semibold">No Greeting Posters Found</p>
+                <p className="text-sm">It looks like the 'public/poster' directory is missing or empty.</p>
+                <p className="text-sm">Please create the folder and add images to it.</p>
             </div>
         )}
 
