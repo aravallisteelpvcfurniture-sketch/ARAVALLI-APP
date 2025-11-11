@@ -8,19 +8,21 @@ export default function GreetingsPage() {
   let posterImages: { id: string; imageUrl: string; description: string; imageHint: string; }[] = [];
 
   try {
-    const filenames = fs.readdirSync(posterDirectory);
-    posterImages = filenames
-      .filter(name => /\.(jpg|jpeg|png)$/i.test(name))
-      .map((name, index) => ({
-        id: `poster-${index}`,
-        imageUrl: `/poster/${name}`, // URL path is relative to the public folder
-        description: name.replace(/\.[^/.]+$/, ""), // Use filename as description
-        imageHint: 'festival poster'
-    }));
+    // Check if directory exists before trying to read it
+    if (fs.existsSync(posterDirectory)) {
+      const filenames = fs.readdirSync(posterDirectory);
+      posterImages = filenames
+        .filter(name => /\.(jpg|jpeg|png)$/i.test(name))
+        .map((name, index) => ({
+          id: `poster-${index}`,
+          imageUrl: `/poster/${name}`, // URL path is relative to the public folder
+          description: name.replace(/\.[^/.]+$/, ""), // Use filename as description
+          imageHint: 'festival poster'
+      }));
+    }
   } catch (error) {
-    console.error("Could not read the poster directory:", error);
-    // Gracefully handle the error if the directory doesn't exist
-    // The client page will show a message.
+    console.error("An error occurred while reading the poster directory:", error);
+    // In case of other errors (like permissions), we'll also gracefully handle it.
   }
 
   return <GreetingsClientPage images={posterImages} />;
