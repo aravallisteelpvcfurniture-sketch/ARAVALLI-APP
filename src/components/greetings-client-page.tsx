@@ -5,8 +5,6 @@ import { Header } from '@/components/header';
 import { BottomNav } from '@/components/bottom-nav';
 import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
-import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { GreetingEditor } from '@/components/greeting-editor';
 
@@ -63,8 +61,8 @@ export function GreetingsClientPage({ images }: GreetingsClientPageProps) {
         ) : (
             <div className="flex flex-col items-center justify-center text-center text-muted-foreground h-64 border-2 border-dashed rounded-lg">
                 <p className="font-semibold">No Greeting Posters Found</p>
-                <p className="text-sm">It looks like the 'public/poster' directory is missing or empty.</p>
-                <p className="text-sm">Please create the folder and add images to it.</p>
+                <p className="text-sm">It looks like the image data file is empty.</p>
+                <p className="text-sm">Please add images to 'src/lib/placeholder-images.json'.</p>
             </div>
         )}
 

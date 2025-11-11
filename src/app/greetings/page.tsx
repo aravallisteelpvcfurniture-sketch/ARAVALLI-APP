@@ -1,29 +1,12 @@
-import fs from 'fs';
-import path from 'path';
+'use client';
+
 import { GreetingsClientPage } from '@/components/greetings-client-page';
+import data from '@/lib/placeholder-images.json';
 
-// This is now a Server Component to read files
+// The page is now a client component again.
 export default function GreetingsPage() {
-  const posterDirectory = path.join(process.cwd(), 'public', 'poster');
-  let posterImages: { id: string; imageUrl: string; description: string; imageHint: string; }[] = [];
-
-  try {
-    // Check if directory exists before trying to read it
-    if (fs.existsSync(posterDirectory)) {
-      const filenames = fs.readdirSync(posterDirectory);
-      posterImages = filenames
-        .filter(name => /\.(jpg|jpeg|png)$/i.test(name))
-        .map((name, index) => ({
-          id: `poster-${index}`,
-          imageUrl: `/poster/${name}`, // URL path is relative to the public folder
-          description: name.replace(/\.[^/.]+$/, ""), // Use filename as description
-          imageHint: 'festival poster'
-      }));
-    }
-  } catch (error) {
-    console.error("An error occurred while reading the poster directory:", error);
-    // In case of other errors (like permissions), we'll also gracefully handle it.
-  }
+  // We directly use the imported JSON data.
+  const posterImages = data.placeholderImages;
 
   return <GreetingsClientPage images={posterImages} />;
 }
