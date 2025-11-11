@@ -1,6 +1,12 @@
 {
   "placeholderImages": [
     {
+      "id": "festival-9",
+      "description": "Happy Holi wishes with colors",
+      "imageUrl": "https://storage.googleapis.com/aif-stg-prompt-gallery/e64ea9b2-30f5-46c5-a81d-e64ea9b230f5.png",
+      "imageHint": "festival holi"
+    },
+    {
       "id": "festival-8",
       "description": "Happy Holi Festival of Colors",
       "imageUrl": "https://storage.googleapis.com/aif-stg-prompt-gallery/8e1f0e9b-4b1e-4b6b-8b5e-8e1f0e9b4b1e.png",
@@ -39,7 +45,7 @@
     {
       "id": "festival-5",
       "description": "Happy Dussehra",
-      "imageUrl": "https://images.unsplash.com/photo-1603788034264-b5a45b8535b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkYW5kaXlhJTIwZGFuY2V8ZW58MHx8fHwxNzIxODM2ODQyfDA&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageUrl": "https://images.unsplash.com/photo-1603788034264-b5a45b8535b2?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwxfHxkYW5kaXlhJTIwZGFuY2V8ZW58MHx8fHwxNzIxODM2ODQyfDA&ixlib-rb-4.1.0&q=80&w=1080",
       "imageHint": "festival navratri"
     },
     {
