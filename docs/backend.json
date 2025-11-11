@@ -32,12 +32,18 @@
           "type": "string",
           "description": "The date and time the user was created.",
           "format": "date-time"
+        },
+        "companyName": {
+            "type": "string",
+            "description": "The user's company name."
+        },
+        "mobile": {
+            "type": "string",
+            "description": "The user's mobile number."
         }
       },
       "required": [
         "id",
-        "firstName",
-        "lastName",
         "email",
         "creationDate"
       ]

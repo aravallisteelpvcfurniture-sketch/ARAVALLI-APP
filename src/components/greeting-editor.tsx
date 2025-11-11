@@ -1,23 +1,49 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import Image from 'next/image';
 import Draggable from 'react-draggable';
 import { ImagePlaceholder } from '@/lib/placeholder-images';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Button } from '@/components/ui/button';
-import { Download } from 'lucide-react';
+import { Download, Loader2 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
 
 interface GreetingEditorProps {
     image: ImagePlaceholder;
 }
 
 export function GreetingEditor({ image }: GreetingEditorProps) {
-    const [companyName, setCompanyName] = useState('Your Company');
-    const [mobile, setMobile] = useState('+91 98765 43210');
-    const [email, setEmail] = useState('contact@yourcompany.com');
+    const { user } = useUser();
+    const firestore = useFirestore();
+
+    const userProfileRef = useMemoFirebase(() => {
+        if (!firestore || !user?.uid) return null;
+        return doc(firestore, 'users', user.uid);
+    }, [firestore, user?.uid]);
+
+    const { data: userProfile, isLoading: isProfileLoading } = useDoc(userProfileRef);
+
+    const [companyName, setCompanyName] = useState('');
+    const [mobile, setMobile] = useState('');
+    const [email, setEmail] = useState('');
+
+    useEffect(() => {
+        if (userProfile) {
+            setCompanyName(userProfile.companyName || 'Your Company');
+            setMobile(userProfile.mobile || '+91 98765 43210');
+            setEmail(userProfile.email || user?.email || 'contact@yourcompany.com');
+        } else if (user) {
+            setCompanyName('Your Company');
+            setMobile('+91 98765 43210');
+            setEmail(user.email || 'contact@yourcompany.com');
+        }
+    }, [userProfile, user]);
+
+
     const editorRef = useRef(null);
     const companyNameRef = useRef(null);
     const mobileRef = useRef(null);
@@ -68,22 +94,31 @@ export function GreetingEditor({ image }: GreetingEditorProps) {
                 </Card>
             </div>
             <div className="space-y-4">
-                <div>
-                    <Label htmlFor="companyName">Company Name</Label>
-                    <Input id="companyName" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
-                </div>
-                <div>
-                    <Label htmlFor="mobile">Mobile Number</Label>
-                    <Input id="mobile" value={mobile} onChange={(e) => setMobile(e.target.value)} />
-                </div>
-                <div>
-                    <Label htmlFor="email">Email Address</Label>
-                    <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
-                </div>
-                <Button onClick={handleDownload} className="w-full">
-                    <Download className="mr-2 h-4 w-4" />
-                    Download Customized Image
-                </Button>
+                { isProfileLoading ? (
+                    <div className="space-y-4 flex flex-col items-center justify-center h-full">
+                        <Loader2 className="h-8 w-8 animate-spin text-muted-foreground" />
+                        <p className="text-muted-foreground text-sm">Loading Profile...</p>
+                    </div>
+                ) : (
+                    <>
+                        <div>
+                            <Label htmlFor="companyName">Company Name</Label>
+                            <Input id="companyName" value={companyName} onChange={(e) => setCompanyName(e.target.value)} />
+                        </div>
+                        <div>
+                            <Label htmlFor="mobile">Mobile Number</Label>
+                            <Input id="mobile" value={mobile} onChange={(e) => setMobile(e.target.value)} />
+                        </div>
+                        <div>
+                            <Label htmlFor="email">Email Address</Label>
+                            <Input id="email" value={email} onChange={(e) => setEmail(e.target.value)} />
+                        </div>
+                        <Button onClick={handleDownload} className="w-full">
+                            <Download className="mr-2 h-4 w-4" />
+                            Download Customized Image
+                        </Button>
+                    </>
+                )}
             </div>
         </div>
     );
