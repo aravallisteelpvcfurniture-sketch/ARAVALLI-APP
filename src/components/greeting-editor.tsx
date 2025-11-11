@@ -1,9 +1,3 @@
-your-project-folder/
-├── public/           <-- यहाँ है public फ़ोल्डर
-├── src/              <-- आपका सारा ऐप कोड यहाँ है
-├── package.json      <-- प्रोजेक्ट की निर्भरता वाली फ़ाइल
-├── next.config.ts    <-- Next.js कॉन्फ़िगरेशन फ़ाइल
-└── ... (और भी फ़ाइलें और फ़ोल्डर)
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
