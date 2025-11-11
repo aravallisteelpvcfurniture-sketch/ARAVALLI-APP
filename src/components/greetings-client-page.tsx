@@ -31,7 +31,7 @@ export function GreetingsClientPage({ images }: GreetingsClientPageProps) {
           <p className="text-muted-foreground">Browse, customize, and download greetings for various festivals.</p>
         </div>
         
-        {images.length > 0 ? (
+        {images && images.length > 0 ? (
           <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
             {images.map((image) => (
               <Card 
