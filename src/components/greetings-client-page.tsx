@@ -61,8 +61,8 @@ export function GreetingsClientPage({ images }: GreetingsClientPageProps) {
         ) : (
             <div className="flex flex-col items-center justify-center text-center text-muted-foreground h-64 border-2 border-dashed rounded-lg">
                 <p className="font-semibold">No Greeting Posters Found</p>
-                <p className="text-sm">It looks like the image data file is empty.</p>
-                <p className="text-sm">Please add images to 'src/lib/placeholder-images.json'.</p>
+                <p className="text-sm">It looks like the 'public/poster' folder is empty or does not exist.</p>
+                <p className="text-sm">Please add images to the 'public/poster' folder to see them here.</p>
             </div>
         )}
 
