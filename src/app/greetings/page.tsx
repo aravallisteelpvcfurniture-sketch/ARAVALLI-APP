@@ -1,70 +1,36 @@
-'use client';
+import fs from 'fs';
+import path from 'path';
+import { GreetingsClientPage } from '@/components/greetings-client-page';
 
-import React, { useState } from 'react';
-import { Header } from '@/components/header';
-import { BottomNav } from '@/components/bottom-nav';
-import { Card, CardContent } from '@/components/ui/card';
-import Image from 'next/image';
-import { PlaceHolderImages, ImagePlaceholder } from '@/lib/placeholder-images';
-import { Button } from '@/components/ui/button';
-import { Download, Edit } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
-import { GreetingEditor } from '@/components/greeting-editor';
-
-
+// This is now a Server Component to read files
 export default function GreetingsPage() {
-  const greetingImages = PlaceHolderImages.filter(img => img.imageHint.includes('festival')).slice(0, 9);
-  const [selectedImage, setSelectedImage] = useState<ImagePlaceholder | null>(null);
-  const [isEditorOpen, setIsEditorOpen] = useState(false);
+  const posterDirectory = path.join(process.cwd(), 'public', 'poster');
+  let posterImages: { id: string; imageUrl: string; description: string; imageHint: string; }[] = [];
 
-  const handleImageClick = (image: ImagePlaceholder) => {
-    setSelectedImage(image);
-    setIsEditorOpen(true);
-  };
-  
-  return (
-    <div className="flex flex-col min-h-dvh bg-background text-foreground">
-      <Header />
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold tracking-tight">Festival Greetings</h1>
-          <p className="text-muted-foreground">Browse, customize, and download greetings for various festivals.</p>
+  try {
+    const filenames = fs.readdirSync(posterDirectory);
+    posterImages = filenames
+      .filter(name => /\.(jpg|jpeg|png)$/i.test(name))
+      .map((name, index) => ({
+        id: `poster-${index}`,
+        imageUrl: `/poster/${name}`, // URL path is relative to the public folder
+        description: name.replace(/\.[^/.]+$/, ""), // Use filename as description
+        imageHint: 'festival poster'
+    }));
+  } catch (error) {
+    console.error("Could not read the poster directory:", error);
+    // You can decide how to handle the error, maybe show a message
+    return (
+        <div className="flex flex-col min-h-dvh bg-background text-foreground">
+            <main className="flex-1 flex items-center justify-center p-4">
+                <div className="text-center">
+                    <h1 className="text-2xl font-bold">Error</h1>
+                    <p className="text-muted-foreground">Could not load greeting images. Make sure the 'public/poster' directory exists.</p>
+                </div>
+            </main>
         </div>
-        <div className="grid grid-cols-2 md:grid-cols-3 gap-6">
-          {greetingImages.map((image) => (
-            <Card 
-              key={image.id} 
-              className="overflow-hidden group cursor-pointer"
-              onClick={() => handleImageClick(image)}
-            >
-              <CardContent className="p-0 relative">
-                <Image
-                  src={image.imageUrl}
-                  alt={image.description}
-                  width={600}
-                  height={400}
-                  className="object-cover aspect-video w-full transition-transform duration-300 group-hover:scale-105"
-                  data-ai-hint={image.imageHint}
-                />
-              </CardContent>
-            </Card>
-          ))}
-        </div>
-      </main>
-      <BottomNav />
-      {selectedImage && (
-         <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
-            <DialogContent className="max-w-5xl p-4">
-              <DialogHeader>
-                <DialogTitle>Greeting Card Editor</DialogTitle>
-                <DialogDescription>
-                  Drag your company details to the desired position on the image. Click download when you're done.
-                </DialogDescription>
-              </DialogHeader>
-              <GreetingEditor image={selectedImage} />
-            </DialogContent>
-         </Dialog>
-      )}
-    </div>
-  );
+    );
+  }
+
+  return <GreetingsClientPage images={posterImages} />;
 }
