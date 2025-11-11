@@ -19,6 +19,9 @@ export function GreetingEditor({ image }: GreetingEditorProps) {
     const [mobile, setMobile] = useState('+91 98765 43210');
     const [email, setEmail] = useState('contact@yourcompany.com');
     const editorRef = useRef(null);
+    const companyNameRef = useRef(null);
+    const mobileRef = useRef(null);
+    const emailRef = useRef(null);
 
     // This is a placeholder for the download functionality.
     // True canvas-based image generation would require a library like html2canvas.
@@ -39,22 +42,22 @@ export function GreetingEditor({ image }: GreetingEditorProps) {
                                 objectFit="contain"
                                 className="pointer-events-none"
                             />
-                            <Draggable bounds="parent">
-                                <div className="absolute cursor-move p-2 bg-black/30 rounded-md">
+                            <Draggable bounds="parent" nodeRef={companyNameRef}>
+                                <div ref={companyNameRef} className="absolute cursor-move p-2 bg-black/30 rounded-md">
                                     <p className="text-white text-lg font-bold" style={{ textShadow: '1px 1px 2px black' }}>
                                         {companyName}
                                     </p>
                                 </div>
                             </Draggable>
-                            <Draggable bounds="parent">
-                                <div className="absolute cursor-move p-2 bg-black/30 rounded-md" style={{top: '80%', left: '5%'}}>
+                            <Draggable bounds="parent" nodeRef={mobileRef}>
+                                <div ref={mobileRef} className="absolute cursor-move p-2 bg-black/30 rounded-md" style={{top: '80%', left: '5%'}}>
                                     <p className="text-white text-sm" style={{ textShadow: '1px 1px 2px black' }}>
                                         {mobile}
                                     </p>
                                 </div>
                             </Draggable>
-                            <Draggable bounds="parent">
-                                <div className="absolute cursor-move p-2 bg-black/30 rounded-md" style={{top: '80%', right: '5%'}}>
+                            <Draggable bounds="parent" nodeRef={emailRef}>
+                                <div ref={emailRef} className="absolute cursor-move p-2 bg-black/30 rounded-md" style={{top: '80%', right: '5%'}}>
                                     <p className="text-white text-sm" style={{ textShadow: '1px 1px 2px black' }}>
                                         {email}
                                     </p>
