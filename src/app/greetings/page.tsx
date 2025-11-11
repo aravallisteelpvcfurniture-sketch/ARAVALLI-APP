@@ -54,13 +54,7 @@ export default function GreetingsPage() {
       <BottomNav />
       {selectedImage && (
          <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
-            <DialogContent className="max-w-4xl">
-              <DialogHeader>
-                <DialogTitle>Customize Greeting</DialogTitle>
-                <DialogDescription>
-                  Add your details and drag them to position. Then click download.
-                </DialogDescription>
-              </DialogHeader>
+            <DialogContent className="max-w-5xl p-4">
               <GreetingEditor image={selectedImage} />
             </DialogContent>
          </Dialog>
