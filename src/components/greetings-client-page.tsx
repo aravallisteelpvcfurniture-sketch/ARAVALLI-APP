@@ -7,13 +7,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import Image from 'next/image';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
 import { GreetingEditor } from '@/components/greeting-editor';
-
-export type ImagePlaceholder = {
-  id: string;
-  description: string;
-  imageUrl: string;
-  imageHint: string;
-};
+import type { ImagePlaceholder } from '@/lib/placeholder-images';
 
 interface GreetingsClientPageProps {
   images: ImagePlaceholder[];
@@ -61,8 +55,8 @@ export function GreetingsClientPage({ images }: GreetingsClientPageProps) {
         ) : (
             <div className="flex flex-col items-center justify-center text-center text-muted-foreground h-64 border-2 border-dashed rounded-lg">
                 <p className="font-semibold">No Greeting Posters Found</p>
-                <p className="text-sm">It looks like the 'public/poster' folder is empty or does not exist.</p>
-                <p className="text-sm">Please add images to the 'public/poster' folder to see them here.</p>
+                <p className="text-sm">It looks like the image configuration is empty.</p>
+                <p className="text-sm">Please add images to 'src/lib/placeholder-images.json' to see them here.</p>
             </div>
         )}
 
