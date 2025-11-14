@@ -1,10 +1,20 @@
 'use client';
 
 import { GreetingsClientPage } from '@/components/greetings-client-page';
-import { PlaceHolderImages } from '@/lib/placeholder-images';
+import type { ImagePlaceholder } from '@/lib/placeholder-images';
+
+// Hardcoded image data to ensure it loads without any external file dependency issues.
+const hardcodedImages: ImagePlaceholder[] = [
+  {
+    id: "diwali-poster",
+    description: "A festive poster for Diwali.",
+    imageUrl: "/Diwali.png", // This points to public/Diwali.png
+    imageHint: "Diwali festival"
+  }
+];
+
 
 export default function GreetingsPage() {
-  // The list of images is now directly imported from the JSON file via placeholder-images.ts
-  // This avoids server-side file system access and the errors it was causing.
-  return <GreetingsClientPage images={PlaceHolderImages} />;
+  // Using the hardcoded image data directly to bypass any potential import problems.
+  return <GreetingsClientPage images={hardcodedImages} />;
 }
