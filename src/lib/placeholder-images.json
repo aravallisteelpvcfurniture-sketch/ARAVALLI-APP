@@ -7,6 +7,12 @@
       "imageHint": "Diwali festival"
     },
     {
+      "id": "diwali-lamp-poster",
+      "description": "A beautiful lamp for Diwali.",
+      "imageUrl": "https://images.unsplash.com/photo-1605039913963-2b2c34a1c172?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwzfHxkaXdhbGklMjBsYW1wfGVufDB8fHx8MTc2MzEwOTg5MHww&ixlib=rb-4.1.0&q=80&w=1080",
+      "imageHint": "Diwali lamp"
+    },
+    {
       "id": "holi-poster",
       "description": "A festive poster for Holi.",
       "imageUrl": "https://images.unsplash.com/photo-1617184003170-1f266c325ff3?crop=entropy&cs=tinysrgb&fit=max&fm=jpg&ixid=M3w3NDE5ODJ8MHwxfHNlYXJjaHwyfHxIb2xpJTIwZmVzdGl2YWx8ZW58MHx8fHwxNzYzMDg3OTM4fDA&ixlib=rb-4.1.0&q=80&w=1080",
