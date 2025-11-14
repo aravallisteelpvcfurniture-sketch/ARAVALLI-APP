@@ -8,7 +8,7 @@ import {
   suggestDesignImprovements,
   SuggestDesignImprovementsInput,
 } from '@/ai/flows/design-improvement-suggestions';
-import { generateTodaysFestivalPosterFlow } from '@/ai/flows/generate-poster-flow';
+import { generatePosterFlow, GeneratePosterOutput } from '@/ai/flows/generate-poster-flow';
 
 export async function getCost(config: EstimateFurnitureCostInput) {
   try {
@@ -30,15 +30,13 @@ export async function getSuggestions(config: SuggestDesignImprovementsInput) {
   }
 }
 
-export async function generateTodaysFestivalPoster() {
+
+export async function generatePoster(prompt: string): Promise<GeneratePosterOutput> {
   try {
-    // This flow now intelligently determines the festival and generates a poster.
-    const result = await generateTodaysFestivalPosterFlow();
+    const result = await generatePosterFlow({ prompt });
     return result;
   } catch (error) {
-    console.error('Error in generateTodaysFestivalPoster action:', error);
-    // It's better to re-throw the error to let the client-side catch it
-    // and display a user-friendly message.
+    console.error('Error in generatePoster action:', error);
     const errorMessage =
       error instanceof Error ? error.message : 'An unknown error occurred.';
     throw new Error(errorMessage);

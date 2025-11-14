@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useRef } from 'react';
+import React, { useState, useTransition, useRef } from 'react';
 import { Header } from '@/components/header';
 import { BottomNav } from '@/components/bottom-nav';
 import { Button } from '@/components/ui/button';
@@ -8,16 +8,20 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/com
 import { Download, Sparkles, Loader2 } from 'lucide-react';
 import Image from 'next/image';
 import { useToast } from '@/hooks/use-toast';
-import html2canvas from 'html2canvas';
-import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
-import { doc } from 'firebase/firestore';
-import Draggable from 'react-draggable';
+import { generatePoster } from '@/lib/actions';
+import { Input } from '@/components/ui/input';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } from '@/components/ui/dialog';
+import Draggable from 'react-draggable';
+import html2canvas from 'html2canvas';
+
 import placeholderData from '@/lib/placeholder-images.json';
 import type { ImagePlaceholder } from '@/lib/placeholder-images';
+import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
+import { doc } from 'firebase/firestore';
+
 
 interface GreetingEditorProps {
-    image: ImagePlaceholder;
+    image: { imageUrl: string; description: string };
     onDownload: (element: HTMLDivElement) => void;
 }
 
@@ -110,13 +114,48 @@ function GreetingEditor({ image, onDownload }: GreetingEditorProps) {
 
 export default function GreetingsPage() {
     const { images } = placeholderData;
-    const [selectedImage, setSelectedImage] = useState<ImagePlaceholder | null>(null);
-    const [isEditorOpen, setIsEditorOpen] = useState(false);
+    const [prompt, setPrompt] = useState('');
+    const [generatedImageUrl, setGeneratedImageUrl] = useState<string | null>(null);
+    const [isGenerating, startTransition] = useTransition();
     const { toast } = useToast();
+    
+    const [selectedImage, setSelectedImage] = useState<{imageUrl: string; description: string} | null>(null);
+    const [isEditorOpen, setIsEditorOpen] = useState(false);
 
-    const handleImageClick = (image: ImagePlaceholder) => {
+    const handleImageClick = (image: {imageUrl: string; description: string}) => {
         setSelectedImage(image);
         setIsEditorOpen(true);
+    };
+
+    const handleGeneratePoster = () => {
+        if (!prompt) {
+            toast({
+                variant: 'destructive',
+                title: 'Prompt is empty',
+                description: 'Please enter a theme for your poster.',
+            });
+            return;
+        }
+
+        startTransition(async () => {
+            setGeneratedImageUrl(null);
+            try {
+                const result = await generatePoster(prompt);
+                setGeneratedImageUrl(result.imageUrl);
+                 toast({
+                    title: 'Poster Generated!',
+                    description: 'Your AI poster is ready.',
+                });
+            } catch (error) {
+                console.error(error);
+                const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
+                toast({
+                    variant: 'destructive',
+                    title: 'Generation Failed',
+                    description: `Could not generate poster. Reason: ${errorMessage}`,
+                });
+            }
+        });
     };
 
     const handleDownload = (element: HTMLDivElement) => {
@@ -124,7 +163,7 @@ export default function GreetingsPage() {
             allowTaint: true,
             useCORS: true,
             backgroundColor: '#ffffff',
-            scale: 2, // Increase resolution
+            scale: 2,
         }).then((canvas) => {
             const link = document.createElement('a');
             link.download = `${selectedImage?.description.toLowerCase().replace(/\s+/g, '-') || 'greeting'}.png`;
@@ -151,41 +190,118 @@ export default function GreetingsPage() {
             <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
                 <div className="mb-8 text-center">
                     <h1 className="text-3xl font-bold tracking-tight">Festival Greetings</h1>
-                    <p className="text-muted-foreground">Browse, customize, and download greetings for various festivals.</p>
+                    <p className="text-muted-foreground">Generate a unique poster with AI or browse our collection.</p>
                 </div>
-                
-                {images && images.length > 0 ? (
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {images.map((image) => (
-                            <Card 
-                                key={image.id} 
+
+                <Card className="mb-8">
+                    <CardHeader>
+                        <CardTitle className="flex items-center gap-2">
+                            <Sparkles className="h-6 w-6 text-accent" />
+                            AI Poster Generator
+                        </CardTitle>
+                        <CardDescription>
+                           Enter a theme for your festival poster (e.g., "Happy Diwali with diyas and lights").
+                        </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                        <div className="flex flex-col sm:flex-row gap-2">
+                            <Input 
+                                placeholder="Enter poster theme..."
+                                value={prompt}
+                                onChange={(e) => setPrompt(e.target.value)}
+                                disabled={isGenerating}
+                            />
+                            <Button onClick={handleGeneratePoster} disabled={isGenerating} className="w-full sm:w-auto">
+                                {isGenerating ? (
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                ) : (
+                                    <Sparkles className="mr-2 h-4 w-4" />
+                                )}
+                                Generate
+                            </Button>
+                        </div>
+
+                         {isGenerating && (
+                            <div className="mt-6 flex flex-col items-center justify-center text-center text-muted-foreground h-64 border-2 border-dashed rounded-lg">
+                                <Loader2 className="h-12 w-12 animate-spin text-primary" />
+                                <p className="font-semibold mt-4">Generating your poster...</p>
+                                <p className="text-sm">This might take a moment.</p>
+                            </div>
+                        )}
+                        
+                        {generatedImageUrl && (
+                           <div className="mt-6">
+                             <h3 className="font-bold text-lg mb-2">Your Generated Poster:</h3>
+                             <Card 
                                 className="overflow-hidden group cursor-pointer transition-transform hover:scale-105"
-                                onClick={() => handleImageClick(image)}
-                            >
+                                onClick={() => handleImageClick({imageUrl: generatedImageUrl, description: prompt})}
+                              >
                                 <CardContent className="p-0 relative">
                                     <Image
-                                        src={image.imageUrl}
-                                        alt={image.description}
+                                        src={generatedImageUrl}
+                                        alt={prompt}
                                         width={600}
                                         height={400}
                                         className="object-cover aspect-video w-full"
-                                        data-ai-hint={image.imageHint}
                                     />
                                     <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
-                                        <p className="text-white font-semibold">{image.description}</p>
+                                        <p className="text-white font-semibold">{prompt}</p>
                                     </div>
                                 </CardContent>
                             </Card>
-                        ))}
+                           </div>
+                        )}
+                    </CardContent>
+                </Card>
+                
+                <div className="my-6 text-center">
+                    <div className="relative">
+                        <div className="absolute inset-0 flex items-center">
+                            <span className="w-full border-t" />
+                        </div>
+                        <div className="relative flex justify-center text-xs uppercase">
+                            <span className="bg-background px-2 text-muted-foreground">Or</span>
+                        </div>
                     </div>
-                ) : (
-                    <div className="flex flex-col items-center justify-center text-center text-muted-foreground h-64 border-2 border-dashed rounded-lg">
-                        <p className="font-semibold">No Greeting Posters Found</p>
-                        <p className="text-sm">It looks like the image configuration is empty.</p>
-                    </div>
-                )}
+                </div>
+
+                <div className="px-6 pb-6">
+                    <h3 className="font-bold text-lg mb-4 text-center sm:text-left">Browse Our Collection</h3>
+                    {images && images.length > 0 ? (
+                        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+                            {images.map((image) => (
+                                <Card 
+                                    key={image.id} 
+                                    className="overflow-hidden group cursor-pointer transition-transform hover:scale-105"
+                                    onClick={() => handleImageClick(image)}
+                                >
+                                    <CardContent className="p-0 relative">
+                                        <Image
+                                            src={image.imageUrl}
+                                            alt={image.description}
+                                            width={600}
+                                            height={400}
+                                            className="object-cover aspect-video w-full"
+                                            data-ai-hint={image.imageHint}
+                                        />
+                                        <div className="absolute bottom-0 left-0 right-0 bg-gradient-to-t from-black/80 to-transparent p-4">
+                                            <p className="text-white font-semibold">{image.description}</p>
+                                        </div>
+                                    </CardContent>
+                                </Card>
+                            ))}
+                        </div>
+                    ) : (
+                        <div className="flex flex-col items-center justify-center text-center text-muted-foreground h-64 border-2 border-dashed rounded-lg">
+                            <p className="font-semibold">No Greeting Posters Found</p>
+                            <p className="text-sm">The static image collection is empty.</p>
+                        </div>
+                    )}
+                </div>
             </main>
+
             <BottomNav />
+
             {selectedImage && (
                 <Dialog open={isEditorOpen} onOpenChange={setIsEditorOpen}>
                     <DialogContent className="max-w-4xl p-4 sm:p-6">
