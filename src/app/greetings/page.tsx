@@ -24,9 +24,9 @@ export default function GreetingsPage() {
                     <Image
                         src="/diwali.png"
                         alt="Diwali Greeting"
-                        layout="fill"
-                        objectFit="cover"
-                        className="transition-transform duration-300 group-hover:scale-105"
+                        width={600}
+                        height={400}
+                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                     />
                 </CardContent>
             </Card>
@@ -35,9 +35,9 @@ export default function GreetingsPage() {
                     <Image
                         src="/makarsakranti.png"
                         alt="Makar Sankranti Greeting"
-                        layout="fill"
-                        objectFit="cover"
-                        className="transition-transform duration-300 group-hover:scale-105"
+                        width={600}
+                        height={400}
+                        className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
                     />
                 </CardContent>
             </Card>
