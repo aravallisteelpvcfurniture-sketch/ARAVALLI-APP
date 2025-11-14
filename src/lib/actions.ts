@@ -32,13 +32,15 @@ export async function getSuggestions(config: SuggestDesignImprovementsInput) {
 
 export async function generateTodaysFestivalPoster() {
   try {
+    // This flow now intelligently determines the festival and generates a poster.
     const result = await generateTodaysFestivalPosterFlow();
     return result;
   } catch (error) {
-    console.error('Error generating festival poster in action:', error);
+    console.error('Error in generateTodaysFestivalPoster action:', error);
+    // It's better to re-throw the error to let the client-side catch it
+    // and display a user-friendly message.
     const errorMessage =
       error instanceof Error ? error.message : 'An unknown error occurred.';
-    console.error(`Full Error: ${errorMessage}`);
     throw new Error(errorMessage);
   }
 }

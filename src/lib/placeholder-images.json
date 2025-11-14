@@ -1,0 +1,46 @@
+{
+  "images": [
+    {
+      "id": "diwali-poster-1",
+      "description": "Happy Diwali",
+      "imageUrl": "https://images.unsplash.com/photo-1604205278744-0a3a2a3c3c4b?q=80&w=2070&auto=format&fit=crop",
+      "imageHint": "Diwali festival"
+    },
+    {
+      "id": "holi-poster-1",
+      "description": "Happy Holi",
+      "imageUrl": "https://images.unsplash.com/photo-1616424222204-924c5a04a622?q=80&w=1932&auto=format&fit=crop",
+      "imageHint": "Holi festival"
+    },
+    {
+      "id": "navratri-poster-1",
+      "description": "Happy Navratri",
+      "imageUrl": "https://images.unsplash.com/photo-1604463772813-924903f75c40?q=80&w=1964&auto=format&fit=crop",
+      "imageHint": "Navratri festival"
+    },
+    {
+      "id": "janmashtami-poster-1",
+      "description": "Happy Janmashtami",
+      "imageUrl": "https://images.unsplash.com/photo-1692292892215-83de64696b65?q=80&w=1935&auto=format&fit=crop",
+      "imageHint": "Krishna Janmashtami"
+    },
+    {
+      "id": "ganesh-chaturthi-poster-1",
+      "description": "Ganesh Chaturthi",
+      "imageUrl": "https://images.unsplash.com/photo-1603892578559-864a37c3855a?q=80&w=1964&auto=format&fit=crop",
+      "imageHint": "Ganesh festival"
+    },
+    {
+      "id": "dussehra-poster-1",
+      "description": "Happy Dussehra",
+      "imageUrl": "https://images.unsplash.com/photo-1665948016483-349a5183ee4f?q=80&w=1974&auto=format&fit=crop",
+      "imageHint": "Dussehra festival"
+    },
+    {
+      "id": "diwali-poster-2",
+      "description": "Festival of Lights",
+      "imageUrl": "https://images.unsplash.com/photo-1574482436154-44a5715a358c?q=80&w=1935&auto=format&fit=crop",
+      "imageHint": "Diwali diya"
+    }
+  ]
+}
