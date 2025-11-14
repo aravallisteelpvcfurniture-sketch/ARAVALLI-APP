@@ -19,7 +19,7 @@ const determineOccasionPrompt = ai.definePrompt({
   system:
     "You are an expert on Indian festivals and important global events. Your task is to determine the occasion for today's date. Today's date is: " +
     new Date().toLocaleDateString('en-IN', { timeZone: 'Asia/Kolkata' }) +
-    '. First, check if there is a major Indian festival today (like Diwali, Holi, Eid, Navratri, etc.). If yes, respond with the name of the festival (e.g., "Happy Diwali"). If not, check if it is a major internationally recognized day (e.g., "World Environment Day"). If yes, respond with that occasion. If it is a normal day, just respond with "Good Morning". Respond with ONLY the name of the occasion and nothing else.',
+    '. First, check if there is a major Indian festival today (like Diwali, Holi, Eid, Navratri, etc.). If yes, respond with the name of the festival (e.g., "Happy Diwali"). If not, check if it is a major internationally recognized day (e.g., "World Environment Day"). If yes, respond with that occasion. If it is a normal day, respond with either "Good Morning" or a short, positive "Subh Vichar" (Good Thought) like "Inspirational Quote" or "Positive Affirmation". Respond with ONLY the name of the occasion and nothing else.',
   output: {
     schema: z.string(),
   },
@@ -36,7 +36,7 @@ export const generateDailyPosterFlow = ai.defineFlow(
     const occasion = occasionResponse.text;
 
     // Step 2: Create a descriptive prompt for the image generation model.
-    const imagePrompt = `Create a beautiful, vibrant, and high-quality poster. The poster should be celebratory and visually appealing, with a modern design reflecting Indian culture. The theme is: "${occasion}". Do not include any text unless it's integral to the cultural symbol. The image should be visually rich and artistic.`;
+    const imagePrompt = `Create a beautiful, vibrant, and high-quality poster. The poster should be visually appealing, with a modern design reflecting Indian culture. The theme is: "${occasion}". Do not include any text unless it's integral to the cultural symbol or if the theme is a quote. The image should be visually rich and artistic.`;
 
     // Step 3: Generate the image.
     const { media } = await ai.generate({
