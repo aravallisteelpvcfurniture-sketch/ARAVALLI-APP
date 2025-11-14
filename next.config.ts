@@ -39,6 +39,12 @@ const nextConfig: NextConfig = {
         hostname: 'minimum-purple-royb13jjzh.edgeone.app',
         port: '',
         pathname: '/**',
+      },
+      {
+        protocol: 'https',
+        hostname: 'i.ibb.co',
+        port: '',
+        pathname: '/**',
       }
     ],
   },
