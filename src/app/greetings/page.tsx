@@ -121,7 +121,7 @@ export default function GreetingsPage() {
                     <p>Generating your masterpiece...</p>
                   </div>
                 ) : generatedImage ? (
-                  <div ref={imageRef} className="w-full h-full">
+                  <div ref={imageRef} className="relative w-full h-full">
                     <Image
                       src={generatedImage}
                       alt={prompt}
