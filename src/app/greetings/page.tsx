@@ -29,18 +29,29 @@ export default function GreetingsPage() {
       return;
     }
     startTransition(async () => {
-      const result = await generatePoster(prompt);
-      if (result && result.imageUrl) {
-        setGeneratedImage(result.imageUrl);
-        toast({
-          title: 'Poster Generated!',
-          description: 'Your AI-powered poster is ready.',
-        });
-      } else {
+      try {
+        const result = await generatePoster(prompt);
+        if (result && result.imageUrl) {
+          setGeneratedImage(result.imageUrl);
+          toast({
+            title: 'Poster Generated!',
+            description: 'Your AI-powered poster is ready.',
+          });
+        } else {
+          // This case might be less likely if the action throws an error
+          toast({
+            variant: 'destructive',
+            title: 'Generation Failed',
+            description: 'The AI did not return an image. Please try again.',
+          });
+        }
+      } catch (error) {
+        console.error("Generation error caught in component:", error);
+        const errorMessage = error instanceof Error ? error.message : 'An unknown error occurred.';
         toast({
           variant: 'destructive',
           title: 'Generation Failed',
-          description: 'Could not generate poster. Please try again.',
+          description: `Could not generate poster: ${errorMessage}`,
         });
       }
     });
@@ -127,6 +138,7 @@ export default function GreetingsPage() {
                       alt={prompt}
                       fill
                       className="object-contain rounded-lg"
+                      crossOrigin="anonymous"
                     />
                   </div>
                 ) : (

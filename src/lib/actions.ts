@@ -37,7 +37,7 @@ export async function generatePoster(
   prompt: string
 ): Promise<GeneratePosterOutput | null> {
   try {
-    // The input to the flow is an object, not just a string
+    // The input to the flow must be an object matching the flow's inputSchema.
     const result = await generatePosterFlow({ prompt });
     return result;
   } catch (error) {
@@ -46,6 +46,7 @@ export async function generatePoster(
     const errorMessage =
       error instanceof Error ? error.message : 'An unknown error occurred.';
     console.error(`Full Error: ${errorMessage}`);
-    return null;
+    // Re-throwing the error to be caught by the client-side for better UI feedback.
+    throw new Error(errorMessage);
   }
 }
