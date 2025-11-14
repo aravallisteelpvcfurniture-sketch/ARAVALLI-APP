@@ -34,7 +34,7 @@ export default function GreetingsPage() {
                   src={image.src}
                   alt={image.alt}
                   fill
-                  className="object-cover w-full h-full transition-transform duration-300 group-hover:scale-105"
+                  className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
                 />
               </CardContent>
             </Card>
