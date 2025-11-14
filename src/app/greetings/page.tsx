@@ -22,8 +22,8 @@ export default function GreetingsPage() {
             <Card className="overflow-hidden group">
                 <CardContent className="p-0 relative aspect-video">
                     <Image
-                        src="/greeting-1.jpg"
-                        alt="Greeting Image 1"
+                        src="/diwali.png"
+                        alt="Diwali Greeting"
                         layout="fill"
                         objectFit="cover"
                         className="transition-transform duration-300 group-hover:scale-105"
@@ -33,8 +33,8 @@ export default function GreetingsPage() {
             <Card className="overflow-hidden group">
                 <CardContent className="p-0 relative aspect-video">
                     <Image
-                        src="/greeting-2.jpg"
-                        alt="Greeting Image 2"
+                        src="/makarsakranti.png"
+                        alt="Makar Sankranti Greeting"
                         layout="fill"
                         objectFit="cover"
                         className="transition-transform duration-300 group-hover:scale-105"
