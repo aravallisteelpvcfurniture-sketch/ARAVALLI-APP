@@ -8,6 +8,11 @@ import {
   suggestDesignImprovements,
   SuggestDesignImprovementsInput,
 } from "@/ai/flows/design-improvement-suggestions";
+import {
+  generatePosterFromPrompt,
+  GeneratePosterOutput,
+} from "@/ai/flows/generate-poster-flow";
+
 
 export async function getCost(config: EstimateFurnitureCostInput) {
   try {
@@ -25,6 +30,16 @@ export async function getSuggestions(config: SuggestDesignImprovementsInput) {
     return suggestions;
   } catch (error) {
     console.error("Error getting design suggestions:", error);
+    return null;
+  }
+}
+
+export async function generatePoster(prompt: string): Promise<GeneratePosterOutput | null> {
+  try {
+    const result = await generatePosterFromPrompt(prompt);
+    return result;
+  } catch (error) {
+    console.error("Error generating poster:", error);
     return null;
   }
 }
