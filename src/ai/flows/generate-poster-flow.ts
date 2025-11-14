@@ -3,8 +3,8 @@
 /**
  * @fileOverview Generates a poster image from a text prompt.
  *
- * - generatePosterFromPrompt - A function that handles the poster generation.
- * - GeneratePosterOutput - The return type for the generatePosterFromPrompt function.
+ * - generatePosterFlow - A function that handles the poster generation.
+ * - GeneratePosterOutput - The return type for the generatePosterFlow function.
  */
 
 import { ai } from '@/ai/genkit';
@@ -15,11 +15,7 @@ const GeneratePosterOutputSchema = z.object({
 });
 export type GeneratePosterOutput = z.infer<typeof GeneratePosterOutputSchema>;
 
-export async function generatePosterFromPrompt(prompt: string): Promise<GeneratePosterOutput> {
-  return generatePosterFlow(prompt);
-}
-
-const generatePosterFlow = ai.defineFlow(
+export const generatePosterFlow = ai.defineFlow(
   {
     name: 'generatePosterFlow',
     inputSchema: z.string(),

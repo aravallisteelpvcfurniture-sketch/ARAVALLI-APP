@@ -9,7 +9,7 @@ import {
   SuggestDesignImprovementsInput,
 } from "@/ai/flows/design-improvement-suggestions";
 import {
-  generatePosterFromPrompt,
+  generatePosterFlow,
   GeneratePosterOutput,
 } from "@/ai/flows/generate-poster-flow";
 
@@ -36,7 +36,7 @@ export async function getSuggestions(config: SuggestDesignImprovementsInput) {
 
 export async function generatePoster(prompt: string): Promise<GeneratePosterOutput | null> {
   try {
-    const result = await generatePosterFromPrompt(prompt);
+    const result = await generatePosterFlow(prompt);
     return result;
   } catch (error) {
     console.error("Error generating poster:", error);
