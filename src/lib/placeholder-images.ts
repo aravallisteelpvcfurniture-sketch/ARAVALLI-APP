@@ -1,6 +1,4 @@
-// This file is no longer the primary source for greetings page,
-// but is kept for potential use in other parts of the app.
-import data from './placeholder-images.json';
+// This file is the new primary source for greetings page images.
 
 export type ImagePlaceholder = {
   id: string;
@@ -9,4 +7,13 @@ export type ImagePlaceholder = {
   imageHint: string;
 };
 
-export const PlaceHolderImages: ImagePlaceholder[] = data.placeholderImages;
+// I've hardcoded the image data here to remove any JSON import issues.
+// This should reliably load the image from the public folder.
+export const PlaceHolderImages: ImagePlaceholder[] = [
+  {
+    "id": "diwali-poster",
+    "description": "A festive poster for Diwali.",
+    "imageUrl": "/Diwali.png", // Points to public/Diwali.png
+    "imageHint": "Diwali festival"
+  }
+];

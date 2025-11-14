@@ -1,28 +1,3 @@
 {
-  "placeholderImages": [
-    {
-      "id": "diwali-poster-lowercase-root",
-      "description": "A festive poster for Diwali.",
-      "imageUrl": "/diwali.png",
-      "imageHint": "Diwali festival"
-    },
-    {
-      "id": "diwali-poster-pascalcase-root",
-      "description": "A festive poster for Diwali.",
-      "imageUrl": "/Diwali.png",
-      "imageHint": "Diwali festival"
-    },
-    {
-      "id": "diwali-poster-lowercase-folder",
-      "description": "A festive poster for Diwali.",
-      "imageUrl": "/poster/diwali.png",
-      "imageHint": "Diwali festival"
-    },
-    {
-      "id": "diwali-poster-pascalcase-folder",
-      "description": "A festive poster for Diwali.",
-      "imageUrl": "/poster/Diwali.png",
-      "imageHint": "Diwali festival"
-    }
-  ]
+  "placeholderImages": []
 }
