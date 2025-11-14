@@ -13,6 +13,8 @@ import { z } from 'genkit';
 const GeneratePosterInputSchema = z.object({
   prompt: z.string().describe('The user\'s request for the poster content.'),
 });
+export type GeneratePosterInput = z.infer<typeof GeneratePosterInputSchema>;
+
 
 const GeneratePosterOutputSchema = z.object({
   imageUrl: z.string().describe('The data URI of the generated poster image.'),

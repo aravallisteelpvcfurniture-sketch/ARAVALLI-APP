@@ -41,7 +41,7 @@ export async function generatePoster(
     const result = await generatePosterFlow({ prompt });
     return result;
   } catch (error) {
-    console.error('Error generating poster:', error);
+    console.error('Error generating poster in action:', error);
     // You might want to cast the error to get more details
     const errorMessage =
       error instanceof Error ? error.message : 'An unknown error occurred.';
