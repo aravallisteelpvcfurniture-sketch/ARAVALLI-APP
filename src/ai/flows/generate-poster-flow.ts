@@ -42,14 +42,17 @@ export const generateTodaysFestivalPosterFlow = ai.defineFlow(
     const festivalName = festivalOutput.festivalName;
 
     // Step 2: Use the festival name to generate an image
-    const imagePrompt = `Create a beautiful, vibrant, and high-quality festival poster for ${festivalName}. The poster should be celebratory and visually appealing, with a modern design. Include text that says "Happy ${festivalName}!".`;
+    const imagePrompt = `Create a beautiful, vibrant, and high-quality festival poster for ${festivalName}. The poster should be celebratory and visually appealing, with a modern design. Include text that says "Happy ${festivalName}!". Do not include any other text or logos.`;
 
     const { media } = await ai.generate({
-      model: 'googleai/imagen-4.0-fast-generate-001',
+      model: 'googleai/gemini-2.5-flash-image-preview',
       prompt: imagePrompt,
+      config: {
+        responseModalities: ['TEXT', 'IMAGE'],
+      },
     });
 
-    if (!media.url) {
+    if (!media?.url) {
       throw new Error('Image generation failed to return a URL.');
     }
 
