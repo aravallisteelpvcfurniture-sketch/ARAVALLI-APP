@@ -8,7 +8,10 @@ import {
   suggestDesignImprovements,
   SuggestDesignImprovementsInput,
 } from '@/ai/flows/design-improvement-suggestions';
-import { generatePosterFlow, GeneratePosterOutput } from '@/ai/flows/generate-poster-flow';
+import {
+  generateDailyPosterFlow,
+  GeneratePosterOutput,
+} from '@/ai/flows/generate-poster-flow';
 
 export async function getCost(config: EstimateFurnitureCostInput) {
   try {
@@ -30,15 +33,15 @@ export async function getSuggestions(config: SuggestDesignImprovementsInput) {
   }
 }
 
-
-export async function generatePoster(prompt: string): Promise<GeneratePosterOutput> {
+export async function generateTodaysFestivalPoster(): Promise<GeneratePosterOutput> {
   try {
-    const result = await generatePosterFlow({ prompt });
+    const result = await generateDailyPosterFlow();
     return result;
   } catch (error) {
-    console.error('Error in generatePoster action:', error);
+    console.error('Error in generateTodaysFestivalPoster action:', error);
     const errorMessage =
       error instanceof Error ? error.message : 'An unknown error occurred.';
+    console.error(`Full Error: ${errorMessage}`);
     throw new Error(errorMessage);
   }
 }
