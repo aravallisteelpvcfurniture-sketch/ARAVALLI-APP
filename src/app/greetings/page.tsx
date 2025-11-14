@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useTransition } from 'react';
+import React, { useState, useTransition, useRef } from 'react';
 import { Header } from '@/components/header';
 import { BottomNav } from '@/components/bottom-nav';
 import { Button } from '@/components/ui/button';
