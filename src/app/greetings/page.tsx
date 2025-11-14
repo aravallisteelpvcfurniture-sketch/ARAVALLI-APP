@@ -11,7 +11,10 @@ const images = [
     src: 'https://i.ibb.co/tT3cyqKt/gettyimages-2147493451-612x612.jpg',
     alt: 'A beautiful greeting image',
   },
-  // You can add more images here in the future
+  {
+    src: 'https://i.ibb.co/hKxSPYp/gettyimages-1201199341-612x612.jpg',
+    alt: 'A festive greeting image',
+  },
 ];
 
 export default function GreetingsPage() {
