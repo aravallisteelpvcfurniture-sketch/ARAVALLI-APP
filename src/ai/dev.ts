@@ -3,4 +3,3 @@ config();
 
 import '@/ai/flows/design-improvement-suggestions.ts';
 import '@/ai/flows/real-time-cost-estimation.ts';
-import '@/ai/flows/generate-poster-flow.ts';
