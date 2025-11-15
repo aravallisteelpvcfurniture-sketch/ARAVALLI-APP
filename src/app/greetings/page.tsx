@@ -10,10 +10,14 @@ const images = [
   {
     src: 'https://i.ibb.co/tT3cyqKt/gettyimages-2147493451-612x612.jpg',
     alt: 'A beautiful greeting image',
+    width: 612,
+    height: 612,
   },
   {
     src: 'https://i.ibb.co/hKxSPYp/gettyimages-1201199341-612x612.jpg',
     alt: 'A festive greeting image',
+    width: 612,
+    height: 612,
   },
 ];
 
@@ -29,12 +33,13 @@ export default function GreetingsPage() {
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {images.map((image, index) => (
             <Card key={index} className="overflow-hidden group">
-              <CardContent className="p-0 relative aspect-video">
+              <CardContent className="p-0">
                 <Image
                   src={image.src}
                   alt={image.alt}
-                  fill
-                  className="object-contain w-full h-full transition-transform duration-300 group-hover:scale-105"
+                  width={image.width}
+                  height={image.height}
+                  className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
                 />
               </CardContent>
             </Card>
