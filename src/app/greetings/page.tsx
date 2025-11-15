@@ -39,6 +39,7 @@ export default function GreetingsPage() {
                   alt={image.alt}
                   width={image.width}
                   height={image.height}
+                  quality={100}
                   className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
                 />
               </CardContent>
