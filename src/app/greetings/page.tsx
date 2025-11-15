@@ -8,10 +8,10 @@ import { Card, CardContent } from '@/components/ui/card';
 
 const images = [
   {
-    src: 'https://i.ibb.co/tT3cyqKt/gettyimages-2147493451-612x612.jpg',
+    src: 'https://i.ibb.co/vxQWBCbr/10321192.jpg',
     alt: 'A beautiful greeting image',
     width: 612,
-    height: 612,
+    height: 408,
   },
   {
     src: 'https://i.ibb.co/hKxSPYp/gettyimages-1201199341-612x612.jpg',
