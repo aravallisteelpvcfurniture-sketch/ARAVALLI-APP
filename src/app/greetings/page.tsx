@@ -32,7 +32,7 @@ export default function GreetingsPage() {
         </div>
         <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-6">
           {images.map((image, index) => (
-            <Card key={index} className="overflow-hidden group">
+            <Card key={index} className="overflow-hidden group rounded-2xl">
               <CardContent className="p-0">
                 <Image
                   src={image.src}

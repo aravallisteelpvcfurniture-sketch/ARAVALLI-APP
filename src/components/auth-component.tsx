@@ -55,7 +55,7 @@ export function AuthComponent() {
   };
   
   return (
-      <Card className="w-full max-w-md">
+      <Card className="w-full max-w-md rounded-2xl">
         <CardHeader className="text-center">
             <CardTitle className="text-2xl">Welcome</CardTitle>
             <CardDescription>
