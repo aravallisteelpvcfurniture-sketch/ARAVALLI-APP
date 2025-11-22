@@ -37,29 +37,24 @@ const tools = [
 export default function DashboardPage() {
   return (
     <div className="flex flex-col min-h-dvh bg-primary">
-      <main className="flex-1 flex flex-col bg-background text-foreground rounded-t-[2.5rem] shadow-lg">
-        {/* Sticky Header */}
-        <header className="px-4 lg:px-6 h-16 flex items-center shrink-0 border-b">
-          <span className="text-xl font-semibold text-primary">Welcome</span>
-          <div className="ml-auto flex gap-4 sm:gap-6">
-            <AuthButton />
-          </div>
-        </header>
-
-        {/* Scrollable Content */}
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-          <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
-            {tools.map((tool) => (
-              <Link href={tool.href} key={tool.name}>
-                <Card className="bg-card hover:bg-muted transition-colors h-full">
-                  <CardContent className="flex flex-col items-center justify-center p-6 gap-4">
-                    <tool.icon className="h-8 w-8 text-primary" />
-                    <span className="text-sm font-medium text-center text-card-foreground">{tool.name}</span>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-          </div>
+      <main className="flex-1 flex flex-col p-4 sm:p-6 lg:p-8 bg-background text-foreground rounded-t-[2.5rem] shadow-lg">
+        <div className="flex items-center mb-8">
+            <span className="text-xl font-semibold text-primary">Welcome</span>
+            <div className="ml-auto flex gap-4 sm:gap-6">
+                <AuthButton />
+            </div>
+        </div>
+        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+          {tools.map((tool) => (
+            <Link href={tool.href} key={tool.name}>
+              <Card className="bg-card hover:bg-muted transition-colors h-full">
+                <CardContent className="flex flex-col items-center justify-center p-6 gap-4">
+                  <tool.icon className="h-8 w-8 text-primary" />
+                  <span className="text-sm font-medium text-center text-card-foreground">{tool.name}</span>
+                </CardContent>
+              </Card>
+            </Link>
+          ))}
         </div>
       </main>
       <BottomNav />
