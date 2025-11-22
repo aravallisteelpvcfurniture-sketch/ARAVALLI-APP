@@ -36,7 +36,7 @@ const tools = [
 
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col min-h-dvh bg-primary">
+    <div className="flex flex-col min-h-dvh bg-primary pt-8">
       <main className="flex-1 flex flex-col p-4 sm:p-6 lg:p-8 bg-background text-foreground rounded-t-[2.5rem] shadow-lg">
         <div className="flex items-center mb-8">
             <span className="text-xl font-semibold text-primary">Welcome</span>
