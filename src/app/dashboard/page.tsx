@@ -38,7 +38,7 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col min-h-dvh bg-primary">
       <Header title="Welcome" />
-      <main className="flex-1 flex flex-col bg-background text-foreground rounded-t-[2.5rem] shadow-lg mt-4">
+      <main className="flex-1 flex flex-col bg-background text-foreground rounded-t-[2.5rem] shadow-lg">
         <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {tools.map((tool) => (
