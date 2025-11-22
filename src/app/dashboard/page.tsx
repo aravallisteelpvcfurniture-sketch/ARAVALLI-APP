@@ -5,6 +5,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Wrench, FileText, Users, Hand, User } from 'lucide-react';
 import Link from 'next/link';
 import { AuthButton } from '@/components/auth-button';
+import Image from 'next/image';
 
 const tools = [
   {
@@ -44,6 +45,18 @@ export default function DashboardPage() {
                 <AuthButton />
             </div>
         </div>
+        
+        <Card className="mb-8 overflow-hidden">
+          <Image
+            src="https://picsum.photos/seed/dashboard-banner/800/400"
+            alt="Dashboard Banner"
+            width={800}
+            height={400}
+            className="w-full h-auto object-cover"
+            data-ai-hint="office workspace"
+          />
+        </Card>
+
         <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
           {tools.map((tool) => (
             <Link href={tool.href} key={tool.name}>
