@@ -48,7 +48,7 @@ export default function DashboardPage() {
             </div>
         </div>
         
-        <Card className="mb-8 overflow-hidden rounded-lg">
+        <Card className="mb-8 overflow-hidden rounded-2xl">
           <Image
             src="https://picsum.photos/seed/dashboard-banner/800/400"
             alt="Dashboard Banner"
@@ -59,13 +59,13 @@ export default function DashboardPage() {
           />
         </Card>
 
-        <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
+        <div className="grid grid-cols-3 sm:grid-cols-4 gap-4">
           {tools.map((tool) => (
             <Link href={tool.href} key={tool.name}>
-              <Card className="bg-card hover:bg-muted transition-colors h-full">
-                <CardContent className="flex flex-col items-center justify-center p-6 gap-4">
-                  <tool.icon className="h-8 w-8 text-primary" />
-                  <span className="text-sm font-medium text-center text-card-foreground">{tool.name}</span>
+              <Card className="bg-card hover:bg-muted transition-colors h-full rounded-2xl">
+                <CardContent className="flex flex-col items-center justify-center p-4 gap-2 aspect-square">
+                  <tool.icon className="h-6 w-6 text-primary" />
+                  <span className="text-xs font-medium text-center text-card-foreground">{tool.name}</span>
                 </CardContent>
               </Card>
             </Link>
