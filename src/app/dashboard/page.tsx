@@ -2,9 +2,9 @@
 
 import { BottomNav } from '@/components/bottom-nav';
 import { Card, CardContent } from '@/components/ui/card';
-import { Wrench, FileText, Users, Hand, User } from 'lucide-react';
+import { Wrench, FileText, Users, Hand, User, Bell } from 'lucide-react';
 import Link from 'next/link';
-import { AuthButton } from '@/components/auth-button';
+import { Button } from '@/components/ui/button';
 import Image from 'next/image';
 
 const tools = [
@@ -42,11 +42,13 @@ export default function DashboardPage() {
         <div className="flex items-center mb-8">
             <span className="text-xl font-semibold text-primary">Welcome</span>
             <div className="ml-auto flex gap-4 sm:gap-6">
-                <AuthButton />
+                <Button variant="ghost" size="icon">
+                  <Bell className="h-6 w-6" />
+                </Button>
             </div>
         </div>
         
-        <Card className="mb-8 overflow-hidden">
+        <Card className="mb-8 overflow-hidden rounded-lg">
           <Image
             src="https://picsum.photos/seed/dashboard-banner/800/400"
             alt="Dashboard Banner"
