@@ -75,7 +75,7 @@ export default function ProfilePage() {
 
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
-      <Header />
+      <Header title="Profile" />
       <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 flex justify-center">
         <Card className="w-full max-w-2xl h-fit">
           <CardHeader>

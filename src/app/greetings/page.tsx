@@ -24,7 +24,7 @@ const images = [
 export default function GreetingsPage() {
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
-      <Header />
+      <Header title="Greetings" />
       <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
         <div className="mb-8">
           <h1 className="text-3xl font-bold tracking-tight">Greetings Gallery</h1>
@@ -40,7 +40,7 @@ export default function GreetingsPage() {
                   width={image.width}
                   height={image.height}
                   quality={100}
-                  className="object-cover w-full h-auto transition-transform duration-300 group-hover:scale-105"
+                  className="object-contain w-full h-auto transition-transform duration-300 group-hover:scale-105"
                 />
               </CardContent>
             </Card>
