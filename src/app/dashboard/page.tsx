@@ -38,15 +38,16 @@ export default function DashboardPage() {
   return (
     <div className="flex flex-col min-h-dvh bg-primary">
       <main className="flex-1 flex flex-col bg-background text-foreground rounded-t-[2.5rem] shadow-lg">
-        {/* Integrated Header */}
-        <div className="px-4 lg:px-6 h-16 flex items-center shrink-0">
-            <span className="text-xl font-semibold text-primary">Welcome</span>
+        {/* Sticky Header */}
+        <header className="px-4 lg:px-6 h-16 flex items-center shrink-0 border-b">
+          <span className="text-xl font-semibold text-primary">Welcome</span>
           <div className="ml-auto flex gap-4 sm:gap-6">
             <AuthButton />
           </div>
-        </div>
+        </header>
 
-        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pt-0">
+        {/* Scrollable Content */}
+        <div className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-4">
             {tools.map((tool) => (
               <Link href={tool.href} key={tool.name}>
