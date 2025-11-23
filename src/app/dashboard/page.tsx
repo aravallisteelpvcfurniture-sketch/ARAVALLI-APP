@@ -37,17 +37,16 @@ const tools = [
 
 export default function DashboardPage() {
   return (
-    <div className="flex flex-col min-h-dvh bg-primary pt-8">
-      <main className="flex-1 flex flex-col p-4 sm:p-6 lg:p-8 bg-card text-foreground rounded-t-[2.5rem] shadow-xl">
-        <div className="flex items-center mb-8">
-            <span className="text-xl font-semibold text-primary">Welcome</span>
+    <div className="flex flex-col min-h-dvh bg-primary">
+        <header className="flex items-center p-4 sm:p-6 lg:px-8 pt-8">
+            <span className="text-xl font-semibold text-primary-foreground">Welcome</span>
             <div className="ml-auto flex gap-4 sm:gap-6">
-                <Button variant="ghost" size="icon">
+                <Button variant="ghost" size="icon" className="text-primary-foreground hover:bg-white/20 hover:text-primary-foreground">
                   <Bell className="h-6 w-6" />
                 </Button>
             </div>
-        </div>
-        
+        </header>
+      <main className="flex-1 flex flex-col p-4 sm:p-6 lg:p-8 bg-card text-foreground rounded-t-[2.5rem] shadow-xl">
         <Card className="mb-8 overflow-hidden rounded-2xl">
           <Image
             src="https://picsum.photos/seed/dashboard-banner/800/400"
