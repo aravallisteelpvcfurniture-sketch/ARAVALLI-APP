@@ -2,7 +2,7 @@
 
 import { BottomNav } from '@/components/bottom-nav';
 import { Card, CardContent } from '@/components/ui/card';
-import { Palette, FileText, Users, Hand, User, Bell } from 'lucide-react';
+import { Cog, FileText, Users, Hand, User, Bell } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
@@ -10,7 +10,7 @@ import Image from 'next/image';
 const tools = [
   {
     name: 'Tools',
-    icon: Palette,
+    icon: Cog,
     href: '#',
   },
   {
