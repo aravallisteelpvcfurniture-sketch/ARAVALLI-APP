@@ -2,7 +2,7 @@
 
 import { BottomNav } from '@/components/bottom-nav';
 import { Card, CardContent } from '@/components/ui/card';
-import { Cog, FileText, Users, Hand, User, Bell } from 'lucide-react';
+import { Bell } from 'lucide-react';
 import Link from 'next/link';
 import { Button } from '@/components/ui/button';
 import Image from 'next/image';
@@ -58,8 +58,8 @@ const tools = [
         <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
             <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2" fill="#a78bfa" stroke="white"/>
             <circle cx="9" cy="7" r="4" fill="#c4b5fd" stroke="white"/>
-            <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="#a78bfa" stroke-width="2.5" fill="none"/>
-            <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="#c4b5fd" stroke-width="2.5" fill="none"/>
+            <path d="M22 21v-2a4 4 0 0 0-3-3.87" stroke="#a78bfa" strokeWidth="2.5" fill="none"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="#c4b5fd" strokeWidth="2.5" fill="none"/>
         </svg>
     ),
     href: '#',
