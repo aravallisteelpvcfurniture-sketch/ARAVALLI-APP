@@ -17,9 +17,11 @@ export default function VisitorsPage() {
       <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-2xl font-bold tracking-tight">Party List</h1>
-          <Button>
-            <Plus className="mr-2 h-4 w-4" />
-            Add Party
+          <Button asChild>
+            <Link href="/visitors/add">
+              <Plus className="mr-2 h-4 w-4" />
+              Add Party
+            </Link>
           </Button>
         </div>
         
