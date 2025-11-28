@@ -5,12 +5,26 @@ import { Header } from '@/components/header';
 import { BottomNav } from '@/components/bottom-nav';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, ChevronRight } from 'lucide-react';
+import { Plus, ChevronRight, Loader2 } from 'lucide-react';
 import Link from 'next/link';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
+import { Skeleton } from '@/components/ui/skeleton';
 
-const parties: { id: number, name: string }[] = [];
 
 export default function VisitorsPage() {
+  const { user, isUserLoading } = useUser();
+  const firestore = useFirestore();
+
+  const partiesCollectionRef = useMemoFirebase(() => {
+    if (!firestore || !user?.uid) return null;
+    return collection(firestore, 'users', user.uid, 'parties');
+  }, [firestore, user?.uid]);
+
+  const { data: parties, isLoading: isPartiesLoading } = useCollection(partiesCollectionRef);
+
+  const isLoading = isUserLoading || isPartiesLoading;
+
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
       <Header title="Visitors" />
@@ -26,7 +40,13 @@ export default function VisitorsPage() {
         </div>
         
         <div className="space-y-4">
-          {parties.length > 0 ? (
+          {isLoading ? (
+            <div className="space-y-4">
+              <Skeleton className="h-14 w-full" />
+              <Skeleton className="h-14 w-full" />
+              <Skeleton className="h-14 w-full" />
+            </div>
+          ) : parties && parties.length > 0 ? (
             parties.map((party) => (
                 <Card key={party.id} className="rounded-2xl">
                 <CardContent className="p-0">

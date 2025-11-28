@@ -9,18 +9,19 @@
  * - Materials: `/materials/{materialId}` - Stores publicly available material information.
  * - Furniture Configurations: `/users/{userId}/furnitureConfigurations/{furnitureConfigurationId}` - Stores user-created furniture configurations.
  * - Orders: `/users/{userId}/orders/{orderId}` - Stores user order information.
+ * - Parties: `/users/{userId}/parties/{partyId}` - Stores user-created party/contact information.
  *
  * Key Security Decisions:
  * - Users can only read and write their own profile data.
  * - Material data is publicly readable.
- * - Users can only read, create, update, and delete their own furniture configurations and orders.
+ * - Users can only read, create, update, and delete their own furniture configurations, orders, and parties.
  * - User listing is disabled.
  *
  * Denormalization for Authorization:
- * - FurnitureConfiguration and Order documents contain a `userId` field, which is denormalized from the user's document ID. This allows direct ownership checks without additional `get()` calls.
+ * - FurnitureConfiguration, Order, and Party documents may contain a `userId` field, which is denormalized from the user's document ID. This allows direct ownership checks without additional `get()` calls.
  *
  * Structural Segregation:
- * - Private user data (FurnitureConfigurations, Orders) is stored under the `/users/{userId}` path.
+ * - Private user data (FurnitureConfigurations, Orders, Parties) is stored under the `/users/{userId}` path.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -67,6 +68,19 @@ service cloud.firestore {
       allow create: if isOwner(userId) && request.resource.data.id == userId;
       allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
       allow delete: if isExistingOwner(userId);
+
+      /**
+       * @description Rules for parties (contacts) belonging to a user.
+       * @path /users/{userId}/parties/{partyId}
+       * @allow (create) - A user can create a party under their own user ID.
+       * @allow (get, list, update, delete) - A user can only access and modify their own parties.
+       * @deny (create) - A user cannot create a party under another user's ID.
+       * @principle Enforces document ownership for parties.
+       */
+      match /parties/{partyId} {
+        allow get, list, update, delete: if isOwner(userId);
+        allow create: if isOwner(userId);
+      }
     }
 
     /**

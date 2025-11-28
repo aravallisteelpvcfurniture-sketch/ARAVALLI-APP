@@ -14,6 +14,9 @@ import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 import { useRouter } from 'next/navigation';
+import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
+import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 
 const partySchema = z.object({
   name: z.string().min(1, 'Name is required'),
@@ -25,6 +28,13 @@ const partySchema = z.object({
 export default function AddPartyPage() {
   const { toast } = useToast();
   const router = useRouter();
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  const partiesCollectionRef = useMemoFirebase(() => {
+    if (!firestore || !user) return null;
+    return collection(firestore, 'users', user.uid, 'parties');
+  }, [firestore, user]);
 
   const form = useForm<z.infer<typeof partySchema>>({
     resolver: zodResolver(partySchema),
@@ -37,15 +47,22 @@ export default function AddPartyPage() {
   });
 
   const onSubmit = (values: z.infer<typeof partySchema>) => {
-    // Placeholder for saving data
-    console.log('New Party Data:', values);
+    if (!partiesCollectionRef) {
+        toast({
+            variant: "destructive",
+            title: "Error",
+            description: "You must be logged in to add a party.",
+        });
+        return;
+    }
+
+    addDocumentNonBlocking(partiesCollectionRef, values);
 
     toast({
-      title: 'Party Added (Simulation)',
+      title: 'Party Added',
       description: `${values.name} has been added to your party list.`,
     });
     
-    // Redirect back to the visitors page after submission
     router.push('/visitors');
   };
 
@@ -57,7 +74,7 @@ export default function AddPartyPage() {
           <CardHeader>
             <CardTitle>New Party Details</CardTitle>
             <CardDescription>
-              Fill in the information for the new party.
+              Fill in the information for the new party. This will be saved to your account.
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -115,7 +132,7 @@ export default function AddPartyPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" disabled={form.formState.isSubmitting}>
+                <Button type="submit" disabled={form.formState.isSubmitting || !partiesCollectionRef}>
                   {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                   Save Party
                 </Button>
