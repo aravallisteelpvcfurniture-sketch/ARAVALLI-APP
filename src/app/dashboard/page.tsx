@@ -13,8 +13,7 @@ const tools = [
     icon: (props: React.SVGProps<SVGSVGElement>) => (
       <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">
         <rect width="20" height="20" x="2" y="2" rx="4" ry="4" fill="#fbbf24" />
-        <path d="M17.5 4H9.75a.75.75 0 0 0-.75.75v14.5a.75.75 0 0 0 .75.75h7.75a2 2 0 0 0 2-2V6a2 2 0 0 0-2-2zM12 7h4v1h-4V7zm0 3h4v1h-4v-1zm0 3h4v1h-4v-1zm-2-5h1v1h-1V8zm-2 2.5a.5.5 0 1 1-1 0 .5.5 0 0 1 1 0z" fill="white" />
-        <path d="M8.25 4.75a.75.75 0 0 0 0 1.5h.01a.75.75 0 0 0 0-1.5H8.25z" fill="white" />
+        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8a8 8 0 0 1-8 8zm0-14a1 1 0 0 0-1 1v1a1 1 0 0 0 2 0V7a1 1 0 0 0-1-1zm0 4a3 3 0 1 0 3 3a3 3 0 0 0-3-3zm0 4a1 1 0 1 1 1-1a1 1 0 0 1-1 1z" fill="white"/>
       </svg>
     ),
     href: '#',
@@ -64,7 +63,7 @@ const tools = [
           <path d="M20.5 17c0-1.5-1-2.8-2.4-3.2.3-.4.5-.9.5-1.5 0-1.8-1.5-3.3-3.3-3.3s-3.3 1.5-3.3 3.3c0 .6.2 1.1.5 1.5-1.4.4-2.4 1.7-2.4 3.2v1h9.9l.1-1z" fill="#c4b5fd" opacity="0.8"/>
         </svg>
     ),
-    href: '#',
+    href: '/visitors',
   },
 ];
 
