@@ -2,37 +2,42 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Users, Package, User } from "lucide-react";
+import { Home, Folder, Scan, User, MoreHorizontal } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", icon: Home, label: "Home" },
-  { href: "/configurator", icon: Package, label: "Configurator" },
-  { href: "/visitors", icon: Users, label: "Visitors" },
+  { href: "/catalogue", icon: Folder, label: "Catalogue" },
+  { href: "/scan", icon: Scan, label: "Scan" },
   { href: "/profile", icon: User, label: "Profile" },
+  { href: "/more", icon: MoreHorizontal, label: "More" },
 ];
 
 export function BottomNav() {
   const pathname = usePathname();
 
   return (
-    <footer className="md:hidden sticky bottom-0 left-0 z-50 w-full h-16 bg-card border-t">
-      <div className="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
-        {navItems.map((item) => (
-          <Link
-            key={item.label}
-            href={item.href}
-            className={cn(
-              "inline-flex flex-col items-center justify-center px-5 hover:bg-muted group",
-              pathname === item.href
-                ? "text-primary"
-                : "text-muted-foreground"
-            )}
-          >
-            <item.icon className="w-5 h-5 mb-1" />
-            <span className="text-xs">{item.label}</span>
-          </Link>
-        ))}
+    <footer className="md:hidden sticky bottom-0 left-0 z-50 w-full h-16 bg-card border-t shadow-[0_-1px_4px_rgba(0,0,0,0.05)]">
+      <div className="grid h-full max-w-lg grid-cols-5 mx-auto font-medium">
+        {navItems.map((item) => {
+          const isActive = pathname === item.href;
+          return (
+            <Link
+              key={item.label}
+              href={item.href}
+              className={cn(
+                "inline-flex flex-col items-center justify-center px-5 group",
+                isActive ? "text-primary" : "text-muted-foreground"
+              )}
+            >
+              <div className={cn("flex items-center justify-center w-10 h-10 rounded-full", 
+                isActive && "bg-primary text-primary-foreground"
+              )}>
+                <item.icon className="w-6 h-6" />
+              </div>
+            </Link>
+          );
+        })}
       </div>
     </footer>
   );
