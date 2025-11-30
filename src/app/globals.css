@@ -14,7 +14,7 @@
     --primary-foreground: 0 0% 100%;
     --secondary: 190 15% 85%;
     --secondary-foreground: 190 20% 15%;
-    --muted: 190- 15% 88%;
+    --muted: 220 13% 91%;
     --muted-foreground: 190 10% 45%;
     --accent: 256 100% 63%;
     --accent-foreground: 0 0% 98%;
@@ -82,3 +82,5 @@
     @apply bg-background text-foreground;
   }
 }
+
+    

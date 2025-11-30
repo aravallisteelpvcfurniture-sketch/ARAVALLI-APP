@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Folder, Scan, User, MoreHorizontal } from "lucide-react";
+import { Home, Folder, User, MoreHorizontal, ScanSearch } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { href: "/dashboard", icon: Home, label: "Home" },
   { href: "/catalogue", icon: Folder, label: "Catalogue" },
-  { href: "/scan", icon: Scan, label: "Scan" },
+  { href: "/scan", icon: ScanSearch, label: "Scan" },
   { href: "/profile", icon: User, label: "Profile" },
   { href: "/more", icon: MoreHorizontal, label: "More" },
 ];
@@ -30,11 +30,16 @@ export function BottomNav() {
                 isActive ? "text-primary" : "text-muted-foreground"
               )}
             >
-              <div className={cn("flex items-center justify-center w-10 h-10 rounded-full", 
-                isActive && "bg-primary text-primary-foreground"
-              )}>
-                <item.icon className="w-6 h-6" />
-              </div>
+                {isActive ? (
+                    <div className="flex items-center justify-center w-12 h-12 rounded-full bg-primary/20">
+                         <div className="flex items-center justify-center w-10 h-10 rounded-full bg-primary text-primary-foreground">
+                            <item.icon className="w-6 h-6" />
+                        </div>
+                    </div>
+                ) : (
+                    <item.icon className="w-6 h-6" />
+                )}
+              <span className="sr-only">{item.label}</span>
             </Link>
           );
         })}
@@ -42,3 +47,5 @@ export function BottomNav() {
     </footer>
   );
 }
+
+    
