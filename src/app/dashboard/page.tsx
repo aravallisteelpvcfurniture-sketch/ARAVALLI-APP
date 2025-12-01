@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BottomNav } from '@/components/bottom-nav';
+import { DashboardCarousel } from '@/components/dashboard-carousel';
 
 const topTools = [
   { name: 'Estimate', href: '#', icon: <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="11" y="8" width="18" height="24" rx="2" fill="white" fillOpacity="0.8"/><path d="M14 13H26" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/><path d="M14 17H26" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/><path d="M14 21H20" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/><rect x="19" y="24" width="8" height="8" rx="1" fill="white" fillOpacity="0.8"/><path d="M23 25C22.4477 25 22 25.4477 22 26V26.5M23 31C23.5523 31 24 30.5523 24 30V29.5M21 27.5H25M22.5 29H24.5" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round"/><circle cx="23" cy="28" r="3.5" stroke="#EF4444" strokeWidth="1.5"/><path d="M23 26.5V28C23 28.2761 22.7761 28.5 22.5 28.5H22" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round"/></svg>, bgColor: 'bg-red-500' },
@@ -43,6 +44,8 @@ export default function DashboardPage() {
       </header>
 
       <main className="flex-1 flex flex-col p-4 gap-4">
+        <DashboardCarousel />
+
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           {topTools.map((tool) => (
             <Link href={tool.href} key={tool.name} className="relative">
