@@ -11,6 +11,7 @@
  * - Orders: `/users/{userId}/orders/{orderId}` - Stores user order information.
  * - Visitors: `/users/{userId}/visitors/{visitorId}` - Stores user-created visitor/contact information.
  * - Site Measurements: `/users/{userId}/visitors/{visitorId}/measurements/{measurementId}` - Stores site measurements for a visitor.
+ * - Visitor Furniture Configs: `/users/{userId}/visitors/{visitorId}/furnitureConfigurations/{furnitureConfigurationId}`
  *
  * Key Security Decisions:
  * - Users can only read and write their own profile data.
@@ -91,6 +92,17 @@ service cloud.firestore {
         match /measurements/{measurementId} {
             allow get, list, create: if isOwner(userId);
             allow update, delete: if false;
+        }
+
+        /**
+         * @description Rules for furniture configurations (quotations) for a visitor.
+         * @path /users/{userId}/visitors/{visitorId}/furnitureConfigurations/{furnitureConfigurationId}
+         * @allow (create, list, get) - A user can manage configurations for their own visitors.
+         * @principle Enforces document ownership for visitor-specific quotations.
+         */
+        match /furnitureConfigurations/{furnitureConfigurationId} {
+          allow get, list, create: if isOwner(userId);
+          allow update, delete: if false;
         }
       }
     }

@@ -45,6 +45,9 @@ import { FurniturePreview } from "@/components/furniture-preview";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from "@/components/ui/accordion";
 import { DollarSign, Lightbulb, Loader2, Send } from "lucide-react";
+import { useUser, useFirestore, useMemoFirebase } from "@/firebase";
+import { addDocumentNonBlocking } from "@/firebase/non-blocking-updates";
+import { collection } from "firebase/firestore";
 
 const formSchema = z.object({
   material: z.string().min(1, "Please select a material."),
@@ -56,7 +59,15 @@ const formSchema = z.object({
   features: z.array(z.string()).optional(),
 });
 
-export function Configurator() {
+interface ConfiguratorProps {
+  visitorId?: string;
+}
+
+export function Configurator({ visitorId }: ConfiguratorProps) {
+  const { user } = useUser();
+  const firestore = useFirestore();
+  const { toast } = useToast();
+
   const [config, setConfig] = useState<FurnitureConfig>(DEFAULT_CONFIG);
   const [cost, setCost] = useState<Cost | null>(null);
   const [suggestions, setSuggestions] = useState<Suggestions | null>(null);
@@ -65,7 +76,10 @@ export function Configurator() {
   const [isSuggestionsLoading, startSuggestionsTransition] = useTransition();
   const [isMounted, setIsMounted] = useState(false);
 
-  const { toast } = useToast();
+  const furnitureConfigurationsRef = useMemoFirebase(() => {
+    if (!firestore || !user?.uid || !visitorId) return null;
+    return collection(firestore, 'users', user.uid, 'visitors', visitorId, 'furnitureConfigurations');
+  }, [firestore, user?.uid, visitorId]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -121,23 +135,45 @@ export function Configurator() {
   }
 
   function handleOrder() {
+    if (!furnitureConfigurationsRef || !user?.uid || !cost) {
+      toast({
+        variant: 'destructive',
+        title: 'Error',
+        description: 'Could not save quotation. Please make sure you are logged in and a visitor is selected.',
+      });
+      return;
+    }
+
+    const furnitureConfigurationData = {
+        userId: user.uid,
+        materialId: config.material,
+        ...config.dimensions,
+        drawers: config.features?.includes('drawers') ? 1 : 0,
+        shelves: config.features?.includes('shelves') ? 1 : 0,
+        doors: config.features?.includes('doors') ? 1 : 0,
+        estimatedCost: cost.estimatedCost,
+        configurationDate: new Date().toISOString(),
+    };
+
+    addDocumentNonBlocking(furnitureConfigurationsRef, furnitureConfigurationData);
+
     toast({
-      title: "Order Placed!",
-      description: "Thank you for your order. We will be in touch shortly.",
+      title: "Quotation Saved!",
+      description: "The furniture configuration has been saved for this visitor.",
     });
   }
 
   return (
-    <div className="container mx-auto max-w-7xl p-4 sm:p-6 lg:p-8">
+    <div className="container mx-auto max-w-7xl p-0 md:p-4 lg:p-8">
       <div className="grid grid-cols-1 gap-8 md:grid-cols-2 lg:grid-cols-5">
         
         {/* Left column: Controls */}
         <div className="lg:col-span-2">
           <Card className="sticky top-4">
             <CardHeader>
-              <CardTitle>Customize Your Furniture</CardTitle>
+              <CardTitle>Customize Furniture</CardTitle>
               <CardDescription>
-                Select materials, dimensions, and features to create your perfect piece.
+                Select materials, dimensions, and features for the quotation.
               </CardDescription>
             </CardHeader>
             <CardContent>
@@ -334,13 +370,13 @@ export function Configurator() {
             <CardFooter>
               <Dialog>
                 <DialogTrigger asChild>
-                  <Button className="w-full" disabled={isCostLoading}>
-                    <Send className="mr-2 h-4 w-4" /> Place Order
+                  <Button className="w-full" disabled={isCostLoading || !visitorId}>
+                    <Send className="mr-2 h-4 w-4" /> {visitorId ? 'Save Quotation' : 'Place Order'}
                   </Button>
                 </DialogTrigger>
                 <DialogContent>
                   <DialogHeader>
-                    <DialogTitle>Confirm Your Order</DialogTitle>
+                    <DialogTitle>Confirm Your Quotation</DialogTitle>
                     <DialogDescription>
                       Review your custom furniture details below.
                     </DialogDescription>
@@ -365,7 +401,7 @@ export function Configurator() {
                       <Button variant="outline">Cancel</Button>
                     </DialogClose>
                     <DialogClose asChild>
-                      <Button onClick={handleOrder}>Confirm Order</Button>
+                      <Button onClick={handleOrder}>Confirm & Save</Button>
                     </DialogClose>
                   </DialogFooter>
                 </DialogContent>
