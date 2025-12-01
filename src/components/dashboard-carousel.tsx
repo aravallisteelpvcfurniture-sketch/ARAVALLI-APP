@@ -12,17 +12,17 @@ import { Card, CardContent } from './ui/card';
 
 const carouselImages = [
   {
-    src: 'https://picsum.photos/seed/carousel1/1200/400',
+    src: 'https://picsum.photos/seed/carousel1/1200/675',
     alt: 'Promotional banner for furniture',
     'data-ai-hint': 'furniture sale'
   },
   {
-    src: 'https://picsum.photos/seed/carousel2/1200/400',
+    src: 'https://picsum.photos/seed/carousel2/1200/675',
     alt: 'Modern interior design',
     'data-ai-hint': 'modern interior'
   },
   {
-    src: 'https://picsum.photos/seed/carousel3/1200/400',
+    src: 'https://picsum.photos/seed/carousel3/1200/675',
     alt: 'Custom steel furniture',
     'data-ai-hint': 'steel furniture'
   },
@@ -49,9 +49,10 @@ export function DashboardCarousel() {
                   src={image.src}
                   alt={image.alt}
                   width={1200}
-                  height={400}
-                  className="w-full aspect-[16/6] object-cover"
+                  height={675}
+                  className="w-full aspect-video object-cover"
                   data-ai-hint={image['data-ai-hint']}
+                  priority={index === 0}
                 />
               </CardContent>
             </Card>
