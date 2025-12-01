@@ -4,8 +4,8 @@ import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
-import { Mountain } from 'lucide-react';
 import { AuthComponent } from '@/components/auth-component';
+import { AravalliLogo } from '@/components/aravalli-logo';
 
 export default function Home() {
   const { user, isUserLoading } = useUser();
@@ -21,9 +21,8 @@ export default function Home() {
     return (
       <div className="flex flex-col min-h-dvh bg-background text-foreground">
         <header className="px-4 lg:px-6 h-16 flex items-center border-b shrink-0 bg-card">
-          <div className="flex items-center justify-center gap-2">
-            <Mountain className="h-6 w-6 text-primary" />
-            <span className="text-xl font-semibold text-primary">Aravalli Configurator</span>
+          <div className="flex items-center justify-start gap-2">
+            <AravalliLogo className="h-10" />
           </div>
         </header>
         <main className="flex-1 flex items-center justify-center">
@@ -40,9 +39,8 @@ export default function Home() {
   return (
     <div className="flex min-h-dvh flex-col bg-background">
       <header className="px-4 lg:px-6 h-16 flex items-center border-b shrink-0 bg-card">
-        <div className="flex items-center justify-center gap-2">
-          <Mountain className="h-6 w-6 text-primary" />
-          <span className="text-xl font-semibold text-primary">Aravalli Configurator</span>
+        <div className="flex items-center justify-start gap-2">
+          <AravalliLogo className="h-10" />
         </div>
       </header>
       <main className="flex flex-1 items-center justify-center p-4">

@@ -12,7 +12,12 @@ export const metadata: Metadata = {
   themeColor: '#00BFFF',
   other: {
     "google-site-verification": "tLL_35h2I3fC5p2w-p0wK1aL8_4Oq2r_2s5X0jE",
-  }
+  },
+  icons: {
+    icon: 'https://i.ibb.co/WpcLSqZd/images-Aspose-Words-38de3690-d30c-4f18-b0a7-9daaa920662f-001.png',
+    shortcut: 'https://i.ibb.co/WpcLSqZd/images-Aspose-Words-38de3690-d30c-4f18-b0a7-9daaa920662f-001.png',
+    apple: 'https://i.ibb.co/WpcLSqZd/images-Aspose-Words-38de3690-d30c-4f18-b0a7-9daaa920662f-001.png',
+  },
 };
 
 export const viewport: Viewport = {
