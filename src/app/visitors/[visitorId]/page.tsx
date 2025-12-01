@@ -43,7 +43,7 @@ const tools = [
         <path d="M22 22H34" stroke="#1D4ED8" strokeWidth="2" strokeLinecap="round"/>
         <path d="M22 28H34" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round"/>
         <path d="M22 34H28" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round"/>
-        <path d="M36 29C36 26.2386 38.2386 24 41 24C43.7614 24 46 26.2386 46 29C46 31.3134 44.4173 33.2062 42.2924 33.8113L41 44" fill="#FBBF24" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M41 24C38.2386 24 36 26.2386 36 29C36 31.3134 37.5827 33.2062 39.7076 33.8113L41 44" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         <path d="M41 32C41.8284 32 42.5 31.3284 42.5 30.5V30.5M41 35C40.1716 35 39.5 34.3284 39.5 33.5V33.5" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round"/>
         <path d="M39.5 29.5H42.5" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round"/>
       </svg>
@@ -87,7 +87,7 @@ export default function VisitorDetailPage() {
             <Bell className="h-6 w-6" />
         </div>
       </header>
-      <main className="flex-1 grid grid-cols-2 grid-rows-2 gap-4 p-4 bg-muted">
+      <main className="flex-1 grid grid-cols-2 grid-rows-2 gap-4 p-4">
         {tools.map((tool) => (
           <Link href={`/visitors/${visitorId}/${tool.href}`} key={tool.name}>
             <Card className="h-full rounded-2xl shadow-sm hover:shadow-md transition-shadow">
