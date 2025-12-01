@@ -78,12 +78,12 @@ export default function VisitorDetailPage() {
 
   return (
     <div className="flex flex-col min-h-dvh bg-muted">
-      <header className="sticky top-0 z-10 flex items-center justify-between bg-green-500 text-white p-4">
-        <Button variant="ghost" size="icon" className="text-white hover:bg-white/10" onClick={() => router.back()}>
+      <header className="sticky top-0 z-10 flex items-center justify-between bg-primary text-primary-foreground p-4">
+        <Button variant="ghost" size="icon" className="hover:bg-background/10" onClick={() => router.back()}>
           <ChevronLeft className="h-6 w-6" />
         </Button>
         <h1 className="text-xl font-bold">Visitor</h1>
-        <Button variant="ghost" size="icon" className="text-white hover:bg-white/10">
+        <Button variant="ghost" size="icon" className="hover:bg-background/10">
           <Bell className="h-6 w-6" />
         </Button>
       </header>
