@@ -63,8 +63,6 @@ const tools = [
         <path d="M22 22L24.8284 24.8284" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round"/>
         <path d="M16 32L20 32" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round"/>
         <path d="M22 42L24.8284 39.1716" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round"/>
-        <path d="M30 19L31 17" stroke="#FCD34D" strokeWidth="2" strokeLinecap="round"/>
-        <path d="M34 19L33 17" stroke="#FCD34D" strokeWidth="2" strokeLinecap="round"/>
       </svg>
     ),
     href: 'inspiration',
@@ -77,30 +75,29 @@ export default function VisitorDetailPage() {
   const { visitorId } = params;
 
   return (
-    <div className="flex flex-col min-h-dvh bg-muted">
-      <header className="sticky top-0 z-10 flex items-center justify-between bg-primary text-primary-foreground p-4">
-        <Button variant="ghost" size="icon" className="hover:bg-background/10" onClick={() => router.back()}>
-          <ChevronLeft className="h-6 w-6" />
-        </Button>
-        <h1 className="text-xl font-bold">Visitor</h1>
-        <Button variant="ghost" size="icon" className="hover:bg-background/10">
-          <Bell className="h-6 w-6" />
-        </Button>
-      </header>
-
-      <main className="flex-1 p-4">
-        <div className="grid grid-cols-2 gap-4">
-          {tools.map((tool) => (
-            <Link key={tool.name} href={`/visitors/${visitorId}/${tool.href}`}>
-              <Card className="aspect-square rounded-2xl shadow-sm hover:shadow-md transition-shadow">
-                <CardContent className="flex flex-col items-center justify-center h-full p-4 gap-4">
-                  <div className="w-16 h-16">{tool.icon}</div>
-                  <p className="font-semibold text-center text-card-foreground">{tool.name}</p>
-                </CardContent>
-              </Card>
-            </Link>
-          ))}
+    <div className="flex flex-col min-h-dvh bg-background text-foreground">
+      <header className="sticky top-0 z-40 bg-primary text-primary-foreground p-4 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => router.back()}>
+                <ChevronLeft className="h-6 w-6" />
+            </Button>
+            <h1 className="text-xl font-bold">Visitor</h1>
         </div>
+        <div className="flex items-center gap-2">
+            <Bell className="h-6 w-6" />
+        </div>
+      </header>
+      <main className="flex-1 grid grid-cols-2 grid-rows-2 gap-4 p-4 bg-muted">
+        {tools.map((tool) => (
+          <Link href={`/visitors/${visitorId}/${tool.href}`} key={tool.name}>
+            <Card className="h-full rounded-2xl shadow-sm hover:shadow-md transition-shadow">
+              <CardContent className="flex flex-col items-center justify-center gap-4 p-4 h-full">
+                {tool.icon}
+                <span className="text-sm font-semibold text-center text-card-foreground">{tool.name}</span>
+              </CardContent>
+            </Card>
+          </Link>
+        ))}
       </main>
     </div>
   );
