@@ -50,7 +50,7 @@ export default function VisitorsPage() {
             visitors.map((visitor) => (
                 <Card key={visitor.id} className="rounded-2xl">
                 <CardContent className="p-0">
-                    <Link href="#" className="flex items-center justify-between p-4 group">
+                    <Link href={`/visitors/${visitor.id}`} className="flex items-center justify-between p-4 group">
                     <span className="font-medium">{visitor.name}</span>
                     <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                     </Link>
