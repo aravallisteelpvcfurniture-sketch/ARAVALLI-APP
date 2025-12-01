@@ -1,4 +1,4 @@
-import type {Metadata} from 'next';
+import type { Metadata, Viewport } from 'next';
 import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase';
@@ -13,6 +13,10 @@ export const metadata: Metadata = {
   other: {
     "google-site-verification": "tLL_35h2I3fC5p2w-p0wK1aL8_4Oq2r_2s5X0jE",
   }
+};
+
+export const viewport: Viewport = {
+  themeColor: '#00BFFF',
 };
 
 export default function RootLayout({
