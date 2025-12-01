@@ -11,8 +11,8 @@ export const metadata: Metadata = {
   authors: [{ name: 'Aravalli Steel' }],
   keywords: ['furniture', 'configurator', 'steel', 'pvc', 'custom'],
   themeColor: [
-    { media: '(prefers-color-scheme: light)', color: 'hsl(220 80% 55%)' },
-    { media: '(prefers-color-scheme: dark)', color: 'hsl(220 80% 65%)' },
+    { media: '(prefers-color-scheme: light)', color: 'hsl(142 71% 45%)' },
+    { media: '(prefers-color-scheme: dark)', color: 'hsl(142 71% 55%)' },
   ],
 };
 
