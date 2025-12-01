@@ -40,12 +40,12 @@ const tools = [
     icon: (
       <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
         <rect x="18" y="16" width="20" height="28" rx="2" fill="#93C5FD"/>
-        <path d="M22 22H34" stroke="#1D4ED8" stroke-width="2" stroke-linecap="round"/>
-        <path d="M22 28H34" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
-        <path d="M22 34H28" stroke="#3B82F6" stroke-width="2" stroke-linecap="round"/>
-        <path d="M36 29C36 26.2386 38.2386 24 41 24C43.7614 24 46 26.2386 46 29C46 31.3134 44.4173 33.2062 42.2924 33.8113L41 44" fill="#FBBF24" stroke="#F59E0B" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-        <path d="M41 32C41.8284 32 42.5 31.3284 42.5 30.5V30.5M41 35C40.1716 35 39.5 34.3284 39.5 33.5V33.5" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
-        <path d="M39.5 29.5H42.5" stroke="#F59E0B" stroke-width="2" stroke-linecap="round"/>
+        <path d="M22 22H34" stroke="#1D4ED8" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M22 28H34" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M22 34H28" stroke="#3B82F6" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M36 29C36 26.2386 38.2386 24 41 24C43.7614 24 46 26.2386 46 29C46 31.3134 44.4173 33.2062 42.2924 33.8113L41 44" fill="#FBBF24" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M41 32C41.8284 32 42.5 31.3284 42.5 30.5V30.5M41 35C40.1716 35 39.5 34.3284 39.5 33.5V33.5" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M39.5 29.5H42.5" stroke="#F59E0B" strokeWidth="2" strokeLinecap="round"/>
       </svg>
     ),
     href: 'quotation',
@@ -56,15 +56,15 @@ const tools = [
       <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
         <path d="M32 23C36.9706 23 41 27.0294 41 32C41 35.5373 38.9207 38.5332 36 39.9324V43H28V39.9324C25.0793 38.5332 23 35.5373 23 32C23 27.0294 27.0294 23 32 23Z" fill="#FCD34D"/>
         <rect x="29" y="43" width="6" height="3" rx="1" fill="#FBBF24"/>
-        <path d="M32 16L32 20" stroke="#FCD34D" stroke-width="3" stroke-linecap="round"/>
-        <path d="M42 22L39.1716 24.8284" stroke="#FCD34D" stroke-width="3" stroke-linecap="round"/>
-        <path d="M48 32L44 32" stroke="#FCD34D" stroke-width="3" stroke-linecap="round"/>
-        <path d="M42 42L39.1716 39.1716" stroke="#FCD34D" stroke-width="3" stroke-linecap="round"/>
-        <path d="M22 22L24.8284 24.8284" stroke="#FCD34D" stroke-width="3" stroke-linecap="round"/>
-        <path d="M16 32L20 32" stroke="#FCD34D" stroke-width="3" stroke-linecap="round"/>
-        <path d="M22 42L24.8284 39.1716" stroke="#FCD34D" stroke-width="3" stroke-linecap="round"/>
-        <path d="M30 19L31 17" stroke="#FCD34D" stroke-width="2" stroke-linecap="round"/>
-        <path d="M34 19L33 17" stroke="#FCD34D" stroke-width="2" stroke-linecap="round"/>
+        <path d="M32 16L32 20" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round"/>
+        <path d="M42 22L39.1716 24.8284" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round"/>
+        <path d="M48 32L44 32" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round"/>
+        <path d="M42 42L39.1716 39.1716" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round"/>
+        <path d="M22 22L24.8284 24.8284" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round"/>
+        <path d="M16 32L20 32" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round"/>
+        <path d="M22 42L24.8284 39.1716" stroke="#FCD34D" strokeWidth="3" strokeLinecap="round"/>
+        <path d="M30 19L31 17" stroke="#FCD34D" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M34 19L33 17" stroke="#FCD34D" strokeWidth="2" strokeLinecap="round"/>
       </svg>
     ),
     href: 'inspiration',
