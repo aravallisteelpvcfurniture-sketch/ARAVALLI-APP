@@ -10,8 +10,7 @@ interface HeaderProps {
 export function Header({ title = "Aravalli Configurator" }: HeaderProps) {
   return (
     <header 
-      className="px-4 lg:px-6 h-16 flex items-center border-b shrink-0 text-primary-foreground"
-      style={{ backgroundColor: '#00BFFF' }}
+      className="px-4 lg:px-6 h-16 flex items-center border-b shrink-0 bg-primary text-primary-foreground"
     >
       <Link href="/" className="flex items-center justify-center gap-2" prefetch={false}>
         <span className="text-xl font-semibold">{title}</span>
