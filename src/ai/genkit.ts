@@ -1,6 +1,6 @@
 import {genkit} from 'genkit';
 import {googleAI} from '@genkit-ai/google-genai';
-import {googleCloudStorage} from 'genkit/plugins/google-cloud';
+import {googleCloudStorage} from '@genkit-ai/google-cloud';
 
 export const ai = genkit({
   plugins: [googleAI(), googleCloudStorage()],
