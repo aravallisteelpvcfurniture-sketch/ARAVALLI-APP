@@ -16,25 +16,25 @@ export default function VisitorsPage() {
   const { user, isUserLoading } = useUser();
   const firestore = useFirestore();
 
-  const partiesCollectionRef = useMemoFirebase(() => {
+  const visitorsCollectionRef = useMemoFirebase(() => {
     if (!firestore || !user?.uid) return null;
-    return collection(firestore, 'users', user.uid, 'parties');
+    return collection(firestore, 'users', user.uid, 'visitors');
   }, [firestore, user?.uid]);
 
-  const { data: parties, isLoading: isPartiesLoading } = useCollection(partiesCollectionRef);
+  const { data: visitors, isLoading: isVisitorsLoading } = useCollection(visitorsCollectionRef);
 
-  const isLoading = isUserLoading || isPartiesLoading;
+  const isLoading = isUserLoading || isVisitorsLoading;
 
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
       <Header title="Visitors" />
       <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
         <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold tracking-tight">Party List</h1>
+          <h1 className="text-2xl font-bold tracking-tight">Visitor List</h1>
           <Button asChild>
             <Link href="/visitors/add">
               <Plus className="mr-2 h-4 w-4" />
-              Add Party
+              Add Visitor
             </Link>
           </Button>
         </div>
@@ -46,12 +46,12 @@ export default function VisitorsPage() {
               <Skeleton className="h-14 w-full" />
               <Skeleton className="h-14 w-full" />
             </div>
-          ) : parties && parties.length > 0 ? (
-            parties.map((party) => (
-                <Card key={party.id} className="rounded-2xl">
+          ) : visitors && visitors.length > 0 ? (
+            visitors.map((visitor) => (
+                <Card key={visitor.id} className="rounded-2xl">
                 <CardContent className="p-0">
                     <Link href="#" className="flex items-center justify-between p-4 group">
-                    <span className="font-medium">{party.name}</span>
+                    <span className="font-medium">{visitor.name}</span>
                     <ChevronRight className="h-5 w-5 text-muted-foreground group-hover:text-primary transition-colors" />
                     </Link>
                 </CardContent>
@@ -59,8 +59,8 @@ export default function VisitorsPage() {
             ))
           ) : (
             <div className="flex flex-col items-center justify-center text-center text-muted-foreground h-48 border-2 border-dashed rounded-lg">
-                <p className="font-semibold">No Parties Found</p>
-                <p className="text-sm">Click "Add Party" to create your first one.</p>
+                <p className="font-semibold">No Visitors Found</p>
+                <p className="text-sm">Click "Add Visitor" to create your first one.</p>
             </div>
           )}
         </div>

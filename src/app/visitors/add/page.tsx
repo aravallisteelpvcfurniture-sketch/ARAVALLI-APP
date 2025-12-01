@@ -12,136 +12,214 @@ import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, User, Phone, Mail, MapPin, Target, ChevronDown } from 'lucide-react';
 import { useRouter } from 'next/navigation';
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 
-const partySchema = z.object({
-  name: z.string().min(1, 'Name is required'),
-  mobile: z.string().optional(),
+const visitorSchema = z.object({
+  phone: z.string().min(1, 'Phone number is required'),
+  name: z.string().min(1, 'Full name is required'),
+  assignTo: z.string().optional(),
   email: z.string().email('Please enter a valid email.').optional(),
+  city: z.string().optional(),
   address: z.string().optional(),
+  purpose: z.string().optional(),
+  status: z.string().optional(),
 });
 
-export default function AddPartyPage() {
+export default function AddVisitorPage() {
   const { toast } = useToast();
   const router = useRouter();
   const { user } = useUser();
   const firestore = useFirestore();
 
-  const partiesCollectionRef = useMemoFirebase(() => {
+  const visitorsCollectionRef = useMemoFirebase(() => {
     if (!firestore || !user) return null;
-    return collection(firestore, 'users', user.uid, 'parties');
+    return collection(firestore, 'users', user.uid, 'visitors');
   }, [firestore, user]);
 
-  const form = useForm<z.infer<typeof partySchema>>({
-    resolver: zodResolver(partySchema),
+  const form = useForm<z.infer<typeof visitorSchema>>({
+    resolver: zodResolver(visitorSchema),
     defaultValues: {
+      phone: '',
       name: '',
-      mobile: '',
+      assignTo: '',
       email: '',
+      city: '',
       address: '',
+      purpose: '',
+      status: '',
     },
   });
 
-  const onSubmit = (values: z.infer<typeof partySchema>) => {
-    if (!partiesCollectionRef) {
+  const onSubmit = (values: z.infer<typeof visitorSchema>) => {
+    if (!visitorsCollectionRef) {
         toast({
             variant: "destructive",
             title: "Error",
-            description: "You must be logged in to add a party.",
+            description: "You must be logged in to add a visitor.",
         });
         return;
     }
 
-    addDocumentNonBlocking(partiesCollectionRef, values);
+    addDocumentNonBlocking(visitorsCollectionRef, values);
 
     toast({
-      title: 'Party Added',
-      description: `${values.name} has been added to your party list.`,
+      title: 'Visitor Added',
+      description: `${values.name} has been added to your visitor list.`,
     });
     
     router.push('/visitors');
   };
 
   return (
-    <div className="flex flex-col min-h-dvh bg-background text-foreground">
-      <Header title="Add Party" />
-      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 flex justify-center">
-        <Card className="w-full max-w-2xl h-fit rounded-2xl">
-          <CardHeader>
-            <CardTitle>New Party Details</CardTitle>
-            <CardDescription>
-              Fill in the information for the new party. This will be saved to your account.
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <Form {...form}>
-              <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-                <FormField
-                  control={form.control}
-                  name="name"
-                  render={({ field }) => (
+    <div className="flex flex-col min-h-dvh bg-muted text-foreground">
+      <Header title="Add Visitor" />
+      <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 bg-card rounded-t-3xl">
+        <Form {...form}>
+          <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+            <FormField
+              control={form.control}
+              name="phone"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="relative">
+                      <Phone className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input placeholder="Phone Number" {...field} className="pl-10 h-12 rounded-full bg-muted border-none" />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="name"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input placeholder="Full Name" {...field} className="pl-10 h-12 rounded-full bg-muted border-none" />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="assignTo"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="relative">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input placeholder="Assign to" {...field} className="pl-10 h-12 rounded-full bg-muted border-none" />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="email"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="relative">
+                      <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input placeholder="Email" {...field} className="pl-10 h-12 rounded-full bg-muted border-none" />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+                control={form.control}
+                name="city"
+                render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Party Name</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter party name" {...field} />
-                      </FormControl>
-                      <FormMessage />
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                                <SelectTrigger className="h-12 rounded-full bg-muted border-none text-muted-foreground">
+                                    <SelectValue placeholder="Select City" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem value="mumbai">Mumbai</SelectItem>
+                                <SelectItem value="delhi">Delhi</SelectItem>
+                                <SelectItem value="bangalore">Bangalore</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
                     </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="mobile"
-                  render={({ field }) => (
+                )}
+            />
+            <FormField
+              control={form.control}
+              name="address"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="relative">
+                      <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input placeholder="Address" {...field} className="pl-10 h-12 rounded-full bg-muted border-none" />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+              control={form.control}
+              name="purpose"
+              render={({ field }) => (
+                <FormItem>
+                  <FormControl>
+                    <div className="relative">
+                      <Target className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                      <Input placeholder="Purpose" {...field} className="pl-10 h-12 rounded-full bg-muted border-none" />
+                    </div>
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+            <FormField
+                control={form.control}
+                name="status"
+                render={({ field }) => (
                     <FormItem>
-                      <FormLabel>Mobile Number</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter mobile number" {...field} />
-                      </FormControl>
-                      <FormMessage />
+                        <Select onValueChange={field.onChange} defaultValue={field.value}>
+                            <FormControl>
+                                <SelectTrigger className="h-12 rounded-full bg-muted border-none text-muted-foreground">
+                                    <SelectValue placeholder="Select Status" />
+                                </SelectTrigger>
+                            </FormControl>
+                            <SelectContent>
+                                <SelectItem value="hot">Hot</SelectItem>
+                                <SelectItem value="warm">Warm</SelectItem>
+                                <SelectItem value="cold">Cold</SelectItem>
+                            </SelectContent>
+                        </Select>
+                        <FormMessage />
                     </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="email"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Email Address</FormLabel>
-                      <FormControl>
-                        <Input placeholder="Enter email address" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <FormField
-                  control={form.control}
-                  name="address"
-                  render={({ field }) => (
-                    <FormItem>
-                      <FormLabel>Address</FormLabel>
-                      <FormControl>
-                        <Textarea placeholder="Enter full address" {...field} />
-                      </FormControl>
-                      <FormMessage />
-                    </FormItem>
-                  )}
-                />
-                <Button type="submit" disabled={form.formState.isSubmitting || !partiesCollectionRef}>
-                  {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                  Save Party
-                </Button>
-              </form>
-            </Form>
-          </CardContent>
-        </Card>
+                )}
+            />
+            <Button type="submit" size="lg" className="w-full rounded-full" disabled={form.formState.isSubmitting || !visitorsCollectionRef}>
+              {form.formState.isSubmitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+              Add Visitor
+            </Button>
+          </form>
+        </Form>
       </main>
-      <BottomNav />
     </div>
   );
 }
