@@ -10,18 +10,19 @@
  * - Furniture Configurations: `/users/{userId}/furnitureConfigurations/{furnitureConfigurationId}` - Stores user-created furniture configurations.
  * - Orders: `/users/{userId}/orders/{orderId}` - Stores user order information.
  * - Visitors: `/users/{userId}/visitors/{visitorId}` - Stores user-created visitor/contact information.
+ * - Site Measurements: `/users/{userId}/visitors/{visitorId}/measurements/{measurementId}` - Stores site measurements for a visitor.
  *
  * Key Security Decisions:
  * - Users can only read and write their own profile data.
  * - Material data is publicly readable.
- * - Users can only read, create, update, and delete their own furniture configurations, orders, and visitors.
+ * - Users can only read, create, update, and delete their own furniture configurations, orders, visitors, and measurements.
  * - User listing is disabled.
  *
  * Denormalization for Authorization:
  * - FurnitureConfiguration, Order, and Visitor documents may contain a `userId` field, which is denormalized from the user's document ID. This allows direct ownership checks without additional `get()` calls.
  *
  * Structural Segregation:
- * - Private user data (FurnitureConfigurations, Orders, Visitors) is stored under the `/users/{userId}` path.
+ * - Private user data (FurnitureConfigurations, Orders, Visitors, Measurements) is stored under the `/users/{userId}` path.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -80,6 +81,17 @@ service cloud.firestore {
       match /visitors/{visitorId} {
         allow get, list, update, delete: if isOwner(userId);
         allow create: if isOwner(userId);
+        
+        /**
+         * @description Rules for site measurements for a visitor.
+         * @path /users/{userId}/visitors/{visitorId}/measurements/{measurementId}
+         * @allow (create, list, get) - A user can manage measurements for their own visitors.
+         * @principle Enforces document ownership for measurements.
+         */
+        match /measurements/{measurementId} {
+            allow get, list, create: if isOwner(userId);
+            allow update, delete: if false;
+        }
       }
     }
 

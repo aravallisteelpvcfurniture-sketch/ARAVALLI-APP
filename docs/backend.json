@@ -251,6 +251,41 @@
         }
       },
       "required": ["id", "name", "phone"]
+    },
+     "SiteMeasurement": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SiteMeasurement",
+      "type": "object",
+      "description": "Represents a site measurement taken for a visitor.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the measurement."
+        },
+        "length": {
+          "type": "string",
+          "description": "The length of the measured area."
+        },
+        "width": {
+          "type": "string",
+          "description": "The width of the measured area."
+        },
+        "height": {
+          "type": "string",
+          "description": "The height of the measured area."
+        },
+        "photo": {
+          "type": "string",
+          "description": "A data URI of the photo taken at the site.",
+          "format": "uri"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time the measurement was taken.",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "length", "width", "height", "createdAt"]
     }
   },
   "auth": {
@@ -352,6 +387,30 @@
                     "description": "The unique identifier of the visitor."
                 }
             ]
+        }
+      },
+      {
+        "path": "/users/{userId}/visitors/{visitorId}/measurements/{measurementId}",
+        "definition": {
+          "entityName": "SiteMeasurement",
+          "schema": {
+            "$ref": "#/backend/entities/SiteMeasurement"
+          },
+          "description": "Stores site measurements taken for a specific visitor.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "visitorId",
+              "description": "The unique identifier of the visitor."
+            },
+            {
+              "name": "measurementId",
+              "description": "The unique identifier of the measurement."
+            }
+          ]
         }
       }
     ],
