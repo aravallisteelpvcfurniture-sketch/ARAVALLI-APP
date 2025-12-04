@@ -275,22 +275,6 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
                     )}
                   />
                   
-                  <div className="space-y-4 pt-4">
-                    <div className="flex items-center justify-between">
-                      <p className="text-lg font-medium text-muted-foreground flex items-center gap-2">
-                        <DollarSign className="h-6 w-6" /> Estimated Cost
-                      </p>
-                      {isCostLoading && <Loader2 className="h-5 w-5 animate-spin text-muted-foreground" />}
-                    </div>
-                     {isMounted && !isCostLoading && cost ? (
-                        <p className="text-5xl font-bold text-primary">
-                            {new Intl.NumberFormat('en-IN', { style: 'currency', currency: cost.currency || 'INR', minimumFractionDigits: 0 }).format(cost.estimatedCost)}
-                        </p>
-                     ) : (
-                        <Skeleton className="h-12 w-48" />
-                     )}
-                  </div>
-                  
                   <FormField
                     control={form.control}
                     name="finalPrice"
