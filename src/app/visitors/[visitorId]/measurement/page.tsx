@@ -189,11 +189,12 @@ export default function MeasurementPage() {
                     <div className="space-y-4">
                         <FormField control={form.control} name="width" render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Width (ft)</FormLabel>
+                                <FormLabel>Width</FormLabel>
                                 <FormControl>
                                     <div className="relative">
                                         <MoveHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                        <Input placeholder="0.00" {...field} type="number" step="0.01" className="pl-10 h-12" />
+                                        <Input placeholder="0.00" {...field} type="number" step="0.01" className="pl-10 h-12 pr-10" />
+                                        <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-sm text-muted-foreground">ft</div>
                                     </div>
                                 </FormControl>
                                 <FormMessage />
@@ -201,11 +202,12 @@ export default function MeasurementPage() {
                         )} />
                         <FormField control={form.control} name="height" render={({ field }) => (
                             <FormItem>
-                                <FormLabel>Height (ft)</FormLabel>
+                                <FormLabel>Height</FormLabel>
                                 <FormControl>
                                     <div className="relative">
                                         <MoveVertical className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                                        <Input placeholder="0.00" {...field} type="number" step="0.01" className="pl-10 h-12" />
+                                        <Input placeholder="0.00" {...field} type="number" step="0.01" className="pl-10 h-12 pr-10" />
+                                         <div className="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none text-sm text-muted-foreground">ft</div>
                                     </div>
                                 </FormControl>
                                 <FormMessage />
@@ -270,7 +272,7 @@ export default function MeasurementPage() {
                                         <span><span className="font-semibold">H:</span> {m.height} ft</span>
                                     </div>
                                     <div className="font-bold text-primary mt-1">
-                                        {m.totalSqFt.toFixed(2)} sq. ft.
+                                        Total square feet: {m.totalSqFt.toFixed(2)}
                                     </div>
                                      {m.sheetQuantity && (
                                         <div className="font-bold text-primary mt-1">
@@ -300,3 +302,5 @@ export default function MeasurementPage() {
     </div>
   );
 }
+
+    
