@@ -197,7 +197,7 @@ export default function MeasurementPage() {
                         <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
                             <div className="flex items-center gap-2 text-sm font-medium">
                                 <Square className="h-5 w-5 text-primary" />
-                                <span>Total Area</span>
+                                <span>Total square feet</span>
                             </div>
                             <Badge variant="secondary" className="text-base">{totalSqFt} sq. ft.</Badge>
                         </div>
