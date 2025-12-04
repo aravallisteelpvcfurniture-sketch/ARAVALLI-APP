@@ -24,11 +24,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
 import { Skeleton } from "@/components/ui/skeleton";
-import { DollarSign, Loader2, Save } from "lucide-react";
+import { DollarSign, Loader2, Save, Share2 } from "lucide-react";
 import { useUser, useFirestore, useMemoFirebase } from "@/firebase";
 import { addDocumentNonBlocking } from "@/firebase/non-blocking-updates";
-import { collection } from "firebase/firestore";
+import { collection, doc } from "firebase/firestore";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
+import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   material: z.string().min(1, "Please select a material."),
@@ -38,6 +39,7 @@ const formSchema = z.object({
     height: z.coerce.number().min(1, "Height is required").min(40).max(250),
   }),
   features: z.array(z.string()).optional(),
+  finalPrice: z.coerce.number().optional(),
 });
 
 interface ConfiguratorProps {
@@ -53,6 +55,7 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
+  const router = useRouter();
 
   const getInitialConfig = useCallback(() => {
     return {
@@ -61,7 +64,8 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
         length: initialDimensions?.length || DEFAULT_CONFIG.dimensions.length,
         width: initialDimensions?.width || DEFAULT_CONFIG.dimensions.width,
         height: initialDimensions?.height || DEFAULT_CONFIG.dimensions.height,
-      }
+      },
+      finalPrice: undefined,
     }
   }, [initialDimensions]);
 
@@ -69,6 +73,7 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
   
   const [isCostLoading, startCostTransition] = useTransition();
   const [isMounted, setIsMounted] = useState(false);
+  const [isSaving, setIsSaving] = useState(false);
 
   const furnitureConfigurationsRef = useMemoFirebase(() => {
     if (!firestore || !user?.uid || !visitorId) return null;
@@ -88,7 +93,7 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
 
   const watchedValues = form.watch();
 
-  const updateCost = useCallback((newConfig: FurnitureConfig) => {
+  const updateCost = useCallback((newConfig: Omit<FurnitureConfig, 'finalPrice'>) => {
     startCostTransition(async () => {
       const result = await getCost(newConfig);
       if (result) {
@@ -106,7 +111,7 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
   useEffect(() => {
     const debouncer = setTimeout(() => {
       if (form.formState.isValid) {
-        const newConfig = form.getValues();
+        const { finalPrice, ...newConfig } = form.getValues();
         updateCost(newConfig);
       }
     }, 500);
@@ -115,7 +120,8 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
   }, [watchedValues, form, updateCost]);
 
 
-  function handleSaveQuotation() {
+  const handleSaveQuotation = async () => {
+    setIsSaving(true);
     const currentConfig = form.getValues();
 
     if (!furnitureConfigurationsRef || !user?.uid || !cost) {
@@ -124,34 +130,73 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
         title: 'Error',
         description: 'Could not save quotation. Please make sure you are logged in and a visitor is selected.',
       });
+      setIsSaving(false);
       return;
     }
 
+    const finalPrice = currentConfig.finalPrice || cost.estimatedCost;
+
     const furnitureConfigurationData = {
         userId: user.uid,
-        materialId: currentConfig.material,
+        visitorId: visitorId,
+        material: currentConfig.material,
         ...currentConfig.dimensions,
-        drawers: currentConfig.features?.includes('drawers') ? 1 : 0,
-        shelves: currentConfig.features?.includes('shelves') ? 1 : 0,
-        doors: currentConfig.features?.includes('doors') ? 1 : 0,
+        features: currentConfig.features || [],
         estimatedCost: cost.estimatedCost,
+        finalPrice: finalPrice,
         configurationDate: new Date().toISOString(),
     };
 
-    addDocumentNonBlocking(furnitureConfigurationsRef, furnitureConfigurationData);
+    try {
+        const newDocRef = doc(furnitureConfigurationsRef); // Create a new doc reference with an auto-generated ID
+        await addDocumentNonBlocking(furnitureConfigurationsRef, furnitureConfigurationData, newDocRef);
 
-    toast({
-      title: "Quotation Saved!",
-      description: "The furniture configuration has been saved for this visitor.",
-    });
+        toast({
+          title: "Quotation Saved!",
+          description: "The furniture configuration has been saved for this visitor.",
+        });
+        return newDocRef.id;
+    } catch (error) {
+        toast({
+            variant: 'destructive',
+            title: 'Save Failed',
+            description: 'Could not save the quotation.',
+        });
+    } finally {
+        setIsSaving(false);
+    }
+    return null;
   }
+  
+  const handleShare = async () => {
+    const quotationId = await handleSaveQuotation();
+    if (quotationId && visitorId) {
+        const shareUrl = `${window.location.origin}/visitors/${visitorId}/quotation/${quotationId}`;
+        if (navigator.share) {
+            navigator.share({
+                title: 'Furniture Quotation',
+                text: 'Here is the furniture quotation we discussed.',
+                url: shareUrl,
+            }).catch((error) => console.error('Error sharing', error));
+        } else {
+            // Fallback for browsers that don't support navigator.share
+            navigator.clipboard.writeText(shareUrl);
+            toast({
+                title: "Link Copied!",
+                description: "Quotation link copied to clipboard.",
+            });
+        }
+    }
+  };
+  
+  const isLoading = isSaving || isCostLoading;
 
   return (
     <div className="p-4 -mt-32">
         <Card className="rounded-2xl shadow-xl">
             <CardContent className="p-6">
               <Form {...form}>
-                <form onSubmit={form.handleSubmit(handleSaveQuotation)} className="space-y-8">
+                <form className="space-y-8">
                   <FormField
                     control={form.control}
                     name="material"
@@ -211,7 +256,7 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
                                 render={({ field: { onChange, value } }) => (
                                     <ToggleGroup
                                         type="multiple"
-                                        value={value}
+                                        value={value || []}
                                         onValueChange={onChange}
                                         className="grid grid-cols-3 gap-2"
                                     >
@@ -245,12 +290,37 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
                         <Skeleton className="h-12 w-48" />
                      )}
                   </div>
+                  
+                  <FormField
+                    control={form.control}
+                    name="finalPrice"
+                    render={({ field }) => (
+                      <FormItem>
+                        <FormLabel className="text-lg font-medium">Final Price</FormLabel>
+                        <FormControl>
+                          <Input 
+                            type="number" 
+                            placeholder="Enter final price (optional)" 
+                            {...field}
+                            value={field.value ?? ''}
+                            className="h-12 text-base"
+                          />
+                        </FormControl>
+                        <FormMessage />
+                      </FormItem>
+                    )}
+                  />
 
-
-                  <Button type="submit" size="lg" className="w-full h-14 text-lg" disabled={isCostLoading || !visitorId}>
-                    <Save className="mr-2 h-5 w-5" />
-                    Save Quotation
-                  </Button>
+                  <div className="grid grid-cols-2 gap-4">
+                    <Button type="button" onClick={handleSaveQuotation} size="lg" className="w-full h-14 text-lg" disabled={isLoading || !visitorId}>
+                        {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
+                        Save
+                    </Button>
+                    <Button type="button" onClick={handleShare} size="lg" className="w-full h-14 text-lg" disabled={isLoading || !visitorId}>
+                        {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Share2 className="mr-2 h-5 w-5" />}
+                        Save & Share
+                    </Button>
+                  </div>
                 </form>
               </Form>
             </CardContent>

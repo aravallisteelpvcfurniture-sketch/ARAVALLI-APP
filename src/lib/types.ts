@@ -10,6 +10,7 @@ export type FurnitureConfig = {
     height: number;
   };
   features: string[];
+  finalPrice?: number;
 };
 
 export type Cost = EstimateFurnitureCostOutput;
@@ -25,3 +26,17 @@ export type FeatureOption = {
   name: string;
   icon: LucideIcon;
 };
+
+export type QuotationData = {
+    id: string;
+    userId: string;
+    visitorId: string;
+    material: string;
+    length: number;
+    width: number;
+    height: number;
+    features: string[];
+    estimatedCost: number;
+    finalPrice: number;
+    configurationDate: string;
+  };

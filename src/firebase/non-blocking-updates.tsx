@@ -33,21 +33,29 @@ export function setDocumentNonBlocking(docRef: DocumentReference, data: any, opt
 
 /**
  * Initiates an addDoc operation for a collection reference.
+ * If a docRef is provided, it uses setDoc to write to that specific document ID.
+ * Otherwise, it uses addDoc to auto-generate an ID.
  * Does NOT await the write operation internally.
- * Returns the Promise for the new doc ref, but typically not awaited by caller.
+ * Returns the Promise, but typically not awaited by the caller.
  */
-export function addDocumentNonBlocking(colRef: CollectionReference, data: any) {
-  const promise = addDoc(colRef, data)
-    .catch(error => {
-      errorEmitter.emit(
-        'permission-error',
-        new FirestorePermissionError({
-          path: colRef.path,
-          operation: 'create',
-          requestResourceData: data,
-        })
-      )
-    });
+export function addDocumentNonBlocking(colRef: CollectionReference, data: any, docRef?: DocumentReference) {
+  const promise = docRef 
+    ? setDoc(docRef, data)
+    : addDoc(colRef, data);
+    
+  promise.catch(error => {
+    const path = docRef ? docRef.path : colRef.path;
+    errorEmitter.emit(
+      'permission-error',
+      new FirestorePermissionError({
+        path: path,
+        operation: 'create',
+        requestResourceData: data,
+      })
+    );
+    // Re-throw the error so the caller's catch block can handle it for UI feedback
+    throw error;
+  });
   return promise;
 }
 
