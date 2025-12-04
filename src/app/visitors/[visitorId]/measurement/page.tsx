@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ChevronLeft, Bell, Camera, X, FileText, Square } from 'lucide-react';
+import { Loader2, ChevronLeft, Bell, Camera, X, FileText, Square, MoveHorizontal, MoveVertical } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useUser, useFirestore, useMemoFirebase, useCollection, useDoc } from '@/firebase';
 import { doc, collection } from 'firebase/firestore';
@@ -17,7 +17,6 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import Link from 'next/link';
-import { Badge } from '@/components/ui/badge';
 
 const measurementSchema = z.object({
   width: z.coerce.number().min(0.1, 'Width is required'),
@@ -163,7 +162,8 @@ export default function MeasurementPage() {
                 <CardTitle>Capture Measurement</CardTitle>
             </CardHeader>
             <CardContent>
-                <div className="space-y-4">
+                <Form {...form}>
+                <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
                     {photo ? (
                         <div className="relative w-full aspect-video">
                             <Image src={photo} alt="Site measurement" layout="fill" className="rounded-md object-cover" />
@@ -186,41 +186,67 @@ export default function MeasurementPage() {
 
                     <canvas ref={canvasRef} className="hidden" />
 
-                    <Form {...form}>
-                    <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="grid grid-cols-2 gap-4">
-                             <FormField control={form.control} name="width" render={({ field }) => (
-                                <FormItem><FormLabel>Width (ft)</FormLabel><FormControl><Input placeholder="0.00" {...field} type="number" step="0.01" /></FormControl><FormMessage /></FormItem>
-                            )} />
-                            <FormField control={form.control} name="height" render={({ field }) => (
-                                <FormItem><FormLabel>Height (ft)</FormLabel><FormControl><Input placeholder="0.00" {...field} type="number" step="0.01" /></FormControl><FormMessage /></FormItem>
-                            )} />
-                        </div>
-                        <div className="space-y-2">
-                            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                                <div className="flex items-center gap-2 text-sm font-medium">
-                                    <Square className="h-5 w-5 text-primary" />
-                                    <span>Total square feet</span>
-                                </div>
-                                <Badge variant="secondary" className="text-base">{totalSqFt} sq. ft.</Badge>
-                            </div>
-                             <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                                <div className="flex items-center gap-2 text-sm font-medium">
-                                    <FileText className="h-5 w-5 text-primary" />
-                                    <span>Sheet Quantity</span>
-                                </div>
-                                <Badge variant="secondary" className="text-base">{sheetQuantity}</Badge>
-                            </div>
-                        </div>
-                        <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
-                        {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-                        Save
-                        </Button>
-                    </form>
-                    </Form>
-                </div>
+                    <div className="space-y-4">
+                        <FormField control={form.control} name="width" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Width (ft)</FormLabel>
+                                <FormControl>
+                                    <div className="relative">
+                                        <MoveHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                        <Input placeholder="0.00" {...field} type="number" step="0.01" className="pl-10 h-12" />
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                        <FormField control={form.control} name="height" render={({ field }) => (
+                            <FormItem>
+                                <FormLabel>Height (ft)</FormLabel>
+                                <FormControl>
+                                    <div className="relative">
+                                        <MoveVertical className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
+                                        <Input placeholder="0.00" {...field} type="number" step="0.01" className="pl-10 h-12" />
+                                    </div>
+                                </FormControl>
+                                <FormMessage />
+                            </FormItem>
+                        )} />
+                    </div>
+                    
+                    <Button type="submit" size="lg" className="w-full h-12" disabled={isLoading}>
+                    {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+                    Save Measurement
+                    </Button>
+                </form>
+                </Form>
             </CardContent>
         </Card>
+        
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <Card className="rounded-2xl">
+                <CardContent className="p-4 flex items-center gap-4">
+                    <div className="bg-primary/10 text-primary p-3 rounded-lg">
+                        <Square className="h-8 w-8"/>
+                    </div>
+                    <div>
+                        <div className="text-sm text-muted-foreground">Total square feet</div>
+                        <div className="text-2xl font-bold">{totalSqFt} sq. ft.</div>
+                    </div>
+                </CardContent>
+            </Card>
+             <Card className="rounded-2xl">
+                <CardContent className="p-4 flex items-center gap-4">
+                    <div className="bg-primary/10 text-primary p-3 rounded-lg">
+                        <FileText className="h-8 w-8"/>
+                    </div>
+                    <div>
+                        <div className="text-sm text-muted-foreground">Sheet Quantity</div>
+                        <div className="text-2xl font-bold">{sheetQuantity}</div>
+                    </div>
+                </CardContent>
+            </Card>
+        </div>
+
 
         <Card className="rounded-2xl">
             <CardHeader>
