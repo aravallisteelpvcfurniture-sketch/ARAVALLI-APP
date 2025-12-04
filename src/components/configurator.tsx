@@ -23,8 +23,7 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Skeleton } from "@/components/ui/skeleton";
-import { DollarSign, Loader2, Save, Share2 } from "lucide-react";
+import { Loader2, Save, Share2 } from "lucide-react";
 import { useUser, useFirestore, useMemoFirebase } from "@/firebase";
 import { addDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 import { collection, doc } from "firebase/firestore";
@@ -35,8 +34,8 @@ const formSchema = z.object({
   material: z.string().min(1, "Please select a material."),
   dimensions: z.object({
     length: z.coerce.number().min(1, "Length is required").min(50).max(300),
-    width: z.coerce.number().min(1, "Width is required").min(30).max(200),
-    height: z.coerce.number().min(1, "Height is required").min(40).max(250),
+    width: z.coerce.number().min(1, "Width is required"),
+    height: z.coerce.number().min(1, "Height is required"),
   }),
   features: z.array(z.string()).optional(),
   finalPrice: z.coerce.number().optional(),
@@ -58,10 +57,11 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
   const router = useRouter();
 
   const getInitialConfig = useCallback(() => {
+    // Width and Height come from measurement, Length is default
     return {
       ...DEFAULT_CONFIG,
       dimensions: {
-        length: initialDimensions?.length || DEFAULT_CONFIG.dimensions.length,
+        length: DEFAULT_CONFIG.dimensions.length, // Keep default length
         width: initialDimensions?.width || DEFAULT_CONFIG.dimensions.width,
         height: initialDimensions?.height || DEFAULT_CONFIG.dimensions.height,
       },
@@ -120,7 +120,7 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
   }, [watchedValues, form, updateCost]);
 
 
-  const handleSaveQuotation = async () => {
+  const handleSaveAndShare = async () => {
     setIsSaving(true);
     const currentConfig = form.getValues();
 
@@ -155,23 +155,9 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
           title: "Quotation Saved!",
           description: "The furniture configuration has been saved for this visitor.",
         });
-        return newDocRef.id;
-    } catch (error) {
-        toast({
-            variant: 'destructive',
-            title: 'Save Failed',
-            description: 'Could not save the quotation.',
-        });
-    } finally {
-        setIsSaving(false);
-    }
-    return null;
-  }
-  
-  const handleShare = async () => {
-    const quotationId = await handleSaveQuotation();
-    if (quotationId && visitorId) {
-        const shareUrl = `${window.location.origin}/visitors/${visitorId}/quotation/${quotationId}`;
+        
+        // Share functionality
+        const shareUrl = `${window.location.origin}/visitors/${visitorId}/quotation/${newDocRef.id}`;
         if (navigator.share) {
             navigator.share({
                 title: 'Furniture Quotation',
@@ -186,8 +172,17 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
                 description: "Quotation link copied to clipboard.",
             });
         }
+
+    } catch (error) {
+        toast({
+            variant: 'destructive',
+            title: 'Save Failed',
+            description: 'Could not save the quotation.',
+        });
+    } finally {
+        setIsSaving(false);
     }
-  };
+  }
   
   const isLoading = isSaving || isCostLoading;
 
@@ -229,16 +224,16 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
                   />
 
                   <div className="space-y-4">
-                    <FormLabel>Dimensions (cm)</FormLabel>
+                    <FormLabel>Dimensions</FormLabel>
                      <div className="grid grid-cols-3 gap-4">
                         <FormField control={form.control} name="dimensions.length" render={({ field }) => (
-                            <FormItem><FormLabel className="text-sm font-normal text-muted-foreground">Length</FormLabel><FormControl><Input placeholder="e.g. 120" {...field} type="number" className="h-12 text-base" /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel className="text-sm font-normal text-muted-foreground">Length (cm)</FormLabel><FormControl><Input placeholder="e.g. 120" {...field} type="number" className="h-12 text-base" /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="dimensions.width" render={({ field }) => (
-                            <FormItem><FormLabel className="text-sm font-normal text-muted-foreground">Width</FormLabel><FormControl><Input placeholder="e.g. 60" {...field} type="number" className="h-12 text-base" /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel className="text-sm font-normal text-muted-foreground">Width (ft)</FormLabel><FormControl><Input placeholder="e.g. 2" {...field} type="number" className="h-12 text-base" /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="dimensions.height" render={({ field }) => (
-                            <FormItem><FormLabel className="text-sm font-normal text-muted-foreground">Height</FormLabel><FormControl><Input placeholder="e.g. 75" {...field} type="number" className="h-12 text-base" /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel className="text-sm font-normal text-muted-foreground">Height (ft)</FormLabel><FormControl><Input placeholder="e.g. 3" {...field} type="number" className="h-12 text-base" /></FormControl><FormMessage /></FormItem>
                         )} />
                     </div>
                   </div>
@@ -295,12 +290,8 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
                     )}
                   />
 
-                  <div className="grid grid-cols-2 gap-4">
-                    <Button type="button" onClick={handleSaveQuotation} size="lg" className="w-full h-14 text-lg" disabled={isLoading || !visitorId}>
-                        {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
-                        Save
-                    </Button>
-                    <Button type="button" onClick={handleShare} size="lg" className="w-full h-14 text-lg" disabled={isLoading || !visitorId}>
+                  <div className="grid grid-cols-1 gap-4">
+                    <Button type="button" onClick={handleSaveAndShare} size="lg" className="w-full h-14 text-lg" disabled={isLoading || !visitorId}>
                         {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Share2 className="mr-2 h-5 w-5" />}
                         Save & Share
                     </Button>
@@ -312,3 +303,5 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
     </div>
   );
 }
+
+    

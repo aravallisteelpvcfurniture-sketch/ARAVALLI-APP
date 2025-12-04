@@ -1,14 +1,14 @@
 'use client';
 
 import React, { useState, useRef, useEffect } from 'react';
-import { useForm } from 'react-hook-form';
+import { useForm, useWatch } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ChevronLeft, Bell, Camera, X, FileText } from 'lucide-react';
+import { Loader2, ChevronLeft, Bell, Camera, X, FileText, Square } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useUser, useFirestore, useMemoFirebase, useCollection, useDoc } from '@/firebase';
 import { doc, collection } from 'firebase/firestore';
@@ -17,11 +17,11 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
 import Link from 'next/link';
+import { Badge } from '@/components/ui/badge';
 
 const measurementSchema = z.object({
-  length: z.string().min(1, 'Length is required'),
-  width: z.string().min(1, 'Width is required'),
-  height: z.string().min(1, 'Height is required'),
+  width: z.coerce.number().min(0.1, 'Width is required'),
+  height: z.coerce.number().min(0.1, 'Height is required'),
 });
 
 type MeasurementFormData = z.infer<typeof measurementSchema>;
@@ -57,11 +57,13 @@ export default function MeasurementPage() {
   const form = useForm<MeasurementFormData>({
     resolver: zodResolver(measurementSchema),
     defaultValues: {
-      length: '',
-      width: '',
-      height: '',
+      width: 0,
+      height: 0,
     },
   });
+
+  const { width, height } = useWatch({ control: form.control });
+  const totalSqFt = (width * height).toFixed(2);
   
   useEffect(() => {
     if (isCameraOpen) {
@@ -125,6 +127,7 @@ export default function MeasurementPage() {
 
     addDocumentNonBlocking(measurementsCollectionRef, { 
         ...values,
+        totalSqFt: parseFloat(totalSqFt),
         photo,
         createdAt: new Date().toISOString(),
      });
@@ -133,7 +136,7 @@ export default function MeasurementPage() {
       title: 'Measurement Saved',
       description: `The new site measurement has been saved for ${visitorData?.name || 'this visitor'}.`,
     });
-    form.reset();
+    form.reset({width: 0, height: 0});
     setPhoto(null);
   };
 
@@ -183,18 +186,22 @@ export default function MeasurementPage() {
 
                     <Form {...form}>
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-                        <div className="grid grid-cols-3 gap-4">
-                            <FormField control={form.control} name="length" render={({ field }) => (
-                                <FormItem><FormLabel>Length</FormLabel><FormControl><Input placeholder="0.00" {...field} type="number" /></FormControl><FormMessage /></FormItem>
-                            )} />
-                            <FormField control={form.control} name="width" render={({ field }) => (
-                                <FormItem><FormLabel>Width</FormLabel><FormControl><Input placeholder="0.00" {...field} type="number" /></FormControl><FormMessage /></FormItem>
+                        <div className="grid grid-cols-2 gap-4">
+                             <FormField control={form.control} name="width" render={({ field }) => (
+                                <FormItem><FormLabel>Width (ft)</FormLabel><FormControl><Input placeholder="0.00" {...field} type="number" step="0.01" /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name="height" render={({ field }) => (
-                                <FormItem><FormLabel>Height</FormLabel><FormControl><Input placeholder="0.00" {...field} type="number" /></FormControl><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Height (ft)</FormLabel><FormControl><Input placeholder="0.00" {...field} type="number" step="0.01" /></FormControl><FormMessage /></FormItem>
                             )} />
                         </div>
-                        <Button type="submit" size="lg" className="w-full" disabled={isLoading || !photo}>
+                        <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                            <div className="flex items-center gap-2 text-sm font-medium">
+                                <Square className="h-5 w-5 text-primary" />
+                                <span>Total Area</span>
+                            </div>
+                            <Badge variant="secondary" className="text-base">{totalSqFt} sq. ft.</Badge>
+                        </div>
+                        <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
                         Save
                         </Button>
@@ -217,14 +224,18 @@ export default function MeasurementPage() {
                 ) : measurements && measurements.length > 0 ? (
                     <div className="space-y-2">
                        {measurements.map(m => {
-                         const quotationUrl = `/visitors/${visitorId}/quotation?length=${m.length}&width=${m.width}&height=${m.height}`;
+                         const quotationUrl = `/visitors/${visitorId}/quotation?width=${m.width}&height=${m.height}`;
                          return (
                              <div key={m.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                                <div className="text-sm space-x-2">
-                                    <span><span className="font-semibold">L:</span> {m.length}</span>
-                                    <span><span className="font-semibold">W:</span> {m.width}</span>
-                                    <span><span className="font-semibold">H:</span> {m.height}</span>
-                                    <div className="text-xs text-muted-foreground">
+                                <div className="text-sm">
+                                    <div className="flex gap-4">
+                                        <span><span className="font-semibold">W:</span> {m.width} ft</span>
+                                        <span><span className="font-semibold">H:</span> {m.height} ft</span>
+                                    </div>
+                                    <div className="font-bold text-primary mt-1">
+                                        {m.totalSqFt.toFixed(2)} sq. ft.
+                                    </div>
+                                    <div className="text-xs text-muted-foreground mt-1">
                                         {new Date(m.createdAt).toLocaleString()}
                                     </div>
                                 </div>
@@ -247,3 +258,5 @@ export default function MeasurementPage() {
     </div>
   );
 }
+
+    

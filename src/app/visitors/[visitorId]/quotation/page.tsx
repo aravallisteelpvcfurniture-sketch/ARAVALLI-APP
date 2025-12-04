@@ -14,7 +14,7 @@ function QuotationContent() {
     const { visitorId } = params as { visitorId: string };
 
     const initialDimensions = {
-        length: searchParams.has('length') ? Number(searchParams.get('length')) : undefined,
+        length: undefined, // Length is no longer used from measurement
         width: searchParams.has('width') ? Number(searchParams.get('width')) : undefined,
         height: searchParams.has('height') ? Number(searchParams.get('height')) : undefined,
     };
@@ -61,3 +61,5 @@ export default function QuotationPage() {
         </Suspense>
     )
 }
+
+    

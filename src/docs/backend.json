@@ -1,0 +1,445 @@
+{
+  "entities": {
+    "User": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "User",
+      "type": "object",
+      "description": "Represents a user of the Aravalli Configurator application.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the user.",
+          "format": "uuid"
+        },
+        "firstName": {
+          "type": "string",
+          "description": "The first name of the user."
+        },
+        "lastName": {
+          "type": "string",
+          "description": "The last name of the user."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the user.",
+          "format": "email"
+        },
+        "googleId": {
+          "type": "string",
+          "description": "Google identifier for the user, used for Google login."
+        },
+        "creationDate": {
+          "type": "string",
+          "description": "The date and time the user was created.",
+          "format": "date-time"
+        },
+        "companyName": {
+            "type": "string",
+            "description": "The user's company name."
+        },
+        "mobile": {
+            "type": "string",
+            "description": "The user's mobile number."
+        }
+      },
+      "required": [
+        "id",
+        "email",
+        "creationDate"
+      ]
+    },
+    "Material": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Material",
+      "type": "object",
+      "description": "Represents a material used in furniture construction.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the material.",
+          "format": "uuid"
+        },
+        "name": {
+          "type": "string",
+          "description": "The name of the material (e.g., Steel, PVC)."
+        },
+        "description": {
+          "type": "string",
+          "description": "A description of the material."
+        },
+        "costPerUnit": {
+          "type": "number",
+          "description": "The cost per unit of the material."
+        },
+        "unit": {
+          "type": "string",
+          "description": "The unit of measurement for the material (e.g., square meter)."
+        }
+      },
+      "required": [
+        "id",
+        "name",
+        "description",
+        "costPerUnit",
+        "unit"
+      ]
+    },
+    "FurnitureConfiguration": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "FurnitureConfiguration",
+      "type": "object",
+      "description": "Represents a specific furniture configuration designed by a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the furniture configuration.",
+          "format": "uuid"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N FurnitureConfiguration)"
+        },
+        "materialId": {
+          "type": "string",
+          "description": "Reference to Material. (Relationship: Material 1:N FurnitureConfiguration)"
+        },
+        "length": {
+          "type": "number",
+          "description": "The length of the furniture."
+        },
+        "width": {
+          "type": "number",
+          "description": "The width of the furniture."
+        },
+        "height": {
+          "type": "number",
+          "description": "The height of the furniture."
+        },
+        "drawers": {
+          "type": "number",
+          "description": "Number of drawers in the furniture."
+        },
+        "shelves": {
+          "type": "number",
+          "description": "Number of shelves in the furniture."
+        },
+        "doors": {
+          "type": "number",
+          "description": "Number of doors in the furniture."
+        },
+        "estimatedCost": {
+          "type": "number",
+          "description": "The estimated cost of the furniture configuration."
+        },
+        "configurationDate": {
+          "type": "string",
+          "description": "The date and time the furniture was configured.",
+          "format": "date-time"
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "materialId",
+        "length",
+        "width",
+        "height",
+        "estimatedCost",
+        "configurationDate"
+      ]
+    },
+    "Order": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Order",
+      "type": "object",
+      "description": "Represents an order placed by a user for a furniture configuration.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the order.",
+          "format": "uuid"
+        },
+        "userId": {
+          "type": "string",
+          "description": "Reference to User. (Relationship: User 1:N Order)"
+        },
+        "furnitureConfigurationId": {
+          "type": "string",
+          "description": "Reference to FurnitureConfiguration. (Relationship: FurnitureConfiguration 1:N Order)"
+        },
+        "orderDate": {
+          "type": "string",
+          "description": "The date and time the order was placed.",
+          "format": "date-time"
+        },
+        "deliveryAddress": {
+          "type": "string",
+          "description": "The delivery address for the order."
+        },
+        "deliveryDate": {
+          "type": "string",
+          "description": "The estimated delivery date for the order.",
+          "format": "date-time"
+        },
+        "totalCost": {
+          "type": "number",
+          "description": "The total cost of the order."
+        },
+        "paymentMethod": {
+          "type": "string",
+          "description": "The payment method used for the order."
+        },
+        "orderStatus": {
+          "type": "string",
+          "description": "The status of the order (e.g., Pending, Processing, Shipped, Delivered)."
+        }
+      },
+      "required": [
+        "id",
+        "userId",
+        "furnitureConfigurationId",
+        "orderDate",
+        "deliveryAddress",
+        "deliveryDate",
+        "totalCost",
+        "paymentMethod",
+        "orderStatus"
+      ]
+    },
+    "Visitor": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "Visitor",
+      "type": "object",
+      "description": "Represents a visitor or contact saved by a user.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the visitor."
+        },
+        "name": {
+          "type": "string",
+          "description": "The full name of the visitor."
+        },
+        "phone": {
+          "type": "string",
+          "description": "The phone number of the visitor."
+        },
+        "email": {
+          "type": "string",
+          "description": "The email address of the visitor.",
+          "format": "email"
+        },
+        "address": {
+          "type": "string",
+          "description": "The address of the visitor."
+        },
+        "city": {
+            "type": "string",
+            "description": "The city of the visitor."
+        },
+        "assignTo": {
+            "type": "string",
+            "description": "Person to whom the visitor is assigned."
+        },
+        "purpose": {
+            "type": "string",
+            "description": "The purpose of the visit."
+        },
+        "status": {
+            "type": "string",
+            "description": "The status of the visitor (e.g., Hot, Warm, Cold)."
+        }
+      },
+      "required": ["id", "name", "phone"]
+    },
+     "SiteMeasurement": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SiteMeasurement",
+      "type": "object",
+      "description": "Represents a site measurement taken for a visitor.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the measurement."
+        },
+        "width": {
+          "type": "number",
+          "description": "The width of the measured area in feet."
+        },
+        "height": {
+          "type": "number",
+          "description": "The height of the measured area in feet."
+        },
+        "totalSqFt": {
+          "type": "number",
+          "description": "The total square footage of the area."
+        },
+        "photo": {
+          "type": "string",
+          "description": "A data URI of the photo taken at the site.",
+          "format": "uri"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time the measurement was taken.",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "width", "height", "totalSqFt", "createdAt"]
+    }
+  },
+  "auth": {
+    "providers": [
+      "password",
+      "anonymous",
+      "google.com"
+    ]
+  },
+  "firestore": {
+    "structure": [
+      {
+        "path": "/users/{userId}",
+        "definition": {
+          "entityName": "User",
+          "schema": {
+            "$ref": "#/backend/entities/User"
+          },
+          "description": "Stores user profiles. Includes standard user information (firstName, lastName, email, googleId, creationDate).",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/materials/{materialId}",
+        "definition": {
+          "entityName": "Material",
+          "schema": {
+            "$ref": "#/backend/entities/Material"
+          },
+          "description": "Stores information about available materials (name, description, costPerUnit, unit).",
+          "params": [
+            {
+              "name": "materialId",
+              "description": "The unique identifier of the material."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/furnitureConfigurations/{furnitureConfigurationId}",
+        "definition": {
+          "entityName": "FurnitureConfiguration",
+          "schema": {
+            "$ref": "#/backend/entities/FurnitureConfiguration"
+          },
+          "description": "Stores furniture configurations created by users. Includes userId (denormalized for authorization), materialId, dimensions, and estimated cost.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "furnitureConfigurationId",
+              "description": "The unique identifier of the furniture configuration."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/orders/{orderId}",
+        "definition": {
+          "entityName": "Order",
+          "schema": {
+            "$ref": "#/backend/entities/Order"
+          },
+          "description": "Stores orders placed by users. Includes userId (denormalized for authorization), furnitureConfigurationId, order details, and delivery information.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "orderId",
+              "description": "The unique identifier of the order."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/visitors/{visitorId}",
+        "definition": {
+            "entityName": "Visitor",
+            "schema": {
+                "$ref": "#/backend/entities/Visitor"
+            },
+            "description": "Stores visitors or contacts for a specific user.",
+            "params": [
+                {
+                    "name": "userId",
+                    "description": "The unique identifier of the user."
+                },
+                {
+                    "name": "visitorId",
+                    "description": "The unique identifier of the visitor."
+                }
+            ]
+        }
+      },
+      {
+        "path": "/users/{userId}/visitors/{visitorId}/measurements/{measurementId}",
+        "definition": {
+          "entityName": "SiteMeasurement",
+          "schema": {
+            "$ref": "#/backend/entities/SiteMeasurement"
+          },
+          "description": "Stores site measurements taken for a specific visitor.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "visitorId",
+              "description": "The unique identifier of the visitor."
+            },
+            {
+              "name": "measurementId",
+              "description": "The unique identifier of the measurement."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/visitors/{visitorId}/furnitureConfigurations/{furnitureConfigurationId}",
+        "definition": {
+          "entityName": "FurnitureConfiguration",
+          "schema": {
+            "$ref": "#/backend/entities/FurnitureConfiguration"
+          },
+          "description": "Stores furniture configurations (quotations) for a specific visitor.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "visitorId",
+              "description": "The unique identifier of the visitor."
+            },
+            {
+              "name": "furnitureConfigurationId",
+              "description": "The unique identifier of the furniture configuration."
+            }
+          ]
+        }
+      }
+    ],
+    "reasoning": "The Firestore structure is designed to facilitate a secure and scalable Aravalli Configurator application, adhering to the principles of Authorization Independence, Clarity of Intent, DBAC, and QAPs.\n\n**Authorization Independence:**\n\n*   The structure ensures authorization independence by avoiding hierarchical `get()` calls in security rules. User-owned data is nested directly under the `/users/{userId}` path, eliminating the need to check parent document attributes for authorization.\n\n**Structural Segregation:**\n\n*   All documents within a collection share the same security requirements, enforced by segregating data based on ownership and access needs. User-specific configurations and visitors are stored under the user's document.\n\n**Access Modeling:**\n\n*   Private data is modeled using path-based ownership (`/users/{userId}/furnitureConfigurations/{furnitureConfigurationId}`, `/users/{userId}/visitors/{visitorId}`).\n\n**QAPs (Rules are not Filters):**\n\n*   The structure supports secure `list` operations by using path-based ownership. Listing user-specific data is only allowed within a user's own path. This prevents unauthorized listing of other users' data.\n\n**Invariants:**\n\n*   The structure supports the integrity of ownership by explicitly associating FurnitureConfigurations, Orders, and Visitors with a specific user ID (`userId`).\n"
+  }
+}
+
+    
