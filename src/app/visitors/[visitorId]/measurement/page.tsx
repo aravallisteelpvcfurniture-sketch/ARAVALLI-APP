@@ -64,6 +64,7 @@ export default function MeasurementPage() {
 
   const { width, height } = useWatch({ control: form.control });
   const totalSqFt = (width * height).toFixed(2);
+  const sheetQuantity = width > 0 && height > 0 ? ((width * height) / 17.36).toFixed(2) : "0.00";
   
   useEffect(() => {
     if (isCameraOpen) {
@@ -128,6 +129,7 @@ export default function MeasurementPage() {
     addDocumentNonBlocking(measurementsCollectionRef, { 
         ...values,
         totalSqFt: parseFloat(totalSqFt),
+        sheetQuantity: parseFloat(sheetQuantity),
         photo,
         createdAt: new Date().toISOString(),
      });
@@ -194,12 +196,21 @@ export default function MeasurementPage() {
                                 <FormItem><FormLabel>Height (ft)</FormLabel><FormControl><Input placeholder="0.00" {...field} type="number" step="0.01" /></FormControl><FormMessage /></FormItem>
                             )} />
                         </div>
-                        <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                            <div className="flex items-center gap-2 text-sm font-medium">
-                                <Square className="h-5 w-5 text-primary" />
-                                <span>Total square feet</span>
+                        <div className="space-y-2">
+                            <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                                <div className="flex items-center gap-2 text-sm font-medium">
+                                    <Square className="h-5 w-5 text-primary" />
+                                    <span>Total square feet</span>
+                                </div>
+                                <Badge variant="secondary" className="text-base">{totalSqFt} sq. ft.</Badge>
                             </div>
-                            <Badge variant="secondary" className="text-base">{totalSqFt} sq. ft.</Badge>
+                             <div className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                                <div className="flex items-center gap-2 text-sm font-medium">
+                                    <FileText className="h-5 w-5 text-primary" />
+                                    <span>Sheet Quantity</span>
+                                </div>
+                                <Badge variant="secondary" className="text-base">{sheetQuantity}</Badge>
+                            </div>
                         </div>
                         <Button type="submit" size="lg" className="w-full" disabled={isLoading}>
                         {isLoading && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
@@ -235,6 +246,11 @@ export default function MeasurementPage() {
                                     <div className="font-bold text-primary mt-1">
                                         {m.totalSqFt.toFixed(2)} sq. ft.
                                     </div>
+                                     {m.sheetQuantity && (
+                                        <div className="font-bold text-primary mt-1">
+                                            Sheet: {m.sheetQuantity.toFixed(2)}
+                                        </div>
+                                     )}
                                     <div className="text-xs text-muted-foreground mt-1">
                                         {new Date(m.createdAt).toLocaleString()}
                                     </div>
@@ -258,5 +274,3 @@ export default function MeasurementPage() {
     </div>
   );
 }
-
-    
