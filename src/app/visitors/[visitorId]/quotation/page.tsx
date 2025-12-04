@@ -5,6 +5,7 @@ import { Button } from "@/components/ui/button";
 import { Bell, ChevronLeft } from "lucide-react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 import { Suspense } from "react";
+import Image from "next/image";
 
 function QuotationContent() {
     const router = useRouter();
@@ -25,13 +26,24 @@ function QuotationContent() {
                     <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => router.back()}>
                         <ChevronLeft className="h-6 w-6" />
                     </Button>
-                    <h1 className="text-xl font-bold">Quotation</h1>
+                    <h1 className="text-xl font-bold">Create Quotation</h1>
                 </div>
                 <div className="flex items-center gap-2">
                     <Bell className="h-6 w-6" />
                 </div>
             </header>
             <main className="flex-1 overflow-y-auto">
+                <div className="relative h-64 w-full">
+                    <Image
+                        src="https://images.unsplash.com/photo-1592078615290-033ee584e267?q=80&w=2160&auto=format&fit=crop"
+                        alt="Modern furniture"
+                        layout="fill"
+                        objectFit="cover"
+                        className="opacity-90"
+                        data-ai-hint="modern furniture"
+                    />
+                    <div className="absolute inset-0 bg-gradient-to-t from-muted to-transparent" />
+                </div>
                 <Configurator 
                     visitorId={visitorId} 
                     initialDimensions={initialDimensions}
