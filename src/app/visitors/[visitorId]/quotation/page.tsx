@@ -3,12 +3,20 @@
 import { Configurator } from "@/components/configurator";
 import { Button } from "@/components/ui/button";
 import { Bell, ChevronLeft } from "lucide-react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
+import { Suspense } from "react";
 
-export default function QuotationPage() {
+function QuotationContent() {
     const router = useRouter();
     const params = useParams();
+    const searchParams = useSearchParams();
     const { visitorId } = params as { visitorId: string };
+
+    const initialDimensions = {
+        length: searchParams.has('length') ? Number(searchParams.get('length')) : undefined,
+        width: searchParams.has('width') ? Number(searchParams.get('width')) : undefined,
+        height: searchParams.has('height') ? Number(searchParams.get('height')) : undefined,
+    };
 
     return (
         <div className="flex flex-col min-h-dvh bg-muted text-foreground">
@@ -24,8 +32,20 @@ export default function QuotationPage() {
                 </div>
             </header>
             <main className="flex-1 overflow-y-auto">
-                <Configurator visitorId={visitorId} />
+                <Configurator 
+                    visitorId={visitorId} 
+                    initialDimensions={initialDimensions}
+                />
             </main>
         </div>
+    )
+}
+
+
+export default function QuotationPage() {
+    return (
+        <Suspense fallback={<div>Loading...</div>}>
+            <QuotationContent />
+        </Suspense>
     )
 }

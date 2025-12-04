@@ -8,7 +8,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ChevronLeft, Bell, Camera, X } from 'lucide-react';
+import { Loader2, ChevronLeft, Bell, Camera, X, FileText } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useUser, useFirestore, useMemoFirebase, useCollection, useDoc } from '@/firebase';
 import { doc, collection } from 'firebase/firestore';
@@ -16,6 +16,7 @@ import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
+import Link from 'next/link';
 
 const measurementSchema = z.object({
   length: z.string().min(1, 'Length is required'),
@@ -184,13 +185,13 @@ export default function MeasurementPage() {
                     <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
                         <div className="grid grid-cols-3 gap-4">
                             <FormField control={form.control} name="length" render={({ field }) => (
-                                <FormItem><FormLabel>Length</FormLabel><FormControl><Input placeholder="0.00" {...field} /></FormControl><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Length</FormLabel><FormControl><Input placeholder="0.00" {...field} type="number" /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name="width" render={({ field }) => (
-                                <FormItem><FormLabel>Width</FormLabel><FormControl><Input placeholder="0.00" {...field} /></FormControl><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Width</FormLabel><FormControl><Input placeholder="0.00" {...field} type="number" /></FormControl><FormMessage /></FormItem>
                             )} />
                             <FormField control={form.control} name="height" render={({ field }) => (
-                                <FormItem><FormLabel>Height</FormLabel><FormControl><Input placeholder="0.00" {...field} /></FormControl><FormMessage /></FormItem>
+                                <FormItem><FormLabel>Height</FormLabel><FormControl><Input placeholder="0.00" {...field} type="number" /></FormControl><FormMessage /></FormItem>
                             )} />
                         </div>
                         <Button type="submit" size="lg" className="w-full" disabled={isLoading || !photo}>
@@ -210,23 +211,32 @@ export default function MeasurementPage() {
             <CardContent>
                 {areMeasurementsLoading ? (
                     <div className="space-y-2">
-                        <Skeleton className="h-12 w-full" />
-                        <Skeleton className="h-12 w-full" />
+                        <Skeleton className="h-16 w-full" />
+                        <Skeleton className="h-16 w-full" />
                     </div>
                 ) : measurements && measurements.length > 0 ? (
                     <div className="space-y-2">
-                       {measurements.map(m => (
-                         <div key={m.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
-                            <div className="text-sm">
-                                <span className="font-semibold">L:</span> {m.length} &nbsp;
-                                <span className="font-semibold">W:</span> {m.width} &nbsp;
-                                <span className="font-semibold">H:</span> {m.height}
-                            </div>
-                            <div className="text-xs text-muted-foreground">
-                                {new Date(m.createdAt).toLocaleDateString()}
-                            </div>
-                         </div>
-                       ))}
+                       {measurements.map(m => {
+                         const quotationUrl = `/visitors/${visitorId}/quotation?length=${m.length}&width=${m.width}&height=${m.height}`;
+                         return (
+                             <div key={m.id} className="flex items-center justify-between p-3 bg-muted rounded-lg">
+                                <div className="text-sm space-x-2">
+                                    <span><span className="font-semibold">L:</span> {m.length}</span>
+                                    <span><span className="font-semibold">W:</span> {m.width}</span>
+                                    <span><span className="font-semibold">H:</span> {m.height}</span>
+                                    <div className="text-xs text-muted-foreground">
+                                        {new Date(m.createdAt).toLocaleString()}
+                                    </div>
+                                </div>
+                                <Button asChild size="sm">
+                                    <Link href={quotationUrl}>
+                                        <FileText className="mr-2 h-4 w-4"/>
+                                        Create Quotation
+                                    </Link>
+                                </Button>
+                             </div>
+                         );
+                       })}
                     </div>
                 ) : (
                     <p className="text-sm text-muted-foreground text-center py-4">No records found.</p>

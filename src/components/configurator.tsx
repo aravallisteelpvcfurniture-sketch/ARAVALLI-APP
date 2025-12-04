@@ -61,14 +61,30 @@ const formSchema = z.object({
 
 interface ConfiguratorProps {
   visitorId?: string;
+  initialDimensions?: {
+    length?: number;
+    width?: number;
+    height?: number;
+  }
 }
 
-export function Configurator({ visitorId }: ConfiguratorProps) {
+export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
 
-  const [config, setConfig] = useState<FurnitureConfig>(DEFAULT_CONFIG);
+  const getInitialConfig = useCallback(() => {
+    return {
+      ...DEFAULT_CONFIG,
+      dimensions: {
+        length: initialDimensions?.length || DEFAULT_CONFIG.dimensions.length,
+        width: initialDimensions?.width || DEFAULT_CONFIG.dimensions.width,
+        height: initialDimensions?.height || DEFAULT_CONFIG.dimensions.height,
+      }
+    }
+  }, [initialDimensions]);
+
+  const [config, setConfig] = useState<FurnitureConfig>(getInitialConfig());
   const [cost, setCost] = useState<Cost | null>(null);
   const [suggestions, setSuggestions] = useState<Suggestions | null>(null);
   
@@ -83,8 +99,15 @@ export function Configurator({ visitorId }: ConfiguratorProps) {
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: DEFAULT_CONFIG,
+    defaultValues: getInitialConfig(),
   });
+  
+  useEffect(() => {
+    const newConfig = getInitialConfig();
+    form.reset(newConfig);
+    setConfig(newConfig);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [initialDimensions, form]);
 
   const watchedValues = form.watch();
 
@@ -100,8 +123,8 @@ export function Configurator({ visitorId }: ConfiguratorProps) {
   useEffect(() => {
     setIsMounted(true);
     // Initial cost calculation
-    updateCost(DEFAULT_CONFIG);
-  }, [updateCost]);
+    updateCost(getInitialConfig());
+  }, [updateCost, getInitialConfig]);
   
   useEffect(() => {
     const debouncer = setTimeout(() => {
@@ -226,8 +249,8 @@ export function Configurator({ visitorId }: ConfiguratorProps) {
                               min={50}
                               max={300}
                               step={1}
+                              value={[field.value]}
                               onValueChange={(value) => field.onChange(value[0])}
-                              defaultValue={[field.value]}
                             />
                           </FormControl>
                         </FormItem>
@@ -247,8 +270,8 @@ export function Configurator({ visitorId }: ConfiguratorProps) {
                               min={30}
                               max={200}
                               step={1}
+                              value={[field.value]}
                               onValueChange={(value) => field.onChange(value[0])}
-                              defaultValue={[field.value]}
                             />
                           </FormControl>
                         </FormItem>
@@ -268,8 +291,8 @@ export function Configurator({ visitorId }: ConfiguratorProps) {
                               min={40}
                               max={250}
                               step={1}
+                              value={[field.value]}
                               onValueChange={(value) => field.onChange(value[0])}
-                              defaultValue={[field.value]}
                             />
                           </FormControl>
                         </FormItem>
