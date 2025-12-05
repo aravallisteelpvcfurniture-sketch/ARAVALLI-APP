@@ -56,6 +56,21 @@ const tools = [
     ),
     href: 'inspiration',
   },
+  {
+    name: 'Site Measurement',
+    icon: (
+      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <rect x="14" y="18" width="36" height="28" rx="3" fill="#D1FAE5"/>
+        <path d="M14 24H50" stroke="#6EE7B7" strokeWidth="2"/>
+        <path d="M24 18V46" stroke="#6EE7B7" strokeWidth="2"/>
+        <rect x="18" y="28" width="16" height="12" rx="2" fill="#A7F3D0"/>
+        <path d="M20 31H32" stroke="#10B981" strokeWidth="1.5" strokeLinecap="round"/>
+        <path d="M20 35H28" stroke="#10B981" strokeWidth="1.5" strokeLinecap="round"/>
+        <rect x="38" y="21" width="8" height="4" rx="1.5" fill="#34D399"/>
+      </svg>
+    ),
+    href: 'measurement',
+  }
 ];
 
 export default function VisitorDetailPage() {
@@ -87,6 +102,7 @@ export default function VisitorDetailPage() {
             </Card>
           </Link>
         ))}
+        {tools.length % 2 !== 0 && <div className="hidden sm:block"></div>}
       </main>
     </div>
   );

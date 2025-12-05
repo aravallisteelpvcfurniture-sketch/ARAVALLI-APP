@@ -1,0 +1,152 @@
+/**
+ * @file Firestore Security Rules for Aravalli Configurator
+ *
+ * Core Philosophy:
+ * This ruleset enforces a strict user-ownership model, where users can only access their own data.
+ *
+ * Data Structure:
+ * - Users: `/users/{userId}` - Stores user profile information.
+ * - Materials: `/materials/{materialId}` - Stores publicly available material information.
+ * - Furniture Configurations: `/users/{userId}/furnitureConfigurations/{furnitureConfigurationId}` - Stores user-created furniture configurations.
+ * - Orders: `/users/{userId}/orders/{orderId}` - Stores user order information.
+ * - Visitors: `/users/{userId}/visitors/{visitorId}` - Stores user-created visitor/contact information.
+ * - Visitor Furniture Configs: `/users/{userId}/visitors/{visitorId}/furnitureConfigurations/{furnitureConfigurationId}`
+ * - Site Measurements: `/users/{userId}/visitors/{visitorId}/measurements/{measurementId}`
+ *
+ * Key Security Decisions:
+ * - Users can only read and write their own profile data.
+ * - Material data is publicly readable.
+ * - Users can only read, create, update, and delete their own furniture configurations, orders, and visitors.
+ * - User listing is disabled.
+ *
+ * Denormalization for Authorization:
+ * - FurnitureConfiguration, Order, and Visitor documents may contain a `userId` field, which is denormalized from the user's document ID. This allows direct ownership checks without additional `get()` calls.
+ *
+ * Structural Segregation:
+ * - Private user data (FurnitureConfigurations, Orders, Visitors) is stored under the `/users/{userId}` path.
+ */
+rules_version = '2';
+service cloud.firestore {
+  match /databases/{database}/documents {
+
+    /**
+     * @description Checks if the request is authenticated.
+     * @return {boolean} True if the request is authenticated, false otherwise.
+     */
+    function isSignedIn() {
+      return request.auth != null;
+    }
+
+    /**
+     * @description Checks if the authenticated user is the owner of the resource.
+     * @param {string} userId The user ID to compare against the authenticated user's ID.
+     * @return {boolean} True if the user is the owner, false otherwise.
+     */
+    function isOwner(userId) {
+      return isSignedIn() && request.auth.uid == userId;
+    }
+
+    /**
+     * @description Checks if the authenticated user is the owner of the resource and the resource exists.
+     * @param {string} userId The user ID to compare against the authenticated user's ID.
+     * @return {boolean} True if the user is the owner and the resource exists, false otherwise.
+     */
+    function isExistingOwner(userId) {
+      return isOwner(userId) && resource != null;
+    }
+
+    /**
+     * @description Rules for user profiles.
+     * @path /users/{userId}
+     * @allow (create) - A user can create their own profile if the userId matches their auth UID.
+     * @allow (get, update, delete) - A user can only access their own profile.
+     * @deny (create) - A user cannot create a profile with a userId that doesn't match their auth UID.
+     * @deny (list) - User listing is not allowed.
+     * @principle Enforces document ownership for user profiles.
+     */
+    match /users/{userId} {
+      allow get: if isOwner(userId);
+      allow list: if false;
+      allow create: if isOwner(userId) && request.resource.data.id == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
+      allow delete: if isExistingOwner(userId);
+
+      /**
+       * @description Rules for visitors (contacts) belonging to a user.
+       * @path /users/{userId}/visitors/{visitorId}
+       * @allow (create) - A user can create a visitor under their own user ID.
+       * @allow (get, list, update, delete) - A user can only access and modify their own visitors.
+       * @deny (create) - A user cannot create a visitor under another user's ID.
+       * @principle Enforces document ownership for visitors.
+       */
+      match /visitors/{visitorId} {
+        allow get, list, update, delete: if isOwner(userId);
+        allow create: if isOwner(userId);
+        
+        /**
+         * @description Rules for furniture configurations (quotations) for a visitor.
+         * @path /users/{userId}/visitors/{visitorId}/furnitureConfigurations/{furnitureConfigurationId}
+         * @allow (create, list, get) - A user can manage configurations for their own visitors.
+         * @principle Enforces document ownership for visitor-specific quotations.
+         */
+        match /furnitureConfigurations/{furnitureConfigurationId} {
+          allow get, list, create: if isOwner(userId);
+          allow update, delete: if false;
+        }
+
+        /**
+         * @description Rules for site measurements for a visitor.
+         * @path /users/{userId}/visitors/{visitorId}/measurements/{measurementId}
+         * @allow (create, list, get, delete) - A user can manage measurements for their own visitors.
+         * @principle Enforces document ownership for visitor-specific measurements.
+         */
+        match /measurements/{measurementId} {
+            allow get, list, create, delete: if isOwner(userId);
+            allow update: if false;
+        }
+      }
+    }
+
+    /**
+     * @description Rules for materials.
+     * @path /materials/{materialId}
+     * @allow (get, list) - Everyone can read material data.
+     * @deny (create, update, delete) - No one can create, update, or delete material data.
+     * @principle Materials are publicly readable but not writable.
+     */
+    match /materials/{materialId} {
+      allow get, list: if true;
+      allow create, update, delete: if false;
+    }
+
+    /**
+     * @description Rules for furniture configurations.
+     * @path /users/{userId}/furnitureConfigurations/{furnitureConfigurationId}
+     * @allow (create) - A user can create a furniture configuration under their own user ID.
+     * @allow (get, list, update, delete) - A user can only access and modify their own furniture configurations.
+     * @deny (create) - A user cannot create a configuration under another user's ID.
+     * @principle Enforces document ownership for furniture configurations.
+     */
+    match /users/{userId}/furnitureConfigurations/{furnitureConfigurationId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+
+    /**
+     * @description Rules for orders.
+     * @path /users/{userId}/orders/{orderId}
+     * @allow (create) - A user can create an order under their own user ID.
+     * @allow (get, list, update, delete) - A user can only access and modify their own orders.
+     * @deny (create) - A user cannot create an order under another user's ID.
+     * @principle Enforces document ownership for orders.
+     */
+    match /users/{userId}/orders/{orderId} {
+      allow get, list: if isOwner(userId);
+      allow create: if isOwner(userId) && request.resource.data.userId == userId;
+      allow update: if isExistingOwner(userId) && request.resource.data.userId == resource.data.userId;
+      allow delete: if isExistingOwner(userId);
+    }
+  }
+}

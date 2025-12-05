@@ -262,22 +262,33 @@
           "type": "string",
           "description": "Unique identifier for the measurement."
         },
+        "productType": {
+          "type": "string",
+          "description": "Type of product being measured (e.g., modular-kitchen)."
+        },
+        "roomType": {
+          "type": "string",
+          "description": "Type of room where the product will be installed (e.g., kitchen)."
+        },
         "width": {
           "type": "number",
-          "description": "The width of the measured area in feet."
+          "description": "The width of the measured area in inches."
         },
         "height": {
           "type": "number",
-          "description": "The height of the measured area in feet."
+          "description": "The height of the measured area in inches."
+        },
+        "depth": {
+          "type": "number",
+          "description": "The depth of the measured area in inches (optional)."
         },
         "totalSqFt": {
           "type": "number",
           "description": "The total square footage of the area."
         },
-        "photo": {
-          "type": "string",
-          "description": "A URL to the photo taken at the site.",
-          "format": "uri"
+         "totalInch": {
+          "type": "number",
+          "description": "The total square inches of the area (width * height)."
         },
         "createdAt": {
           "type": "string",
@@ -285,7 +296,7 @@
           "format": "date-time"
         }
       },
-      "required": ["id", "width", "height", "totalSqFt", "createdAt"]
+      "required": ["id", "productType", "roomType", "width", "height", "totalSqFt", "totalInch", "createdAt"]
     }
   },
   "auth": {
