@@ -40,3 +40,12 @@ export type QuotationData = {
     finalPrice: number;
     configurationDate: string;
   };
+
+export type SiteMeasurement = {
+    id: string;
+    width: number;
+    height: number;
+    totalSqFt: number;
+    photo?: string;
+    createdAt: string;
+};
