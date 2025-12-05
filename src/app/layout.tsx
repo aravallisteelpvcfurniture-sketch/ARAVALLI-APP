@@ -31,6 +31,9 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en" suppressHydrationWarning>
+       <head>
+        <meta name="theme-color" content="#16A34A" />
+      </head>
       <body>
         <FirebaseClientProvider>
           {children}
