@@ -13,7 +13,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { addDocumentNonBlocking }from '@/firebase/non-blocking-updates';
-import { collection, doc } from 'firebase/firestore';
+import { collection } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
@@ -77,8 +77,6 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
 
     setIsSaving(true);
     
-    const newDocRef = doc(measurementsCollectionRef);
-
     const measurementData: any = {
       ...values,
       depth: values.depth || undefined,
@@ -88,7 +86,7 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
     };
 
     try {
-        await addDocumentNonBlocking(measurementsCollectionRef, measurementData, newDocRef);
+        await addDocumentNonBlocking(measurementsCollectionRef, measurementData);
 
         toast({
             title: 'Measurement Saved',
