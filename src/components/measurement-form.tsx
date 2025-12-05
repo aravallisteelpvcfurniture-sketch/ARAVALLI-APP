@@ -41,6 +41,7 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
   const [totalSqFt, setTotalSqFt] = useState(0);
+  const [totalInch, setTotalInch] = useState(0);
 
   const measurementsCollectionRef = useMemoFirebase(() => {
     if (!firestore || !user?.uid || !visitorId) return null;
@@ -62,8 +63,12 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
 
   useEffect(() => {
     const { width, height } = watchedValues;
-    const sqft = ((width || 0) * (height || 0)) / 144;
+    const w = width || 0;
+    const h = height || 0;
+    const sqft = (w * h) / 144;
+    const inch = w * h;
     setTotalSqFt(sqft);
+    setTotalInch(inch);
   }, [watchedValues]);
 
 
@@ -78,6 +83,7 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
       ...values,
       depth: values.depth || undefined,
       totalSqFt,
+      totalInch,
       createdAt: new Date().toISOString(),
     };
 
@@ -194,6 +200,13 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
         <div className="relative">
             <Input 
                 value={`Total sqft : ${totalSqFt.toFixed(2)}`} 
+                readOnly 
+                className="h-12 rounded-full bg-white border-gray-300 font-medium text-center"
+            />
+        </div>
+         <div className="relative">
+            <Input 
+                value={`Total Inch : ${totalInch}`} 
                 readOnly 
                 className="h-12 rounded-full bg-white border-gray-300 font-medium text-center"
             />

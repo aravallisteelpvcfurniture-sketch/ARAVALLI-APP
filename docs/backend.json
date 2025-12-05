@@ -286,13 +286,17 @@
           "type": "number",
           "description": "The total square footage of the area."
         },
+        "totalInch": {
+          "type": "number",
+          "description": "The total square inches of the area (width * height)."
+        },
         "createdAt": {
           "type": "string",
           "description": "The date and time the measurement was taken.",
           "format": "date-time"
         }
       },
-      "required": ["id", "productType", "roomType", "width", "height", "totalSqFt", "createdAt"]
+      "required": ["id", "productType", "roomType", "width", "height", "totalSqFt", "totalInch", "createdAt"]
     }
   },
   "auth": {

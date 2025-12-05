@@ -49,6 +49,6 @@ export type SiteMeasurement = {
     height: number;
     depth?: number;
     totalSqFt: number;
+    totalInch: number;
     createdAt: string;
 };
-
