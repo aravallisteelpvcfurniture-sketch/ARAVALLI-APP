@@ -1,12 +1,12 @@
 'use client';
 
 import React, { useState } from 'react';
-import { useForm, Controller } from 'react-hook-form';
+import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
-import { addDocumentNonBlocking } from '@/firebase/non-blocking-updates';
-import { collection, serverTimestamp } from 'firebase/firestore';
+import { addDocumentNonBlocking }from '@/firebase/non-blocking-updates';
+import { collection, doc } from 'firebase/firestore';
 import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -86,23 +86,23 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
     setIsSaving(true);
     const totalSqFt = values.width * values.height;
     
+    const newDocRef = doc(measurementsCollectionRef);
+
+    let photoUrl: string | null = null;
+    if (photoData) {
+        photoUrl = await uploadPhoto(newDocRef.id);
+    }
+
     const measurementData: any = {
       width: values.width,
       height: values.height,
       totalSqFt: totalSqFt,
-      createdAt: new Date().toISOString(), // Use ISO string for consistency
+      createdAt: new Date().toISOString(),
+      ...(photoUrl && { photo: photoUrl }),
     };
 
     try {
-        const newDocRef = await addDocumentNonBlocking(measurementsCollectionRef, measurementData);
-        
-        if (photoData && newDocRef) {
-            const photoUrl = await uploadPhoto(newDocRef.id);
-            if (photoUrl) {
-                // This is a fire-and-forget update, consistent with non-blocking pattern
-                 addDocumentNonBlocking(measurementsCollectionRef, { photo: photoUrl }, newDocRef);
-            }
-        }
+        await addDocumentNonBlocking(measurementsCollectionRef, measurementData, newDocRef);
 
         toast({
             title: 'Measurement Saved',
@@ -186,57 +186,5 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
         </Button>
       </form>
     </Form>
-  </change>
-  <change>
-    <file>src/lib/types.ts</file>
-    <content><![CDATA[import type { EstimateFurnitureCostOutput } from "@/ai/flows/real-time-cost-estimation";
-import type { SuggestDesignImprovementsOutput } from "@/ai/flows/design-improvement-suggestions";
-import type { LucideIcon } from 'lucide-react';
-
-export type FurnitureConfig = {
-  material: string;
-  dimensions: {
-    length: number;
-    width: number;
-    height: number;
-  };
-  features: string[];
-  finalPrice?: number;
-};
-
-export type Cost = EstimateFurnitureCostOutput;
-export type Suggestions = SuggestDesignImprovementsOutput;
-
-export type MaterialOption = {
-  id: string;
-  name: string;
-};
-
-export type FeatureOption = {
-  id: string;
-  name: string;
-  icon: LucideIcon;
-};
-
-export type QuotationData = {
-    id: string;
-    userId: string;
-    visitorId: string;
-    material: string;
-    length: number;
-    width: number;
-    height: number;
-    features: string[];
-    estimatedCost: number;
-    finalPrice: number;
-    configurationDate: string;
-  };
-
-export type SiteMeasurement = {
-    id: string;
-    width: number;
-    height: number;
-    totalSqFt: number;
-    photo?: string;
-    createdAt: string;
-};
+  );
+}
