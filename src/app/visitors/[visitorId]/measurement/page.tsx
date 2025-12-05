@@ -13,13 +13,17 @@ import {
   DialogTitle,
   DialogDescription,
   DialogTrigger,
+  DialogFooter,
+  DialogClose,
 } from '@/components/ui/dialog';
 import { Header } from '@/components/header';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Plus, Image as ImageIcon, ExternalLink } from 'lucide-react';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Plus, Image as ImageIcon, ExternalLink, X, ChevronLeft } from 'lucide-react';
 import { MeasurementForm } from '@/components/measurement-form';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { SiteMeasurement } from '@/lib/types';
+import { Bell } from 'lucide-react';
+
 
 export default function MeasurementPage() {
   const router = useRouter();
@@ -38,102 +42,88 @@ export default function MeasurementPage() {
   const { data: measurements, isLoading } = useCollection<SiteMeasurement>(measurementsCollectionRef);
 
   return (
-    <div className="flex flex-col min-h-dvh bg-muted">
-      <Header title="Site Measurements" />
+    <div className="flex flex-col min-h-dvh bg-gray-100 dark:bg-gray-800">
+      <header className="sticky top-0 z-40 bg-primary text-primary-foreground p-4 flex items-center justify-between">
+        <div className="flex items-center gap-4">
+            <Button variant="ghost" size="icon" className="h-9 w-9" onClick={() => router.back()}>
+                <ChevronLeft className="h-6 w-6" />
+            </Button>
+            <h1 className="text-xl font-bold">Site Measurement</h1>
+        </div>
+        <div className="flex items-center gap-2">
+            <Bell className="h-6 w-6" />
+        </div>
+      </header>
+
 
       <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8">
-        <div className="flex justify-between items-center mb-6">
-          <h1 className="text-2xl font-bold tracking-tight">Saved Measurements</h1>
-          <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-            <DialogTrigger asChild>
-              <Button>
-                <Plus className="mr-2 h-4 w-4" />
-                Take New Measurement
-              </Button>
-            </DialogTrigger>
-            <DialogContent className="sm:max-w-[425px]">
-              <DialogHeader>
-                <DialogTitle>Add New Measurement</DialogTitle>
-                <DialogDescription>
-                  Enter the dimensions and upload a photo for the new site measurement.
-                </DialogDescription>
-              </DialogHeader>
-              <MeasurementForm
-                visitorId={visitorId}
-                onSave={() => setIsDialogOpen(false)}
-              />
-            </DialogContent>
-          </Dialog>
-        </div>
-
         {isLoading ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-4">
             {[...Array(3)].map((_, i) => (
                 <Card key={i}>
                     <CardContent className="p-4">
-                         <div className="flex gap-4">
-                            <Skeleton className="h-24 w-24 rounded-lg" />
-                            <div className="flex-1 space-y-2">
-                                <Skeleton className="h-4 w-3/4" />
-                                <Skeleton className="h-4 w-1/2" />
-                                <Skeleton className="h-4 w-1/2" />
-                                <Skeleton className="h-8 w-full mt-2" />
+                         <div className="flex justify-between items-center">
+                            <div className="space-y-2">
+                                <Skeleton className="h-5 w-32" />
+                                <Skeleton className="h-4 w-48" />
+                                <Skeleton className="h-4 w-24" />
                             </div>
+                            <Skeleton className="h-8 w-20" />
                         </div>
                     </CardContent>
                 </Card>
             ))}
           </div>
         ) : measurements && measurements.length > 0 ? (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="space-y-4">
             {measurements.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((m) => (
               <Card key={m.id} className="overflow-hidden rounded-2xl shadow-sm">
                 <CardContent className="p-4">
-                  <div className="flex gap-4">
-                    <div className="w-24 h-24 bg-muted rounded-lg flex items-center justify-center overflow-hidden">
-                       {m.photo ? (
-                         <Image
-                           src={m.photo}
-                           alt={`Measurement ${m.id}`}
-                           width={96}
-                           height={96}
-                           className="object-cover w-full h-full"
-                         />
-                       ) : (
-                         <ImageIcon className="h-8 w-8 text-muted-foreground" />
-                       )}
+                  <div className="flex justify-between items-center">
+                    <div className='space-y-1'>
+                       <p className="text-base font-semibold">{m.title}</p>
+                       <p className="text-sm text-muted-foreground">{`H: ${m.height} x W: ${m.width} x D: ${m.depth}`}</p>
+                       <p className="text-sm font-medium text-primary">{m.totalSqFt.toFixed(2)} sqft</p>
                     </div>
-                    <div className="flex-1 space-y-1">
-                      <p className="text-sm font-semibold text-primary">{`W: ${m.width} ft x H: ${m.height} ft`}</p>
-                      <p className="text-lg font-bold">{m.totalSqFt.toFixed(2)} sq. ft.</p>
-                      <p className="text-xs text-muted-foreground">
-                        {new Date(m.createdAt).toLocaleDateString('en-US', {
-                          year: 'numeric',
-                          month: 'short',
-                          day: 'numeric',
-                        })}
-                      </p>
-                       <Button
-                        variant="secondary"
-                        size="sm"
-                        className="w-full mt-2"
-                        onClick={() => router.push(`/visitors/${visitorId}/quotation?width=${m.width}&height=${m.height}`)}
-                       >
-                         Create Quotation
-                       </Button>
-                    </div>
+                    <Button variant="secondary" onClick={() => router.push(`/visitors/${visitorId}/quotation?measurementId=${m.id}`)}>
+                      Create Quotation
+                    </Button>
                   </div>
                 </CardContent>
               </Card>
             ))}
           </div>
         ) : (
-          <div className="flex flex-col items-center justify-center text-center text-muted-foreground h-64 border-2 border-dashed rounded-lg">
-            <p className="font-semibold">No Measurements Found</p>
-            <p className="text-sm">Click "Take New Measurement" to get started.</p>
+          <div className="flex flex-col items-center justify-center text-center text-muted-foreground h-64">
+            <p className="font-semibold">No Products Added</p>
+            <p className="text-sm">Click "Add More Product" to get started.</p>
           </div>
         )}
       </main>
+        
+      <footer className="p-4 bg-gray-100 dark:bg-gray-800">
+         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
+            <DialogTrigger asChild>
+                <Button size="lg" className="w-full border-2 border-dashed border-gray-400 bg-transparent text-gray-600 hover:bg-gray-200 hover:text-gray-700">Add More Product</Button>
+            </DialogTrigger>
+            <DialogContent className="sm:max-w-md bg-gray-200 p-0">
+                <DialogHeader className="p-4 bg-white rounded-t-lg">
+                  <div className="flex justify-between items-center">
+                    <DialogTitle className="text-xl font-bold">Add Product</DialogTitle>
+                    <DialogClose asChild>
+                      <Button variant="ghost" size="icon"><X className="h-5 w-5"/></Button>
+                    </DialogClose>
+                  </div>
+                </DialogHeader>
+                <div className="p-4">
+                  <MeasurementForm
+                    visitorId={visitorId}
+                    onSave={() => setIsDialogOpen(false)}
+                  />
+                </div>
+            </DialogContent>
+          </Dialog>
+      </footer>
     </div>
   );
 }

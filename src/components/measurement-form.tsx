@@ -1,6 +1,13 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from '@/components/ui/select';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -15,8 +22,10 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2, UploadCloud, MoveHorizontal, MoveVertical } from 'lucide-react';
 
 const measurementSchema = z.object({
-  width: z.coerce.number().min(0.1, 'Width must be greater than 0'),
+  title: z.string().min(1, 'Title is required.'),
   height: z.coerce.number().min(0.1, 'Height must be greater than 0'),
+  width: z.coerce.number().min(0.1, 'Width must be greater than 0'),
+  depth: z.coerce.number().min(0.1, 'Depth must be greater than 0'),
 });
 
 interface MeasurementFormProps {
@@ -29,8 +38,7 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
-  const [photoPreview, setPhotoPreview] = useState<string | null>(null);
-  const [photoData, setPhotoData] = useState<string | null>(null);
+  const [totalSqFt, setTotalSqFt] = useState(0);
 
   const measurementsCollectionRef = useMemoFirebase(() => {
     if (!firestore || !user?.uid || !visitorId) return null;
@@ -40,65 +48,33 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
   const form = useForm<z.infer<typeof measurementSchema>>({
     resolver: zodResolver(measurementSchema),
     defaultValues: {
-      width: 0,
+      title: '',
       height: 0,
+      width: 0,
+      depth: 0,
     },
   });
-
-  const handlePhotoChange = (event: React.ChangeEvent<HTMLInputElement>) => {
-    const file = event.target.files?.[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onloadend = () => {
-        const result = reader.result as string;
-        setPhotoPreview(result);
-        setPhotoData(result);
-      };
-      reader.readAsDataURL(file);
-    }
-  };
   
-  const uploadPhoto = async (measurementId: string): Promise<string | null> => {
-    if (!photoData || !user?.uid || !visitorId) return null;
-    
-    const storage = getStorage();
-    const photoRef = ref(storage, `users/${user.uid}/visitors/${visitorId}/${measurementId}.jpg`);
+  const watchedValues = form.watch();
 
-    try {
-        await uploadString(photoRef, photoData, 'data_url');
-        const downloadURL = await getDownloadURL(photoRef);
-        return downloadURL;
-    } catch (error) {
-        console.error("Error uploading photo: ", error);
-        toast({
-            variant: "destructive",
-            title: "Photo Upload Failed",
-            description: "Could not upload the measurement photo.",
-        });
-        return null;
-    }
-  }
+  useEffect(() => {
+    const { height, width } = watchedValues;
+    const sqft = (height || 0) * (width || 0);
+    setTotalSqFt(sqft);
+  }, [watchedValues]);
 
 
   const onSubmit = async (values: z.infer<typeof measurementSchema>) => {
     if (!measurementsCollectionRef) return;
 
     setIsSaving(true);
-    const totalSqFt = values.width * values.height;
     
     const newDocRef = doc(measurementsCollectionRef);
 
-    let photoUrl: string | null = null;
-    if (photoData) {
-        photoUrl = await uploadPhoto(newDocRef.id);
-    }
-
     const measurementData: any = {
-      width: values.width,
-      height: values.height,
-      totalSqFt: totalSqFt,
+      ...values,
+      totalSqFt,
       createdAt: new Date().toISOString(),
-      ...(photoUrl && { photo: photoUrl }),
     };
 
     try {
@@ -122,67 +98,97 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
-        <div className="grid grid-cols-2 gap-4">
-          <FormField
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
+        <FormField
             control={form.control}
-            name="width"
+            name="title"
             render={({ field }) => (
-              <FormItem>
-                <FormLabel>Width (ft)</FormLabel>
-                <FormControl>
-                  <div className="relative">
-                    <MoveHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                    <Input type="number" placeholder="e.g. 10.5" {...field} className="pl-10" />
-                  </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
+                <FormItem>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                            <SelectTrigger className="h-12 rounded-full bg-white border-gray-300">
+                                <SelectValue placeholder="Select Product" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
+                            <SelectItem value="wardrobe">Wardrobe</SelectItem>
+                            <SelectItem value="tv-unit">TV Unit</SelectItem>
+                            <SelectItem value="kitchen">Kitchen</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
             )}
-          />
-          <FormField
-            control={form.control}
-            name="height"
-            render={({ field }) => (
-              <FormItem>
-                <FormLabel>Height (ft)</FormLabel>
-                <FormControl>
-                    <div className="relative">
-                        <MoveVertical className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
-                        <Input type="number" placeholder="e.g. 8" {...field} className="pl-10"/>
-                    </div>
-                </FormControl>
-                <FormMessage />
-              </FormItem>
-            )}
-          />
+        />
+        <FormField
+          control={form.control}
+          name="title"
+          render={({ field }) => (
+            <FormItem>
+              <FormControl>
+                <Input placeholder="Title" {...field} className="h-12 rounded-full bg-white border-gray-300"/>
+              </FormControl>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        
+        <div>
+          <div className="flex justify-between text-sm font-medium mb-2">
+            <span>Measurement in Inch</span>
+            <span>In Feet</span>
+          </div>
+          <div className="grid grid-cols-3 gap-2">
+            <FormField
+                control={form.control}
+                name="height"
+                render={({ field }) => (
+                <FormItem>
+                    <FormControl>
+                        <Input type="number" placeholder="Height" {...field} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="width"
+                render={({ field }) => (
+                <FormItem>
+                    <FormControl>
+                        <Input type="number" placeholder="Width" {...field} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+            <FormField
+                control={form.control}
+                name="depth"
+                render={({ field }) => (
+                <FormItem>
+                    <FormControl>
+                        <Input type="number" placeholder="Depth" {...field} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
+                    </FormControl>
+                    <FormMessage />
+                </FormItem>
+                )}
+            />
+          </div>
         </div>
         
-        <FormItem>
-            <FormLabel>Measurement Photo</FormLabel>
-            <FormControl>
-                 <label htmlFor="photo-upload" className="mt-2 flex justify-center w-full h-32 px-6 pt-5 pb-6 border-2 border-dashed rounded-md cursor-pointer hover:border-primary">
-                    <div className="space-y-1 text-center">
-                        {photoPreview ? (
-                             <img src={photoPreview} alt="Preview" className="mx-auto h-24 w-auto rounded-md" />
-                        ) : (
-                            <>
-                                <UploadCloud className="mx-auto h-12 w-12 text-muted-foreground" />
-                                <p className="text-sm text-muted-foreground">
-                                    Click to upload a photo
-                                </p>
-                             </>
-                        )}
-                    </div>
-                    <input id="photo-upload" name="photo-upload" type="file" className="sr-only" accept="image/*" onChange={handlePhotoChange} />
-                </label>
-            </FormControl>
-        </FormItem>
+        <div className="relative">
+            <Input 
+                value={`Total sqft : ${totalSqFt.toFixed(2)}`} 
+                readOnly 
+                className="h-12 rounded-full bg-white border-gray-300 font-medium"
+            />
+        </div>
         
-
-        <Button type="submit" className="w-full" disabled={isSaving}>
+        <Button type="submit" size="lg" className="w-full h-12 rounded-full text-lg" disabled={isSaving}>
           {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Save Measurement
+          Add Now
         </Button>
       </form>
     </Form>

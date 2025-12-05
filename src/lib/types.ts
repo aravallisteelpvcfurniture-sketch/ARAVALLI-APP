@@ -43,9 +43,10 @@ export type QuotationData = {
 
 export type SiteMeasurement = {
     id: string;
-    width: number;
+    title: string;
     height: number;
+    width: number;
+    depth: number;
     totalSqFt: number;
-    photo?: string;
     createdAt: string;
 };
