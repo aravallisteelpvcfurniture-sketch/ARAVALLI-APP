@@ -14,9 +14,9 @@ function QuotationContent() {
     const { visitorId } = params as { visitorId: string };
 
     const initialDimensions = {
-        length: undefined, // Length is no longer used from measurement
-        width: searchParams.has('width') ? Number(searchParams.get('width')) : undefined,
-        height: searchParams.has('height') ? Number(searchParams.get('height')) : undefined,
+        length: undefined, 
+        width: searchParams.has('width') ? Number(searchParams.get('width')) / 12 : undefined, // inches to feet
+        height: searchParams.has('height') ? Number(searchParams.get('height')) / 12 : undefined, // inches to feet
     };
 
     return (

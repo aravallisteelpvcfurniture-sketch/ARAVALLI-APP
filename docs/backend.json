@@ -262,17 +262,21 @@
           "type": "string",
           "description": "Unique identifier for the measurement."
         },
-        "title": {
+        "productType": {
           "type": "string",
-          "description": "Title of the product."
+          "description": "Type of product (e.g., Modular Kitchen, Wardrobe)."
         },
-        "height": {
-          "type": "number",
-          "description": "The height of the measured area in feet."
+        "roomType": {
+          "type": "string",
+          "description": "Type of room (e.g., Kitchen, Bedroom)."
         },
         "width": {
           "type": "number",
-          "description": "The width of the measured area in feet."
+          "description": "The width of the measured area in inches."
+        },
+        "height": {
+          "type": "number",
+          "description": "The height of the measured area in inches."
         },
         "depth": {
           "type": "number",
@@ -288,7 +292,7 @@
           "format": "date-time"
         }
       },
-      "required": ["id", "title", "height", "width", "totalSqFt", "createdAt"]
+      "required": ["id", "productType", "roomType", "width", "height", "totalSqFt", "createdAt"]
     }
   },
   "auth": {

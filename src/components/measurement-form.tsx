@@ -21,18 +21,21 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
 const measurementSchema = z.object({
-  title: z.string().min(1, 'Title is required.'),
-  height: z.coerce.number().min(0.1, 'Height must be greater than 0'),
-  width: z.coerce.number().min(0.1, 'Width must be greater than 0'),
+  productType: z.string().min(1, 'Product type is required.'),
+  roomType: z.string().min(1, 'Room type is required.'),
+  width: z.coerce.number().min(1, 'Width is required'),
+  height: z.coerce.number().min(1, 'Height is required'),
   depth: z.coerce.number().min(0).optional(),
 });
 
 interface MeasurementFormProps {
   visitorId: string;
   onSave: () => void;
+  title: string;
+  buttonText: string;
 }
 
-export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
+export function MeasurementForm({ visitorId, onSave, title, buttonText }: MeasurementFormProps) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -47,18 +50,19 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
   const form = useForm<z.infer<typeof measurementSchema>>({
     resolver: zodResolver(measurementSchema),
     defaultValues: {
-      title: '',
-      height: 0,
+      productType: '',
+      roomType: '',
       width: 0,
-      depth: 0,
+      height: 0,
+      depth: undefined,
     },
   });
   
   const watchedValues = form.watch();
 
   useEffect(() => {
-    const { height, width } = watchedValues;
-    const sqft = (height || 0) * (width || 0);
+    const { width, height } = watchedValues;
+    const sqft = ((width || 0) * (height || 0)) / 144;
     setTotalSqFt(sqft);
   }, [watchedValues]);
 
@@ -72,7 +76,7 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
 
     const measurementData: any = {
       ...values,
-      depth: values.depth || 0,
+      depth: values.depth || undefined,
       totalSqFt,
       createdAt: new Date().toISOString(),
     };
@@ -101,19 +105,40 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
             control={form.control}
-            name="title"
+            name="productType"
             render={({ field }) => (
                 <FormItem>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                             <SelectTrigger className="h-12 rounded-full bg-white border-gray-300">
-                                <SelectValue placeholder="Select Product" />
+                                <SelectValue placeholder="MODULAR KITCHEN" />
                             </SelectTrigger>
                         </FormControl>
                         <SelectContent>
+                            <SelectItem value="modular-kitchen">Modular Kitchen</SelectItem>
                             <SelectItem value="wardrobe">Wardrobe</SelectItem>
                             <SelectItem value="tv-unit">TV Unit</SelectItem>
+                        </SelectContent>
+                    </Select>
+                    <FormMessage />
+                </FormItem>
+            )}
+        />
+         <FormField
+            control={form.control}
+            name="roomType"
+            render={({ field }) => (
+                <FormItem>
+                    <Select onValueChange={field.onChange} defaultValue={field.value}>
+                        <FormControl>
+                            <SelectTrigger className="h-12 rounded-full bg-white border-gray-300">
+                                <SelectValue placeholder="room" />
+                            </SelectTrigger>
+                        </FormControl>
+                        <SelectContent>
                             <SelectItem value="kitchen">Kitchen</SelectItem>
+                            <SelectItem value="bedroom">Bedroom</SelectItem>
+                            <SelectItem value="living-room">Living Room</SelectItem>
                         </SelectContent>
                     </Select>
                     <FormMessage />
@@ -122,17 +147,18 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
         />
         
         <div>
-          <div className="flex justify-between text-sm font-medium mb-2">
-            <span>Measurement in Feet</span>
+          <div className="grid grid-cols-2 gap-4 mb-2">
+            <span className="text-sm font-medium">Measurement in Inch</span>
+            <span className="text-sm font-medium">In Feet</span>
           </div>
           <div className="grid grid-cols-3 gap-2">
             <FormField
                 control={form.control}
-                name="height"
+                name="width"
                 render={({ field }) => (
                 <FormItem>
                     <FormControl>
-                        <Input type="number" placeholder="Height" {...field} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
+                        <Input type="number" placeholder="50" {...field} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -140,11 +166,11 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
             />
             <FormField
                 control={form.control}
-                name="width"
+                name="height"
                 render={({ field }) => (
                 <FormItem>
                     <FormControl>
-                        <Input type="number" placeholder="Width" {...field} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
+                        <Input type="number" placeholder="100" {...field} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -173,9 +199,9 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
             />
         </div>
         
-        <Button type="submit" size="lg" className="w-full h-12 rounded-full text-lg" disabled={isSaving}>
+        <Button type="submit" size="lg" className="w-full h-12 rounded-full text-lg bg-green-500 hover:bg-green-600" disabled={isSaving}>
           {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          Add Now
+          {buttonText}
         </Button>
       </form>
     </Form>

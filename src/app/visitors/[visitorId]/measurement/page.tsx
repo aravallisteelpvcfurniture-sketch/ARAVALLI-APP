@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
@@ -11,19 +11,14 @@ import {
   DialogContent,
   DialogHeader,
   DialogTitle,
-  DialogDescription,
   DialogTrigger,
-  DialogFooter,
   DialogClose,
 } from '@/components/ui/dialog';
-import { Header } from '@/components/header';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { Plus, Image as ImageIcon, ExternalLink, X, ChevronLeft } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Plus, X, ChevronLeft, Bell } from 'lucide-react';
 import { MeasurementForm } from '@/components/measurement-form';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { SiteMeasurement } from '@/lib/types';
-import { Bell } from 'lucide-react';
-
 
 export default function MeasurementPage() {
   const router = useRouter();
@@ -40,6 +35,13 @@ export default function MeasurementPage() {
   }, [firestore, user?.uid, visitorId]);
 
   const { data: measurements, isLoading } = useCollection<SiteMeasurement>(measurementsCollectionRef);
+
+  const formatDate = (dateString: string | undefined) => {
+    if (!dateString) return '';
+    const date = new Date(dateString);
+    if (isNaN(date.getTime())) return dateString; // Return original string if invalid
+    return date.toLocaleDateString();
+  };
 
   return (
     <div className="flex flex-col min-h-dvh bg-gray-100 dark:bg-gray-800">
@@ -76,16 +78,17 @@ export default function MeasurementPage() {
           </div>
         ) : measurements && measurements.length > 0 ? (
           <div className="space-y-4">
-            {measurements.sort((a, b) => new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()).map((m) => (
+            {measurements.sort((a, b) => (new Date(b.createdAt) as any) - (new Date(a.createdAt) as any)).map((m) => (
               <Card key={m.id} className="overflow-hidden rounded-2xl shadow-sm">
                 <CardContent className="p-4">
                   <div className="flex justify-between items-center">
                     <div className='space-y-1'>
-                       <p className="text-base font-semibold">{m.title}</p>
-                       <p className="text-sm text-muted-foreground">{`H: ${m.height} x W: ${m.width} x D: ${m.depth}`}</p>
+                       <p className="text-base font-semibold">{m.productType} ({m.roomType})</p>
+                       <p className="text-sm text-muted-foreground">{`W: ${m.width}" x H: ${m.height}"`}{m.depth ? ` x D: ${m.depth}'` : ''}</p>
                        <p className="text-sm font-medium text-primary">{m.totalSqFt.toFixed(2)} sqft</p>
+                       <p className="text-xs text-muted-foreground">{formatDate(m.createdAt)}</p>
                     </div>
-                    <Button variant="secondary" onClick={() => router.push(`/visitors/${visitorId}/quotation?measurementId=${m.id}`)}>
+                    <Button variant="secondary" onClick={() => router.push(`/visitors/${visitorId}/quotation?measurementId=${m.id}&width=${m.width}&height=${m.height}`)}>
                       Create Quotation
                     </Button>
                   </div>
@@ -119,6 +122,8 @@ export default function MeasurementPage() {
                   <MeasurementForm
                     visitorId={visitorId}
                     onSave={() => setIsDialogOpen(false)}
+                    title="Add Product"
+                    buttonText="Add Now"
                   />
                 </div>
             </DialogContent>
