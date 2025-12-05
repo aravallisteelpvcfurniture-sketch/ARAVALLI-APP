@@ -262,22 +262,25 @@
           "type": "string",
           "description": "Unique identifier for the measurement."
         },
-        "length": {
+        "title": {
           "type": "string",
-          "description": "The length of the measured area."
-        },
-        "width": {
-          "type": "string",
-          "description": "The width of the measured area."
+          "description": "Title of the product."
         },
         "height": {
-          "type": "string",
-          "description": "The height of the measured area."
+          "type": "number",
+          "description": "The height of the measured area in feet."
         },
-        "photo": {
-          "type": "string",
-          "description": "A data URI of the photo taken at the site.",
-          "format": "uri"
+        "width": {
+          "type": "number",
+          "description": "The width of the measured area in feet."
+        },
+        "depth": {
+          "type": "number",
+          "description": "The depth of the measured area in feet."
+        },
+        "totalSqFt": {
+          "type": "number",
+          "description": "The total square footage of the area."
         },
         "createdAt": {
           "type": "string",
@@ -285,7 +288,7 @@
           "format": "date-time"
         }
       },
-      "required": ["id", "length", "width", "height", "createdAt"]
+      "required": ["id", "title", "height", "width", "totalSqFt", "createdAt"]
     }
   },
   "auth": {

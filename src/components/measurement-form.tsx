@@ -14,18 +14,17 @@ import * as z from 'zod';
 import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { addDocumentNonBlocking }from '@/firebase/non-blocking-updates';
 import { collection, doc } from 'firebase/firestore';
-import { getStorage, ref, uploadString, getDownloadURL } from 'firebase/storage';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, UploadCloud, MoveHorizontal, MoveVertical } from 'lucide-react';
+import { Loader2 } from 'lucide-react';
 
 const measurementSchema = z.object({
   title: z.string().min(1, 'Title is required.'),
   height: z.coerce.number().min(0.1, 'Height must be greater than 0'),
   width: z.coerce.number().min(0.1, 'Width must be greater than 0'),
-  depth: z.coerce.number().min(0.1, 'Depth must be greater than 0'),
+  depth: z.coerce.number().min(0).optional(),
 });
 
 interface MeasurementFormProps {
@@ -73,6 +72,7 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
 
     const measurementData: any = {
       ...values,
+      depth: values.depth || 0,
       totalSqFt,
       createdAt: new Date().toISOString(),
     };
@@ -120,23 +120,10 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
                 </FormItem>
             )}
         />
-        <FormField
-          control={form.control}
-          name="title"
-          render={({ field }) => (
-            <FormItem>
-              <FormControl>
-                <Input placeholder="Title" {...field} className="h-12 rounded-full bg-white border-gray-300"/>
-              </FormControl>
-              <FormMessage />
-            </FormItem>
-          )}
-        />
         
         <div>
           <div className="flex justify-between text-sm font-medium mb-2">
-            <span>Measurement in Inch</span>
-            <span>In Feet</span>
+            <span>Measurement in Feet</span>
           </div>
           <div className="grid grid-cols-3 gap-2">
             <FormField
@@ -182,7 +169,7 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
             <Input 
                 value={`Total sqft : ${totalSqFt.toFixed(2)}`} 
                 readOnly 
-                className="h-12 rounded-full bg-white border-gray-300 font-medium"
+                className="h-12 rounded-full bg-white border-gray-300 font-medium text-center"
             />
         </div>
         
