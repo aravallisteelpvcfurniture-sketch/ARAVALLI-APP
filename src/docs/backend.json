@@ -274,13 +274,9 @@
           "type": "number",
           "description": "The total square footage of the area."
         },
-        "sheetQuantity": {
-            "type": "number",
-            "description": "The calculated sheet quantity."
-        },
         "photo": {
           "type": "string",
-          "description": "A data URI of the photo taken at the site.",
+          "description": "A URL to the photo taken at the site.",
           "format": "uri"
         },
         "createdAt": {
