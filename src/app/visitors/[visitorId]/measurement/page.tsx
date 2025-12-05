@@ -6,10 +6,10 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, ChevronLeft, Bell, MoveHorizontal, MoveVertical, Square, Camera, Trash2 } from 'lucide-react';
+import { Loader2, ChevronLeft, Bell, MoveHorizontal, MoveVertical, Square, Camera, Trash2, Sheet } from 'lucide-react';
 import { useParams, useRouter } from 'next/navigation';
 import { useUser, useFirestore, useMemoFirebase, useCollection } from '@/firebase';
-import { collection, serverTimestamp } from 'firebase/firestore';
+import { collection, serverTimestamp, doc } from 'firebase/firestore';
 import { addDocumentNonBlocking, deleteDocumentNonBlocking } from '@/firebase/non-blocking-updates';
 import { Skeleton } from '@/components/ui/skeleton';
 import Image from 'next/image';
@@ -28,6 +28,7 @@ export default function MeasurementPage() {
   const [width, setWidth] = useState('');
   const [height, setHeight] = useState('');
   const [totalSqFt, setTotalSqFt] = useState(0);
+  const [sheetQuantity, setSheetQuantity] = useState(0);
   const [photo, setPhoto] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
@@ -43,9 +44,12 @@ export default function MeasurementPage() {
     const w = parseFloat(width);
     const h = parseFloat(height);
     if (!isNaN(w) && !isNaN(h) && w > 0 && h > 0) {
-      setTotalSqFt(w * h);
+      const area = w * h;
+      setTotalSqFt(area);
+      setSheetQuantity(area / 17.36);
     } else {
       setTotalSqFt(0);
+      setSheetQuantity(0);
     }
   }, [width, height]);
   
@@ -76,9 +80,7 @@ export default function MeasurementPage() {
     if (photo) {
         try {
             const storage = getStorage();
-            // Create a unique path for the image
             const imageRef = ref(storage, `measurements/${visitorId}/${Date.now()}`);
-            // The photo state is a data URL, we need to upload the base64 part
             const uploadResult = await uploadString(imageRef, photo, 'data_url');
             photoUrl = await getDownloadURL(uploadResult.ref);
         } catch (error) {
@@ -97,7 +99,7 @@ export default function MeasurementPage() {
       height: parseFloat(height),
       totalSqFt,
       photo: photoUrl,
-      createdAt: serverTimestamp(),
+      createdAt: new Date().toISOString(),
     };
 
     try {
@@ -126,8 +128,8 @@ export default function MeasurementPage() {
   
   const handleDelete = (measurementId: string) => {
     if (!firestore || !user?.uid) return;
-    const docRef = collection(firestore, 'users', user.uid, 'visitors', visitorId, 'measurements');
-    deleteDocumentNonBlocking(doc(docRef, measurementId));
+    const docRef = doc(firestore, 'users', user.uid, 'visitors', visitorId, 'measurements', measurementId);
+    deleteDocumentNonBlocking(docRef);
     toast({
         title: "Measurement Deleted",
         description: "The measurement has been removed.",
@@ -136,6 +138,17 @@ export default function MeasurementPage() {
 
   const createQuotation = (measurement: { width: number, height: number }) => {
     router.push(`/visitors/${visitorId}/quotation?width=${measurement.width}&height=${measurement.height}`);
+  }
+
+  const renderDate = (createdAt: any) => {
+    if (!createdAt) return null;
+    if (typeof createdAt === 'string') {
+      return new Date(createdAt).toLocaleDateString();
+    }
+    if (createdAt.toDate) {
+      return createdAt.toDate().toLocaleDateString();
+    }
+    return null;
   }
 
   return (
@@ -155,7 +168,7 @@ export default function MeasurementPage() {
         <Card className="rounded-2xl">
             <CardHeader>
                 <CardTitle>Capture Measurement</CardTitle>
-                <CardDescription>Enter dimensions in feet. Total square footage will be calculated automatically.</CardDescription>
+                <CardDescription>Enter dimensions in feet. Calculations will update automatically.</CardDescription>
             </CardHeader>
             <CardContent className="space-y-6">
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -164,6 +177,7 @@ export default function MeasurementPage() {
                         <div className="relative">
                             <MoveHorizontal className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                             <Input id="width" type="number" placeholder="e.g., 10.5" value={width} onChange={(e) => setWidth(e.target.value)} className="pl-10"/>
+                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">ft</span>
                         </div>
                     </div>
                     <div className="space-y-2">
@@ -171,16 +185,30 @@ export default function MeasurementPage() {
                          <div className="relative">
                             <MoveVertical className="absolute left-3 top-1/2 -translate-y-1/2 h-5 w-5 text-muted-foreground" />
                             <Input id="height" type="number" placeholder="e.g., 8" value={height} onChange={(e) => setHeight(e.target.value)} className="pl-10"/>
+                             <span className="absolute right-3 top-1/2 -translate-y-1/2 text-sm text-muted-foreground">ft</span>
                         </div>
                     </div>
                 </div>
-                
-                <div className="space-y-2">
-                    <Label>Calculated Area</Label>
-                    <div className="flex items-center gap-2 p-3 bg-muted rounded-md border">
-                        <Square className="h-5 w-5 text-primary"/>
-                        <span className="font-semibold text-lg">{totalSqFt.toFixed(2)} sq. ft.</span>
-                    </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <Card className="bg-primary/10">
+                        <CardHeader className="flex-row items-center justify-between pb-2">
+                            <CardTitle className="text-sm font-medium">Total square feet</CardTitle>
+                            <Square className="h-5 w-5 text-primary"/>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{totalSqFt.toFixed(2)}</div>
+                        </CardContent>
+                    </Card>
+                     <Card className="bg-secondary/10">
+                        <CardHeader className="flex-row items-center justify-between pb-2">
+                            <CardTitle className="text-sm font-medium">Sheet Quantity</CardTitle>
+                            <Sheet className="h-5 w-5 text-secondary-foreground"/>
+                        </CardHeader>
+                        <CardContent>
+                            <div className="text-2xl font-bold">{sheetQuantity.toFixed(2)}</div>
+                        </CardContent>
+                    </Card>
                 </div>
 
                 <div className="space-y-2">
@@ -225,7 +253,7 @@ export default function MeasurementPage() {
                                         <p className="font-semibold">{m.width} ft x {m.height} ft</p>
                                         <p className="text-sm text-primary font-bold">{m.totalSqFt.toFixed(2)} sq. ft.</p>
                                         <p className="text-xs text-muted-foreground">
-                                           {m.createdAt?.toDate().toLocaleDateString()}
+                                            {renderDate(m.createdAt)}
                                         </p>
                                     </div>
                                </div>
