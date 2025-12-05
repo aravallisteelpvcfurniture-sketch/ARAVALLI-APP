@@ -25,17 +25,6 @@ const tools = [
     href: 'detail',
   },
   {
-    name: 'Site Measurement',
-    icon: (
-      <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M48 30C48 22.268 41.732 16 34 16H22C20.3431 16 19 17.3431 19 19V30H48Z" fill="#FCD34D"/>
-        <path d="M19 30V32C19 35.3137 21.6863 38 25 38H34C41.732 38 48 31.732 48 24H45C45 29.5228 40.0228 34 34 34H25C23.8954 34 23 33.1046 23 32V30H19Z" fill="#FBBF24"/>
-        <rect x="44" y="24" width="4" height="6" rx="1" fill="#374151"/>
-      </svg>
-    ),
-    href: 'measurement',
-  },
-  {
     name: 'Quotation',
     icon: (
       <svg width="64" height="64" viewBox="0 0 64 64" fill="none" xmlns="http://www.w3.org/2000/svg">
