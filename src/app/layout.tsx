@@ -9,7 +9,7 @@ export const metadata: Metadata = {
   applicationName: 'Aravalli Configurator',
   authors: [{ name: 'Aravalli Steel' }],
   keywords: ['furniture', 'configurator', 'steel', 'pvc', 'custom'],
-  themeColor: '#22C55E',
+  themeColor: '#16A34A',
   other: {
     "google-site-verification": "tLL_35h2I3fC5p2w-p0wK1aL8_4Oq2r_2s5X0jE",
   },
@@ -21,7 +21,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#22C55E',
+  themeColor: '#16A34A',
 };
 
 export default function RootLayout({
