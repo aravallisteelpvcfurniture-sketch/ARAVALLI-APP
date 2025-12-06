@@ -101,8 +101,7 @@ service cloud.firestore {
          * @principle Enforces document ownership for visitor-specific measurements.
          */
         match /measurements/{measurementId} {
-            allow get, list, create, delete: if isOwner(userId);
-            allow update: if false;
+            allow read, write: if isOwner(userId);
         }
       }
     }
