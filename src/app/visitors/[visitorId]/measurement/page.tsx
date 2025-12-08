@@ -77,13 +77,13 @@ export default function SiteMeasurementPage() {
             {measurements.map((m) => (
               <Card key={m.id} className="relative">
                 <CardHeader>
-                    <CardTitle className="capitalize">{m.productType.replace('-', ' ')}</CardTitle>
+                    <CardTitle className="capitalize">{m.productType ? m.productType.replace('-', ' ') : ''}</CardTitle>
                     <CardDescription className="capitalize">Room: {m.roomType}</CardDescription>
                 </CardHeader>
                 <CardContent className="text-sm">
                     <p><strong>Dimensions (WxH):</strong> {m.width}" x {m.height}" {m.depth ? `x ${m.depth}"` : ''}</p>
-                    <p><strong>Total Inch:</strong> {m.totalInch.toFixed(2)} in²</p>
-                    <p><strong>Total SqFt:</strong> {m.totalSqFt.toFixed(2)} ft²</p>
+                    <p><strong>Total Inch:</strong> {m.totalInch ? m.totalInch.toFixed(2) : 'N/A'} in²</p>
+                    <p><strong>Total SqFt:</strong> {m.totalSqFt ? m.totalSqFt.toFixed(2) : 'N/A'} ft²</p>
                 </CardContent>
                 <div className="absolute top-2 right-2">
                    <AlertDialog>
