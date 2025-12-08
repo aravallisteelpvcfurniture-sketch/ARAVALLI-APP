@@ -1,11 +1,10 @@
 "use client";
 
-import React, { useState, useEffect, useTransition, useCallback } from "react";
+import React, { useState, useEffect, useCallback } from "react";
 import { useForm, Controller } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { getCost } from "@/lib/actions";
-import type { Cost, FurnitureConfig } from "@/lib/types";
+import type { FurnitureConfig } from "@/lib/types";
 import { DEFAULT_CONFIG, MATERIALS, FEATURES } from "@/lib/constants";
 
 import { Button } from "@/components/ui/button";
@@ -23,12 +22,11 @@ import {
 } from "@/components/ui/form";
 import { Input } from "@/components/ui/input";
 import { useToast } from "@/hooks/use-toast";
-import { Loader2, Save, Share2 } from "lucide-react";
+import { Loader2, Save } from "lucide-react";
 import { useUser, useFirestore, useMemoFirebase } from "@/firebase";
 import { addDocumentNonBlocking } from "@/firebase/non-blocking-updates";
 import { collection, doc } from "firebase/firestore";
 import { ToggleGroup, ToggleGroupItem } from "./ui/toggle-group";
-import { useRouter } from "next/navigation";
 
 const formSchema = z.object({
   material: z.string().min(1, "Please select a material."),
@@ -42,89 +40,50 @@ const formSchema = z.object({
 });
 
 interface ConfiguratorProps {
-  initialDimensions?: {
-    length?: number;
-    width?: number;
-    height?: number;
-  }
+  onConfigChange: (config: FurnitureConfig) => void;
 }
 
-export function Configurator({ initialDimensions }: ConfiguratorProps) {
+export function Configurator({ onConfigChange }: ConfiguratorProps) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
-  const router = useRouter();
 
-  const getInitialConfig = useCallback(() => {
-    // Width and Height come from measurement, Length is default
-    return {
-      ...DEFAULT_CONFIG,
-      dimensions: {
-        length: DEFAULT_CONFIG.dimensions.length, // Keep default length
-        width: initialDimensions?.width || DEFAULT_CONFIG.dimensions.width,
-        height: initialDimensions?.height || DEFAULT_CONFIG.dimensions.height,
-      },
-      finalPrice: undefined,
-    }
-  }, [initialDimensions]);
-
-  const [cost, setCost] = useState<Cost | null>(null);
-  
-  const [isCostLoading, startCostTransition] = useTransition();
-  const [isMounted, setIsMounted] = useState(false);
   const [isSaving, setIsSaving] = useState(false);
 
   const furnitureConfigurationsRef = useMemoFirebase(() => {
     if (!firestore || !user?.uid) return null;
-    // This is a simplified path for user-specific configurations, not tied to a visitor
     return collection(firestore, 'users', user.uid, 'furnitureConfigurations');
   }, [firestore, user?.uid]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
-    defaultValues: getInitialConfig(),
+    defaultValues: DEFAULT_CONFIG,
   });
-  
-  useEffect(() => {
-    const newConfig = getInitialConfig();
-    form.reset(newConfig);
-  // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [initialDimensions, form]);
 
   const watchedValues = form.watch();
 
-  const updateCost = useCallback((newConfig: Omit<FurnitureConfig, 'finalPrice'>) => {
-    startCostTransition(async () => {
-      const result = await getCost(newConfig);
-      if (result) {
-        setCost(result);
-      }
+  useEffect(() => {
+    const subscription = form.watch((value) => {
+        const { finalPrice, ...newConfig } = value as z.infer<typeof formSchema>;
+        if (form.formState.isValid) {
+            onConfigChange(newConfig as FurnitureConfig);
+        }
     });
-  }, []);
-
-  useEffect(() => {
-    setIsMounted(true);
-    // Initial cost calculation
-    updateCost(getInitialConfig());
-  }, [updateCost, getInitialConfig]);
-  
-  useEffect(() => {
-    const debouncer = setTimeout(() => {
-      if (form.formState.isValid) {
+    // Initial call
+    if (form.formState.isValid) {
         const { finalPrice, ...newConfig } = form.getValues();
-        updateCost(newConfig);
-      }
-    }, 500);
-
-    return () => clearTimeout(debouncer);
-  }, [watchedValues, form, updateCost]);
+        onConfigChange(newConfig as FurnitureConfig);
+    }
+    return () => subscription.unsubscribe();
+  }, [form, onConfigChange]);
 
 
   const handleSaveAndShare = async () => {
     setIsSaving(true);
     const currentConfig = form.getValues();
+    const finalPrice = currentConfig.finalPrice; // This will be handled by the parent
 
-    if (!furnitureConfigurationsRef || !user?.uid || !cost) {
+    if (!furnitureConfigurationsRef || !user?.uid) {
       toast({
         variant: 'destructive',
         title: 'Error',
@@ -134,20 +93,17 @@ export function Configurator({ initialDimensions }: ConfiguratorProps) {
       return;
     }
 
-    const finalPrice = currentConfig.finalPrice || cost.estimatedCost;
-
     const furnitureConfigurationData = {
         userId: user.uid,
         material: currentConfig.material,
         ...currentConfig.dimensions,
         features: currentConfig.features || [],
-        estimatedCost: cost.estimatedCost,
-        finalPrice: finalPrice,
+        finalPrice: finalPrice || 0, // Parent will provide final cost
         configurationDate: new Date().toISOString(),
     };
 
     try {
-        const newDocRef = doc(furnitureConfigurationsRef); // Create a new doc reference with an auto-generated ID
+        const newDocRef = doc(furnitureConfigurationsRef);
         await addDocumentNonBlocking(furnitureConfigurationsRef, furnitureConfigurationData, newDocRef);
 
         toast({
@@ -155,10 +111,7 @@ export function Configurator({ initialDimensions }: ConfiguratorProps) {
           description: "The furniture configuration has been saved.",
         });
         
-        // This part needs to be re-evaluated as there is no visitor context anymore
-        // For now, let's just log a success message or disable sharing.
         console.log("Quotation saved with ID:", newDocRef.id);
-
 
     } catch (error) {
         toast({
@@ -171,10 +124,8 @@ export function Configurator({ initialDimensions }: ConfiguratorProps) {
     }
   }
   
-  const isLoading = isSaving || isCostLoading;
-
   return (
-    <div className="p-4 -mt-32">
+    <div className="md:-mt-32">
         <Card className="rounded-2xl shadow-xl">
             <CardContent className="p-6">
               <Form {...form}>
@@ -217,10 +168,10 @@ export function Configurator({ initialDimensions }: ConfiguratorProps) {
                             <FormItem><FormLabel className="text-sm font-normal text-muted-foreground">Length (cm)</FormLabel><FormControl><Input placeholder="e.g. 120" {...field} type="number" className="h-12 text-base" /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="dimensions.width" render={({ field }) => (
-                            <FormItem><FormLabel className="text-sm font-normal text-muted-foreground">Width (ft)</FormLabel><FormControl><Input placeholder="e.g. 2" {...field} type="number" className="h-12 text-base" /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel className="text-sm font-normal text-muted-foreground">Width (cm)</FormLabel><FormControl><Input placeholder="e.g. 60" {...field} type="number" className="h-12 text-base" /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="dimensions.height" render={({ field }) => (
-                            <FormItem><FormLabel className="text-sm font-normal text-muted-foreground">Height (ft)</FormLabel><FormControl><Input placeholder="e.g. 3" {...field} type="number" className="h-12 text-base" /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormLabel className="text-sm font-normal text-muted-foreground">Height (cm)</FormLabel><FormControl><Input placeholder="e.g. 75" {...field} type="number" className="h-12 text-base" /></FormControl><FormMessage /></FormItem>
                         )} />
                     </div>
                   </div>
@@ -278,7 +229,7 @@ export function Configurator({ initialDimensions }: ConfiguratorProps) {
                   />
 
                   <div className="grid grid-cols-1 gap-4">
-                    <Button type="button" onClick={handleSaveAndShare} size="lg" className="w-full h-14 text-lg" disabled={isLoading}>
+                    <Button type="button" onClick={handleSaveAndShare} size="lg" className="w-full h-14 text-lg" disabled={isSaving}>
                         {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
                         Save Configuration
                     </Button>
