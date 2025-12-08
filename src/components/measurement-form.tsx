@@ -15,7 +15,7 @@ import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { addDocumentNonBlocking }from '@/firebase/non-blocking-updates';
 import { collection } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
@@ -25,7 +25,7 @@ const measurementSchema = z.object({
   roomType: z.string().min(1, 'Room type is required.'),
   width: z.coerce.number().min(1, 'Width is required'),
   height: z.coerce.number().min(1, 'Height is required'),
-  depth: z.coerce.number().min(0).optional(),
+  depth: z.coerce.number().optional(),
 });
 
 interface MeasurementFormProps {
@@ -53,9 +53,6 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
     defaultValues: {
       productType: '',
       roomType: '',
-      width: 0,
-      height: 0,
-      depth: 0,
     },
   });
   
@@ -151,18 +148,15 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
         />
         
         <div>
-          <div className="grid grid-cols-2 gap-4 mb-2">
-            <span className="text-sm font-medium">Measurement in Inch</span>
-            <span className="text-sm font-medium">In Feet</span>
-          </div>
           <div className="grid grid-cols-3 gap-2">
             <FormField
                 control={form.control}
                 name="width"
                 render={({ field }) => (
                 <FormItem>
+                    <FormLabel>Width (Inch)</FormLabel>
                     <FormControl>
-                        <Input type="number" placeholder="50" {...field} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
+                        <Input type="number" placeholder="50" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -173,8 +167,9 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
                 name="height"
                 render={({ field }) => (
                 <FormItem>
+                    <FormLabel>Height (Inch)</FormLabel>
                     <FormControl>
-                        <Input type="number" placeholder="100" {...field} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
+                        <Input type="number" placeholder="100" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -185,6 +180,7 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
                 name="depth"
                 render={({ field }) => (
                 <FormItem>
+                    <FormLabel>Depth (Inch)</FormLabel>
                     <FormControl>
                         <Input type="number" placeholder="Depth" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
                     </FormControl>
