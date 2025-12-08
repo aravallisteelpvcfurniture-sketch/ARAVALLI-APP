@@ -2,11 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Phone, Bell, Calendar as CalendarIcon, Trash2 } from 'lucide-react';
+import { Plus, Phone, Bell, Calendar as CalendarIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Visitor } from '@/lib/types';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -14,18 +14,6 @@ import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
-import { useToast } from '@/hooks/use-toast';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const statusFilters = [
@@ -41,6 +29,7 @@ const statusFilters = [
 
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
     <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm4.21 13.66a5.46 5.46 0 0 1-7.72 0 5.46 5.46 0 0 1 0-7.72 5.46 5.46 0 0 1 7.72 0 5.46 5.46 0 0 1 0 7.72z" opacity=".1"/>
         <path d="M16.6 14.21a1 1 0 0 0-1.35-.35l-1.3 1.08a.69.69 0 0 1-.72 0l-2.73-2.05a.69.69 0 0 1-.3-1L11.55 9.8a1 1 0 0 0-.42-1.36l-1.5-1a1 1 0 0 0-1.4.3L7.17 9.1a.69.69 0 0 0 0 .72l2.4 3.21a.69.69 0 0 0 .72 0l2.74-2.05a.69.69 0 0 0 .3-1l-1.34-2.24a1 1 0 0 0-1.35-.42L8.9 9.17" />
         <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" />
     </svg>
@@ -51,7 +40,6 @@ export default function VisitorsPage() {
     const { user } = useUser();
     const firestore = useFirestore();
     const router = useRouter();
-    const { toast } = useToast();
 
     const [dateFrom, setDateFrom] = React.useState<Date>();
     const [dateTo, setDateTo] = React.useState<Date>();
@@ -62,16 +50,6 @@ export default function VisitorsPage() {
     }, [firestore, user?.uid]);
 
     const { data: visitors, isLoading } = useCollection<Visitor>(visitorsCollectionRef);
-
-    const handleDeleteVisitor = (visitorId: string) => {
-        if (!visitorsCollectionRef) return;
-        const visitorDocRef = doc(visitorsCollectionRef, visitorId);
-        deleteDocumentNonBlocking(visitorDocRef);
-        toast({
-          title: "Visitor Deleted",
-          description: "The visitor has been removed from your list.",
-        });
-      };
 
     return (
         <div className="flex flex-col min-h-dvh bg-muted">
@@ -176,30 +154,6 @@ export default function VisitorsPage() {
                                             <p className="text-muted-foreground text-sm">{visitor.phone}</p>
                                             <p className="text-muted-foreground text-sm truncate">{visitor.email}</p>
                                         </Link>
-                                        <AlertDialog>
-                                            <AlertDialogTrigger asChild>
-                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive hover:bg-destructive/10">
-                                                    <Trash2 className="h-4 w-4" />
-                                                </Button>
-                                            </AlertDialogTrigger>
-                                            <AlertDialogContent>
-                                            <AlertDialogHeader>
-                                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                                                <AlertDialogDescription>
-                                                This action will permanently delete this visitor and all associated data.
-                                                </AlertDialogDescription>
-                                            </AlertDialogHeader>
-                                            <AlertDialogFooter>
-                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
-                                                <AlertDialogAction
-                                                onClick={() => handleDeleteVisitor(visitor.id)}
-                                                className="bg-destructive hover:bg-destructive/90"
-                                                >
-                                                Delete
-                                                </AlertDialogAction>
-                                            </AlertDialogFooter>
-                                            </AlertDialogContent>
-                                        </AlertDialog>
                                     </div>
                                     <div className="flex items-center gap-2 mt-2">
                                         <a href={`tel:${visitor.phone}`} className="flex-shrink-0">
@@ -236,3 +190,4 @@ export default function VisitorsPage() {
             </footer>
         </div>
     );
+}
