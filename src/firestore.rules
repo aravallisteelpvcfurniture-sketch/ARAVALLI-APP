@@ -80,8 +80,7 @@ service cloud.firestore {
        * @principle Enforces document ownership for visitors.
        */
       match /visitors/{visitorId} {
-        allow get, list, update, delete: if isOwner(userId);
-        allow create: if isOwner(userId);
+        allow read, write: if isOwner(userId);
         
         /**
          * @description Rules for furniture configurations (quotations) for a visitor.
