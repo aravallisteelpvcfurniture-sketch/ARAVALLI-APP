@@ -137,33 +137,33 @@ export default function VisitorsPage() {
                 {!isLoading && visitors && visitors.length > 0 && (
                     <div className="space-y-4">
                         {visitors.map((visitor) => (
-                            <Card key={visitor.id} className="rounded-2xl shadow-md overflow-hidden relative">
-                                 {visitor.status && (
-                                     <div className={cn("absolute top-2 right-2 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10",
-                                        visitor.status === 'Hot' && 'bg-red-500',
-                                        visitor.status === 'Warm' && 'bg-yellow-500',
-                                        visitor.status === 'Cold' && 'bg-blue-500',
-                                        !['Hot', 'Warm', 'Cold'].includes(visitor.status) && 'bg-green-500'
-                                     )}>
-                                        {visitor.status === 'Quotation' ? 'Estimate Shared' : visitor.status}
+                            <Card key={visitor.id} className="rounded-2xl shadow-md overflow-hidden">
+                                <CardContent className="p-4 flex justify-between items-center">
+                                    <div className="flex-grow">
+                                        <Link href={`/visitors/${visitor.id}`} className="block">
+                                            {visitor.status && (
+                                                <div className={cn("inline-block text-white text-[10px] font-bold px-2 py-0.5 rounded-full mb-2",
+                                                    visitor.status === 'Hot' && 'bg-red-500',
+                                                    visitor.status === 'Warm' && 'bg-yellow-500',
+                                                    visitor.status === 'Cold' && 'bg-blue-500',
+                                                    !['Hot', 'Warm', 'Cold'].includes(visitor.status) && 'bg-green-500'
+                                                )}>
+                                                    {visitor.status === 'Quotation' ? 'Estimate Shared' : visitor.status}
+                                                </div>
+                                            )}
+                                            <h3 className="font-bold text-xl mb-1">{visitor.name}</h3>
+                                            <p className="text-muted-foreground text-sm">{visitor.phone}</p>
+                                            <p className="text-muted-foreground text-sm truncate mt-1">{visitor.email}</p>
+                                        </Link>
                                     </div>
-                                 )}
-                                <CardContent className="p-4">
-                                    <Link href={`/visitors/${visitor.id}`} className="block">
-                                        <h3 className="font-bold text-xl mb-1">{visitor.name}</h3>
-                                        <div className="flex items-center gap-2 text-muted-foreground text-sm">
-                                            <span>{visitor.phone}</span>
-                                            <div className="flex items-center gap-2">
-                                                <a href={`tel:${visitor.phone}`} onClick={e => e.stopPropagation()} className="flex-shrink-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 hover:bg-green-200 transition-colors">
-                                                    <Phone className="h-4 w-4" />
-                                                </a>
-                                                <a href={`https://wa.me/${visitor.phone.replace(/[^0-9]/g, '')}`} onClick={e => e.stopPropagation()} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 hover:bg-green-200 transition-colors">
-                                                    <WhatsAppIcon className="h-5 w-5"/>
-                                                </a>
-                                            </div>
-                                        </div>
-                                        <p className="text-muted-foreground text-sm truncate mt-1">{visitor.email}</p>
-                                    </Link>
+                                    <div className="flex flex-col items-center gap-4 ml-4">
+                                        <a href={`tel:${visitor.phone}`} className="flex-shrink-0 h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 hover:bg-green-200 transition-colors">
+                                            <Phone className="h-5 w-5" />
+                                        </a>
+                                        <a href={`https://wa.me/${visitor.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 hover:bg-green-200 transition-colors">
+                                            <WhatsAppIcon className="h-6 w-6"/>
+                                        </a>
+                                    </div>
                                 </CardContent>
                             </Card>
                         ))}
