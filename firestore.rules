@@ -103,6 +103,16 @@ service cloud.firestore {
             allow get, list, create, delete: if isOwner(userId);
             allow update: if false;
         }
+
+         /**
+         * @description Rules for site photos for a visitor.
+         * @path /users/{userId}/visitors/{visitorId}/photos/{photoId}
+         * @allow (create, list, get, delete) - A user can manage photos for their own visitors.
+         * @principle Enforces document ownership for visitor-specific photos.
+         */
+        match /photos/{photoId} {
+          allow get, list, create, delete: if isOwner(userId);
+        }
       }
     }
 

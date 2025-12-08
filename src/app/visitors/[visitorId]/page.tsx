@@ -1,14 +1,14 @@
 'use client';
 
 import React from 'react';
-import { useParams, useRouter } from 'next/navigation';
+import { useParams } from 'next/navigation';
 import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Header } from '@/components/header';
 import { BottomNav } from '@/components/bottom-nav';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { User, Phone, Mail, MapPin, Building, ChevronRight, Ruler, FileText } from 'lucide-react';
+import { User, Phone, Mail, MapPin, Building, Ruler, FileText, Camera, BookUser } from 'lucide-react';
 import type { Visitor } from '@/lib/types';
 import Link from 'next/link';
 
@@ -25,8 +25,10 @@ export default function VisitorDetailPage() {
   const { data: visitor, isLoading } = useDoc<Visitor>(visitorDocRef);
 
   const menuItems = [
-    { name: 'Site Measurement', href: `/visitors/${visitorId}/measurement`, icon: Ruler },
-    { name: 'Quotation', href: `/visitors/${visitorId}/quotation`, icon: FileText },
+    { name: 'Site Measurement', href: `/visitors/${visitorId}/measurement`, icon: Ruler, description: 'Take and view measurements' },
+    { name: 'Quotation', href: `/visitors/${visitorId}/quotation`, icon: FileText, description: 'Create and manage quotations' },
+    { name: 'Site Photo', href: `/visitors/${visitorId}/photos`, icon: Camera, description: 'Upload and view site photos' },
+    { name: 'All Details', href: '#', icon: BookUser, description: 'View all client information' },
   ];
 
   if (isLoading) {
@@ -45,12 +47,12 @@ export default function VisitorDetailPage() {
               <Skeleton className="h-6 w-2/3" />
             </CardContent>
           </Card>
-           <Card>
-            <CardContent className="p-2 space-y-2">
-                <Skeleton className="h-12 w-full" />
-                <Skeleton className="h-12 w-full" />
-            </CardContent>
-           </Card>
+          <div className="grid grid-cols-2 gap-4">
+            <Skeleton className="h-28 w-full" />
+            <Skeleton className="h-28 w-full" />
+            <Skeleton className="h-28 w-full" />
+            <Skeleton className="h-28 w-full" />
+          </div>
         </main>
         <BottomNav />
       </div>
@@ -72,58 +74,56 @@ export default function VisitorDetailPage() {
   return (
     <div className="flex flex-col min-h-dvh bg-muted/40">
       <Header title={visitor.name} />
-      <main className="flex-1 p-4 space-y-4">
-        <Card>
+      <main className="flex-1 p-4 space-y-6">
+        <Card className="shadow-md">
           <CardHeader>
-            <CardTitle>Client Details</CardTitle>
+            <CardTitle className="text-xl">Client Details</CardTitle>
           </CardHeader>
-          <CardContent className="space-y-3 text-muted-foreground">
-            <div className="flex items-center gap-3">
-              <User className="h-5 w-5 text-primary" />
+          <CardContent className="space-y-3 text-sm text-muted-foreground">
+            <div className="flex items-start gap-3">
+              <User className="h-5 w-5 text-primary mt-0.5 shrink-0" />
               <span className="font-medium text-foreground">{visitor.name}</span>
             </div>
-            <div className="flex items-center gap-3">
-              <Phone className="h-5 w-5 text-primary" />
+            <div className="flex items-start gap-3">
+              <Phone className="h-5 w-5 text-primary mt-0.5 shrink-0" />
               <a href={`tel:${visitor.phone}`} className="text-foreground hover:underline">{visitor.phone}</a>
             </div>
             {visitor.email && (
-              <div className="flex items-center gap-3">
-                <Mail className="h-5 w-5 text-primary" />
-                 <a href={`mailto:${visitor.email}`} className="text-foreground hover:underline">{visitor.email}</a>
+              <div className="flex items-start gap-3">
+                <Mail className="h-5 w-5 text-primary mt-0.5 shrink-0" />
+                 <a href={`mailto:${visitor.email}`} className="text-foreground hover:underline break-all">{visitor.email}</a>
               </div>
             )}
             {visitor.address && (
-              <div className="flex items-center gap-3">
-                <MapPin className="h-5 w-5 text-primary" />
+              <div className="flex items-start gap-3">
+                <MapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                 <span>{visitor.address}</span>
               </div>
             )}
             {visitor.city && (
-                <div className="flex items-center gap-3">
-                    <Building className="h-5 w-5 text-primary" />
+                <div className="flex items-start gap-3">
+                    <Building className="h-5 w-5 text-primary mt-0.5 shrink-0" />
                     <span>{visitor.city}</span>
                 </div>
             )}
           </CardContent>
         </Card>
 
-        <Card>
-            <CardContent className="p-2">
-                 <ul className="divide-y">
-                    {menuItems.map((item) => (
-                        <li key={item.name}>
-                            <Link href={item.href} className="flex items-center justify-between p-3 hover:bg-muted rounded-lg transition-colors">
-                                <div className="flex items-center gap-4">
-                                    <item.icon className="h-6 w-6 text-primary" />
-                                    <span className="font-medium">{item.name}</span>
-                                </div>
-                                <ChevronRight className="h-5 w-5 text-muted-foreground" />
-                            </Link>
-                        </li>
-                    ))}
-                 </ul>
-            </CardContent>
-        </Card>
+        <div className="grid grid-cols-2 gap-4">
+            {menuItems.map((item) => (
+                <Link href={item.href} key={item.name}>
+                    <Card className="h-full hover:bg-muted transition-colors shadow-md hover:shadow-lg">
+                        <CardContent className="p-4 flex flex-col items-center justify-center text-center gap-2">
+                           <div className="flex items-center justify-center bg-primary/10 text-primary h-12 w-12 rounded-full mb-2">
+                             <item.icon className="h-6 w-6" />
+                           </div>
+                           <p className="font-semibold text-sm">{item.name}</p>
+                           <p className="text-xs text-muted-foreground">{item.description}</p>
+                        </CardContent>
+                    </Card>
+                </Link>
+            ))}
+        </div>
       </main>
       <BottomNav />
     </div>

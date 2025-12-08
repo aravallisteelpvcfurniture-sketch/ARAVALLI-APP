@@ -297,6 +297,29 @@
         }
       },
       "required": ["id", "productType", "roomType", "width", "height", "totalSqFt", "totalInch", "createdAt"]
+    },
+    "SitePhoto": {
+      "$schema": "http://json-schema.org/draft-07/schema#",
+      "title": "SitePhoto",
+      "type": "object",
+      "description": "Represents a photo of a site for a visitor.",
+      "properties": {
+        "id": {
+          "type": "string",
+          "description": "Unique identifier for the photo."
+        },
+        "imageUrl": {
+          "type": "string",
+          "description": "URL of the uploaded photo.",
+          "format": "uri"
+        },
+        "createdAt": {
+          "type": "string",
+          "description": "The date and time the photo was uploaded.",
+          "format": "date-time"
+        }
+      },
+      "required": ["id", "imageUrl", "createdAt"]
     }
   },
   "auth": {
@@ -444,6 +467,30 @@
             {
               "name": "furnitureConfigurationId",
               "description": "The unique identifier of the furniture configuration."
+            }
+          ]
+        }
+      },
+      {
+        "path": "/users/{userId}/visitors/{visitorId}/photos/{photoId}",
+        "definition": {
+          "entityName": "SitePhoto",
+          "schema": {
+            "$ref": "#/backend/entities/SitePhoto"
+          },
+          "description": "Stores photos for a specific visitor.",
+          "params": [
+            {
+              "name": "userId",
+              "description": "The unique identifier of the user."
+            },
+            {
+              "name": "visitorId",
+              "description": "The unique identifier of the visitor."
+            },
+            {
+              "name": "photoId",
+              "description": "The unique identifier of the photo."
             }
           ]
         }
