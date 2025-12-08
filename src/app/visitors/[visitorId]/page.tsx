@@ -8,7 +8,7 @@ import { Header } from '@/components/header';
 import { BottomNav } from '@/components/bottom-nav';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { User, Phone, Mail, MapPin, Building, Ruler, FileText, Camera, BookUser } from 'lucide-react';
+import { User, Phone, Mail, MapPin, Building, Ruler, FileText, Camera, Edit } from 'lucide-react';
 import type { Visitor } from '@/lib/types';
 import Link from 'next/link';
 
@@ -28,7 +28,7 @@ export default function VisitorDetailPage() {
     { name: 'Site Measurement', href: `/visitors/${visitorId}/measurement`, icon: Ruler, description: 'Take and view measurements' },
     { name: 'Quotation', href: `/visitors/${visitorId}/quotation`, icon: FileText, description: 'Create and manage quotations' },
     { name: 'Site Photo', href: `/visitors/${visitorId}/photos`, icon: Camera, description: 'Upload and view site photos' },
-    { name: 'All Details', href: '#', icon: BookUser, description: 'View all client information' },
+    { name: 'Edit Details', href: `/visitors/${visitorId}/edit`, icon: Edit, description: 'Edit client information' },
   ];
 
   if (isLoading) {
@@ -75,40 +75,6 @@ export default function VisitorDetailPage() {
     <div className="flex flex-col min-h-dvh bg-muted/40">
       <Header title={visitor.name} />
       <main className="flex-1 p-4 space-y-6">
-        <Card className="shadow-md">
-          <CardHeader>
-            <CardTitle className="text-xl">Client Details</CardTitle>
-          </CardHeader>
-          <CardContent className="space-y-3 text-sm text-muted-foreground">
-            <div className="flex items-start gap-3">
-              <User className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-              <span className="font-medium text-foreground">{visitor.name}</span>
-            </div>
-            <div className="flex items-start gap-3">
-              <Phone className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-              <a href={`tel:${visitor.phone}`} className="text-foreground hover:underline">{visitor.phone}</a>
-            </div>
-            {visitor.email && (
-              <div className="flex items-start gap-3">
-                <Mail className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                 <a href={`mailto:${visitor.email}`} className="text-foreground hover:underline break-all">{visitor.email}</a>
-              </div>
-            )}
-            {visitor.address && (
-              <div className="flex items-start gap-3">
-                <MapPin className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                <span>{visitor.address}</span>
-              </div>
-            )}
-            {visitor.city && (
-                <div className="flex items-start gap-3">
-                    <Building className="h-5 w-5 text-primary mt-0.5 shrink-0" />
-                    <span>{visitor.city}</span>
-                </div>
-            )}
-          </CardContent>
-        </Card>
-
         <div className="grid grid-cols-2 gap-4">
             {menuItems.map((item) => (
                 <Link href={item.href} key={item.name}>
