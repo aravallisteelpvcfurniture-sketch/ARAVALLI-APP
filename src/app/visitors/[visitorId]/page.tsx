@@ -25,10 +25,10 @@ export default function VisitorDetailPage() {
   const { data: visitor, isLoading } = useDoc<Visitor>(visitorDocRef);
 
   const menuItems = [
-    { name: 'Site Measurement', href: `/visitors/${visitorId}/measurement`, icon: Ruler, description: 'Take and view measurements' },
-    { name: 'Quotation', href: `/visitors/${visitorId}/quotation`, icon: FileText, description: 'Create and manage quotations' },
-    { name: 'Site Photo', href: `/visitors/${visitorId}/photos`, icon: Camera, description: 'Upload and view site photos' },
-    { name: 'Edit Details', href: `/visitors/${visitorId}/edit`, icon: Edit, description: 'Edit client information' },
+    { name: 'Site Measurement', href: `/visitors/${visitorId}/measurement`, icon: Ruler, description: 'Take and view measurements', bgColor: 'bg-blue-100', textColor: 'text-blue-600' },
+    { name: 'Quotation', href: `/visitors/${visitorId}/quotation`, icon: FileText, description: 'Create and manage quotations', bgColor: 'bg-green-100', textColor: 'text-green-600' },
+    { name: 'Site Photo', href: `/visitors/${visitorId}/photos`, icon: Camera, description: 'Upload and view site photos', bgColor: 'bg-orange-100', textColor: 'text-orange-600' },
+    { name: 'Edit Details', href: `/visitors/${visitorId}/edit`, icon: Edit, description: 'Edit client information', bgColor: 'bg-purple-100', textColor: 'text-purple-600' },
   ];
 
   if (isLoading) {
@@ -66,7 +66,7 @@ export default function VisitorDetailPage() {
             <Link href={item.href} key={item.name} className="flex">
                 <Card className="w-full h-full hover:bg-muted transition-colors shadow-md hover:shadow-lg rounded-2xl">
                     <CardContent className="p-4 flex flex-col items-center justify-center text-center gap-2 h-full">
-                       <div className="flex items-center justify-center bg-primary/10 text-primary h-16 w-16 rounded-full mb-3">
+                       <div className={`flex items-center justify-center ${item.bgColor} ${item.textColor} h-16 w-16 rounded-full mb-3`}>
                          <item.icon className="h-8 w-8" />
                        </div>
                        <p className="font-semibold text-base">{item.name}</p>
