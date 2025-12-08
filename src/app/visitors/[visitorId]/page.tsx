@@ -6,9 +6,9 @@ import { useUser, useFirestore, useDoc, useMemoFirebase } from '@/firebase';
 import { doc } from 'firebase/firestore';
 import { Header } from '@/components/header';
 import { BottomNav } from '@/components/bottom-nav';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 import { Skeleton } from '@/components/ui/skeleton';
-import { User, Phone, Mail, MapPin, Building, Ruler, FileText, Camera, Edit } from 'lucide-react';
+import { Ruler, FileText, Camera, Edit } from 'lucide-react';
 import type { Visitor } from '@/lib/types';
 import Link from 'next/link';
 
@@ -35,24 +35,11 @@ export default function VisitorDetailPage() {
     return (
       <div className="flex flex-col min-h-dvh bg-muted/40">
         <Header title="Loading..." />
-        <main className="flex-1 p-4 space-y-4">
-          <Card>
-            <CardHeader>
-              <Skeleton className="h-8 w-3/4" />
-              <Skeleton className="h-4 w-1/2 mt-2" />
-            </CardHeader>
-            <CardContent className="space-y-4">
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-full" />
-              <Skeleton className="h-6 w-2/3" />
-            </CardContent>
-          </Card>
-          <div className="grid grid-cols-2 gap-4">
-            <Skeleton className="h-28 w-full" />
-            <Skeleton className="h-28 w-full" />
-            <Skeleton className="h-28 w-full" />
-            <Skeleton className="h-28 w-full" />
-          </div>
+        <main className="flex-1 p-4 grid grid-cols-2 grid-rows-2 gap-4">
+          <Skeleton className="h-full w-full rounded-2xl" />
+          <Skeleton className="h-full w-full rounded-2xl" />
+          <Skeleton className="h-full w-full rounded-2xl" />
+          <Skeleton className="h-full w-full rounded-2xl" />
         </main>
         <BottomNav />
       </div>
@@ -74,22 +61,20 @@ export default function VisitorDetailPage() {
   return (
     <div className="flex flex-col min-h-dvh bg-muted/40">
       <Header title={visitor.name} />
-      <main className="flex-1 p-4 space-y-6">
-        <div className="grid grid-cols-2 gap-4">
-            {menuItems.map((item) => (
-                <Link href={item.href} key={item.name}>
-                    <Card className="h-full hover:bg-muted transition-colors shadow-md hover:shadow-lg">
-                        <CardContent className="p-4 flex flex-col items-center justify-center text-center gap-2">
-                           <div className="flex items-center justify-center bg-primary/10 text-primary h-12 w-12 rounded-full mb-2">
-                             <item.icon className="h-6 w-6" />
-                           </div>
-                           <p className="font-semibold text-sm">{item.name}</p>
-                           <p className="text-xs text-muted-foreground">{item.description}</p>
-                        </CardContent>
-                    </Card>
-                </Link>
-            ))}
-        </div>
+      <main className="flex-1 p-4 grid grid-cols-2 grid-rows-2 gap-4">
+        {menuItems.map((item) => (
+            <Link href={item.href} key={item.name} className="flex">
+                <Card className="w-full h-full hover:bg-muted transition-colors shadow-md hover:shadow-lg rounded-2xl">
+                    <CardContent className="p-4 flex flex-col items-center justify-center text-center gap-2 h-full">
+                       <div className="flex items-center justify-center bg-primary/10 text-primary h-16 w-16 rounded-full mb-3">
+                         <item.icon className="h-8 w-8" />
+                       </div>
+                       <p className="font-semibold text-base">{item.name}</p>
+                       <p className="text-sm text-muted-foreground">{item.description}</p>
+                    </CardContent>
+                </Card>
+            </Link>
+        ))}
       </main>
       <BottomNav />
     </div>
