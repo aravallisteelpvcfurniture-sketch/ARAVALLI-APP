@@ -2,12 +2,11 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
-import { collection } from 'firebase/firestore';
-import { Header } from '@/components/header';
+import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from '@/firebase';
+import { collection, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Phone, Bell, Calendar as CalendarIcon } from 'lucide-react';
+import { Plus, Phone, Bell, Calendar as CalendarIcon, Trash2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Visitor } from '@/lib/types';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -15,12 +14,29 @@ import { Calendar } from '@/components/ui/calendar';
 import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
+import {
+  AlertDialog,
+  AlertDialogAction,
+  AlertDialogCancel,
+  AlertDialogContent,
+  AlertDialogDescription,
+  AlertDialogFooter,
+  AlertDialogHeader,
+  AlertDialogTitle,
+  AlertDialogTrigger,
+} from "@/components/ui/alert-dialog";
+import { useToast } from '@/hooks/use-toast';
+import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const statusFilters = [
-    { label: 'Created', count: 0, color: 'bg-yellow-400' },
-    { label: 'Assigned', count: 0, color: 'bg-red-600' },
-    { label: 'Requirement Gathered', count: 0, color: 'bg-green-600' },
-    { label: 'Estimate', count: 1, color: 'bg-blue-500' },
+    { label: 'Created', count: 1, color: 'bg-yellow-400' },
+    { label: 'Assigned', count: 1, color: 'bg-orange-500' },
+    { label: 'Requirement Gathered', count: 1, color: 'bg-blue-500' },
+    { label: 'Estimate', count: 1, color: 'bg-cyan-500' },
+    { label: 'Quotation Shared', count: 1, color: 'bg-green-500' },
+    { label: 'Follow up', count: 1, color: 'bg-indigo-500' },
+    { label: 'Converted', count: 1, color: 'bg-purple-600' },
+    { label: 'Closed', count: 1, color: 'bg-pink-600' },
 ];
 
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
@@ -35,6 +51,7 @@ export default function VisitorsPage() {
     const { user } = useUser();
     const firestore = useFirestore();
     const router = useRouter();
+    const { toast } = useToast();
 
     const [dateFrom, setDateFrom] = React.useState<Date>();
     const [dateTo, setDateTo] = React.useState<Date>();
@@ -45,6 +62,16 @@ export default function VisitorsPage() {
     }, [firestore, user?.uid]);
 
     const { data: visitors, isLoading } = useCollection<Visitor>(visitorsCollectionRef);
+
+    const handleDeleteVisitor = (visitorId: string) => {
+        if (!visitorsCollectionRef) return;
+        const visitorDocRef = doc(visitorsCollectionRef, visitorId);
+        deleteDocumentNonBlocking(visitorDocRef);
+        toast({
+          title: "Visitor Deleted",
+          description: "The visitor has been removed from your list.",
+        });
+      };
 
     return (
         <div className="flex flex-col min-h-dvh bg-muted">
@@ -90,7 +117,7 @@ export default function VisitorsPage() {
                                     !dateTo && "text-muted-foreground"
                                 )}
                                 >
-                                {dateTo ? format(dateTo, "dd-MM-yyyy") : <span>Select date</span>}
+                                {dateTo ? format(dateTo, "dd-MM-yyyy") : <span>To</span>}
                                 <CalendarIcon className="mr-2 h-4 w-4" />
                                 </Button>
                             </PopoverTrigger>
@@ -101,14 +128,18 @@ export default function VisitorsPage() {
                     </div>
                 </div>
 
-                <div className="grid grid-cols-3 gap-2">
-                    {statusFilters.map(filter => (
-                         <Button key={filter.label} variant="secondary" className={`h-auto flex flex-col gap-0 p-2 rounded-xl ${filter.color} text-white hover:${filter.color}/90`}>
-                            <span className="font-semibold">{filter.label}</span>
-                            <span className="font-bold text-lg">#{filter.count}</span>
-                        </Button>
-                    ))}
-                </div>
+                <ScrollArea className="w-full whitespace-nowrap">
+                    <div className="flex w-max space-x-2 pb-2">
+                        {statusFilters.map(filter => (
+                            <Button key={filter.label} variant="secondary" className={`h-auto flex-col gap-0 p-2 rounded-xl text-white hover:text-white/90 ${filter.color} hover:bg-opacity-90`} style={{backgroundColor: filter.color}}>
+                                <span className="font-semibold text-sm">{filter.label}</span>
+                                <span className="font-bold text-lg">#{filter.count}</span>
+                            </Button>
+                        ))}
+                    </div>
+                    <ScrollBar orientation="horizontal" />
+                </ScrollArea>
+
 
                 {isLoading && (
                     <div className="space-y-4">
@@ -128,15 +159,48 @@ export default function VisitorsPage() {
                     <div className="space-y-4">
                         {visitors.map((visitor) => (
                             <Card key={visitor.id} className="rounded-2xl shadow-md overflow-hidden">
-                                 <div className="bg-lime-500 text-white text-xs font-bold px-3 py-1 text-center">
-                                    Estimate Shared
-                                </div>
+                                 {visitor.status && (
+                                     <div className={cn("text-white text-xs font-bold px-3 py-1 text-center",
+                                        visitor.status === 'Hot' && 'bg-red-500',
+                                        visitor.status === 'Warm' && 'bg-yellow-500',
+                                        visitor.status === 'Cold' && 'bg-blue-500',
+                                        !['Hot', 'Warm', 'Cold'].includes(visitor.status) && 'bg-gray-500'
+                                     )}>
+                                        {visitor.status}
+                                    </div>
+                                 )}
                                 <CardContent className="p-4">
-                                    <Link href={`/visitors/${visitor.id}`} className="block">
-                                        <h3 className="font-bold text-lg">{visitor.name}</h3>
-                                        <p className="text-muted-foreground text-sm">{visitor.phone}</p>
-                                        <p className="text-muted-foreground text-sm truncate">{visitor.email}</p>
-                                    </Link>
+                                    <div className="flex justify-between items-start">
+                                        <Link href={`/visitors/${visitor.id}`} className="block flex-1">
+                                            <h3 className="font-bold text-lg">{visitor.name}</h3>
+                                            <p className="text-muted-foreground text-sm">{visitor.phone}</p>
+                                            <p className="text-muted-foreground text-sm truncate">{visitor.email}</p>
+                                        </Link>
+                                        <AlertDialog>
+                                            <AlertDialogTrigger asChild>
+                                                <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive hover:bg-destructive/10">
+                                                    <Trash2 className="h-4 w-4" />
+                                                </Button>
+                                            </AlertDialogTrigger>
+                                            <AlertDialogContent>
+                                            <AlertDialogHeader>
+                                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                                <AlertDialogDescription>
+                                                This action will permanently delete this visitor and all associated data.
+                                                </AlertDialogDescription>
+                                            </AlertDialogHeader>
+                                            <AlertDialogFooter>
+                                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                                <AlertDialogAction
+                                                onClick={() => handleDeleteVisitor(visitor.id)}
+                                                className="bg-destructive hover:bg-destructive/90"
+                                                >
+                                                Delete
+                                                </AlertDialogAction>
+                                            </AlertDialogFooter>
+                                            </AlertDialogContent>
+                                        </AlertDialog>
+                                    </div>
                                     <div className="flex items-center gap-2 mt-2">
                                         <a href={`tel:${visitor.phone}`} className="flex-shrink-0">
                                             <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
@@ -162,7 +226,7 @@ export default function VisitorsPage() {
                     </div>
                 )}
             </main>
-            <footer className="sticky bottom-0 p-4 bg-muted/0">
+            <footer className="sticky bottom-0 p-4 bg-transparent backdrop-blur-sm">
                  <Button asChild size="lg" className="w-full h-14 rounded-full text-lg">
                     <Link href="/visitors/add">
                         <Plus className="mr-2 h-5 w-5" />
@@ -172,4 +236,3 @@ export default function VisitorsPage() {
             </footer>
         </div>
     );
-}
