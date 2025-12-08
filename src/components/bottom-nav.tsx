@@ -13,10 +13,10 @@ const navItems = [
     icon: (isActive: boolean) => (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
             <path d="M3 9L12 2L21 9V20C21 20.5304 20.7893 21.0391 20.4142 21.4142C20.0391 21.7893 19.5304 22 19 22H5C4.46957 22 3.96086 21.7893 3.58579 21.4142C3.21071 21.0391 3 20.5304 3 20V9Z" 
-                stroke={isActive ? "white" : "#9ca3af"} 
+                stroke={isActive ? "white" : "#6b7280"} 
                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
             <path d="M9 22V12H15V22" 
-                stroke={isActive ? "white" : "#9ca3af"} 
+                stroke={isActive ? "white" : "#6b7280"} 
                 strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
         </svg>
     )
@@ -25,7 +25,7 @@ const navItems = [
     href: "/visitors", 
     label: "Visitors",
     icon: (isActive: boolean) => (
-      <Users className={cn("h-6 w-6", isActive ? "text-primary" : "text-gray-400")} />
+      <Users className={cn("h-6 w-6", isActive ? "text-white" : "text-gray-500")} />
     )
   },
   { 
@@ -33,11 +33,11 @@ const navItems = [
     label: "Scan",
     icon: (isActive: boolean) => (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 7V4C3 3.44772 3.44772 3 4 3H7" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M17 3H20C20.5523 3 21 3.44772 21 4V7" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M21 17V20C21 20.5523 20.5523 21 20 21H17" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M7 21H4C3.44772 21 3 20.5523 3 20V17" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M7 12H17" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M3 7V4C3 3.44772 3.44772 3 4 3H7" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M17 3H20C20.5523 3 21 3.44772 21 4V7" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M21 17V20C21 20.5523 20.5523 21 20 21H17" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M7 21H4C3.44772 21 3 20.5523 3 20V17" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M7 12H17" stroke="#6b7280" strokeWidth="2" strokeLinecap="round"/>
       </svg>
     )
   },
@@ -46,9 +46,9 @@ const navItems = [
     label: "More",
     icon: (isActive: boolean) => (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="1" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round"/>
-            <circle cx="19" cy="12" r="1" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round"/>
-            <circle cx="5" cy="12" r="1" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="12" cy="12" r="1" stroke="#6b7280" strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="19" cy="12" r="1" stroke="#6b7280" strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="5" cy="12" r="1" stroke="#6b7280" strokeWidth="2" strokeLinecap="round"/>
         </svg>
     )
   },
@@ -63,6 +63,7 @@ export function BottomNav() {
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
           const IconComponent = item.icon;
+          const isSpecial = item.href === "/dashboard" || item.href === "/visitors";
 
           return (
             <Link
@@ -71,8 +72,8 @@ export function BottomNav() {
               className="inline-flex flex-col items-center justify-center px-5 group"
             >
               <div className={cn(
-                "flex items-center justify-center w-12 h-12 transition-transform duration-200 ease-in-out",
-                isActive && item.href === "/dashboard" ? "bg-primary rounded-full" : ""
+                "flex items-center justify-center w-12 h-12 transition-colors duration-200 ease-in-out rounded-full",
+                isActive && isSpecial ? "bg-primary" : ""
               )}>
                  {IconComponent(isActive)}
               </div>

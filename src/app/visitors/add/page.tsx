@@ -7,14 +7,12 @@ import * as z from 'zod';
 import { useUser, useFirestore, useMemoFirebase, addDocumentNonBlocking } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { useRouter } from 'next/navigation';
-import { Header } from '@/components/header';
-import { BottomNav } from '@/components/bottom-nav';
 import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Save } from 'lucide-react';
+import { Loader2, Save, Bell } from 'lucide-react';
 import {
   Select,
   SelectContent,
@@ -88,9 +86,19 @@ export default function AddVisitorPage() {
 
   return (
     <div className="flex flex-col min-h-dvh bg-muted/40">
-      <Header title="Add New Visitor" />
+       <header className="sticky top-0 z-40 bg-primary text-primary-foreground p-4 flex items-center justify-between">
+            <div className='flex items-center gap-4'>
+                <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => router.back()}>
+                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M15 18L9 12L15 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                    </svg>
+                </Button>
+                <h1 className="text-xl font-bold">Add Visitor</h1>
+            </div>
+            <Bell className="h-6 w-6" />
+        </header>
       <main className="flex-1 flex flex-col items-center p-4">
-        <Card className="w-full max-w-2xl">
+        <Card className="w-full max-w-2xl rounded-2xl shadow-md">
           <CardHeader>
             <CardTitle>Visitor Information</CardTitle>
             <CardDescription>Fill out the form to add a new client or lead.</CardDescription>
@@ -185,7 +193,7 @@ export default function AddVisitorPage() {
                     </FormItem>
                   )}
                 />
-                <Button type="submit" className="w-full" disabled={isSaving}>
+                <Button type="submit" size="lg" className="w-full h-14 rounded-full text-lg" disabled={isSaving}>
                   {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : <Save className="mr-2 h-4 w-4" />}
                   Save Visitor
                 </Button>
@@ -194,7 +202,6 @@ export default function AddVisitorPage() {
           </CardContent>
         </Card>
       </main>
-      <BottomNav />
     </div>
   );
 }

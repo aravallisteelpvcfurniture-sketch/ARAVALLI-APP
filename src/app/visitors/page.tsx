@@ -2,150 +2,174 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from '@/firebase';
-import { collection, doc } from 'firebase/firestore';
+import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
+import { collection } from 'firebase/firestore';
 import { Header } from '@/components/header';
-import { BottomNav } from '@/components/bottom-nav';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { PlusCircle, User, Phone, MapPin, Trash2 } from 'lucide-react';
+import { Card, CardContent } from '@/components/ui/card';
+import { Plus, Phone, Bell, Calendar as CalendarIcon } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
-import {
-  AlertDialog,
-  AlertDialogAction,
-  AlertDialogCancel,
-  AlertDialogContent,
-  AlertDialogDescription,
-  AlertDialogFooter,
-  AlertDialogHeader,
-  AlertDialogTitle,
-  AlertDialogTrigger,
-} from "@/components/ui/alert-dialog";
 import type { Visitor } from '@/lib/types';
-import { useToast } from '@/hooks/use-toast';
+import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
+import { Calendar } from '@/components/ui/calendar';
+import { format } from 'date-fns';
+import { cn } from '@/lib/utils';
+import { useRouter } from 'next/navigation';
+
+const statusFilters = [
+    { label: 'Created', count: 0, color: 'bg-yellow-400' },
+    { label: 'Assigned', count: 0, color: 'bg-red-600' },
+    { label: 'Requirement Gathered', count: 0, color: 'bg-green-600' },
+    { label: 'Estimate', count: 1, color: 'bg-blue-500' },
+];
+
+const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
+    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
+        <path d="M16.6 14.21a1 1 0 0 0-1.35-.35l-1.3 1.08a.69.69 0 0 1-.72 0l-2.73-2.05a.69.69 0 0 1-.3-1L11.55 9.8a1 1 0 0 0-.42-1.36l-1.5-1a1 1 0 0 0-1.4.3L7.17 9.1a.69.69 0 0 0 0 .72l2.4 3.21a.69.69 0 0 0 .72 0l2.74-2.05a.69.69 0 0 0 .3-1l-1.34-2.24a1 1 0 0 0-1.35-.42L8.9 9.17" />
+        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" />
+    </svg>
+);
+
 
 export default function VisitorsPage() {
-  const { user } = useUser();
-  const firestore = useFirestore();
-  const { toast } = useToast();
+    const { user } = useUser();
+    const firestore = useFirestore();
+    const router = useRouter();
 
-  const visitorsCollectionRef = useMemoFirebase(() => {
-    if (!firestore || !user?.uid) return null;
-    return collection(firestore, 'users', user.uid, 'visitors');
-  }, [firestore, user?.uid]);
+    const [dateFrom, setDateFrom] = React.useState<Date>();
+    const [dateTo, setDateTo] = React.useState<Date>();
 
-  const { data: visitors, isLoading } = useCollection<Visitor>(visitorsCollectionRef);
+    const visitorsCollectionRef = useMemoFirebase(() => {
+        if (!firestore || !user?.uid) return null;
+        return collection(firestore, 'users', user.uid, 'visitors');
+    }, [firestore, user?.uid]);
 
-  const handleDeleteVisitor = (visitorId: string) => {
-    if (!visitorsCollectionRef) return;
-    const visitorDocRef = doc(visitorsCollectionRef, visitorId);
-    
-    deleteDocumentNonBlocking(visitorDocRef);
+    const { data: visitors, isLoading } = useCollection<Visitor>(visitorsCollectionRef);
 
-    toast({
-      title: "Visitor Deleted",
-      description: "The visitor has been removed from your list.",
-    });
-  };
-
-  return (
-    <div className="flex flex-col min-h-dvh bg-muted/40">
-      <Header title="Visitors" />
-      <main className="flex-1 flex flex-col p-4 gap-4">
-        <div className="flex justify-between items-center">
-          <h1 className="text-2xl font-bold">Client List</h1>
-          <Button asChild>
-            <Link href="/visitors/add">
-              <PlusCircle className="mr-2 h-4 w-4" />
-              Add Visitor
-            </Link>
-          </Button>
-        </div>
-
-        {isLoading && (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {[...Array(3)].map((_, i) => (
-              <Card key={i}>
-                <CardHeader>
-                  <Skeleton className="h-6 w-3/4" />
-                  <Skeleton className="h-4 w-1/2" />
-                </CardHeader>
-                <CardContent className="space-y-2">
-                  <Skeleton className="h-4 w-full" />
-                  <Skeleton className="h-4 w-2/3" />
-                </CardContent>
-              </Card>
-            ))}
-          </div>
-        )}
-
-        {!isLoading && visitors && visitors.length > 0 && (
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-            {visitors.map((visitor) => (
-              <Card key={visitor.id} className="relative">
-                <div className="absolute top-2 right-2">
-                  <AlertDialog>
-                    <AlertDialogTrigger asChild>
-                      <Button variant="ghost" size="icon" className="h-8 w-8 text-destructive/70 hover:text-destructive hover:bg-destructive/10">
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </AlertDialogTrigger>
-                    <AlertDialogContent>
-                      <AlertDialogHeader>
-                        <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                        <AlertDialogDescription>
-                          This action cannot be undone. This will permanently delete the visitor
-                          and all associated data.
-                        </AlertDialogDescription>
-                      </AlertDialogHeader>
-                      <AlertDialogFooter>
-                        <AlertDialogCancel>Cancel</AlertDialogCancel>
-                        <AlertDialogAction
-                          onClick={() => handleDeleteVisitor(visitor.id)}
-                          className="bg-destructive hover:bg-destructive/90"
-                        >
-                          Delete
-                        </AlertDialogAction>
-                      </AlertDialogFooter>
-                    </AlertDialogContent>
-                  </AlertDialog>
+    return (
+        <div className="flex flex-col min-h-dvh bg-muted">
+            <header className="sticky top-0 z-40 bg-primary text-primary-foreground p-4 flex items-center justify-between">
+                <div className='flex items-center gap-4'>
+                    <Button variant="ghost" size="icon" className="h-8 w-8" onClick={() => router.back()}>
+                        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                            <path d="M15 18L9 12L15 6" stroke="white" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+                        </svg>
+                    </Button>
+                    <h1 className="text-xl font-bold">Visitor List</h1>
                 </div>
-                <Link href={`/visitors/${visitor.id}`} className="block h-full">
-                  <CardHeader>
-                    <CardTitle className="flex items-center gap-2">
-                      <User className="h-5 w-5 text-primary" />
-                      {visitor.name}
-                    </CardTitle>
-                    {visitor.status && (
-                      <CardDescription>Status: {visitor.status}</CardDescription>
-                    )}
-                  </CardHeader>
-                  <CardContent className="space-y-1 text-sm text-muted-foreground">
-                    <div className="flex items-center gap-2">
-                      <Phone className="h-4 w-4" />
-                      <span>{visitor.phone}</span>
-                    </div>
-                    {visitor.city && (
-                      <div className="flex items-center gap-2">
-                        <MapPin className="h-4 w-4" />
-                        <span>{visitor.city}</span>
-                      </div>
-                    )}
-                  </CardContent>
-                </Link>
-              </Card>
-            ))}
-          </div>
-        )}
+                <Bell className="h-6 w-6" />
+            </header>
 
-        {!isLoading && (!visitors || visitors.length === 0) && (
-          <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground border-2 border-dashed rounded-lg bg-background">
-            <p className="text-lg font-semibold">No Visitors Yet</p>
-            <p className="text-sm">Click "Add Visitor" to get started.</p>
-          </div>
-        )}
-      </main>
-      <BottomNav />
-    </div>
-  );
+            <main className="flex-1 flex flex-col p-4 gap-4">
+                <div>
+                    <span className="text-sm font-medium text-muted-foreground">Select Date From</span>
+                    <div className="grid grid-cols-2 items-center gap-4 mt-1">
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                variant={"outline"}
+                                className={cn(
+                                    "w-full justify-between text-left font-normal h-12 rounded-xl",
+                                    !dateFrom && "text-muted-foreground"
+                                )}
+                                >
+                                {dateFrom ? format(dateFrom, "dd-MM-yyyy") : <span>Select date</span>}
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus />
+                            </PopoverContent>
+                        </Popover>
+                        <Popover>
+                            <PopoverTrigger asChild>
+                                <Button
+                                variant={"outline"}
+                                className={cn(
+                                    "w-full justify-between text-left font-normal h-12 rounded-xl",
+                                    !dateTo && "text-muted-foreground"
+                                )}
+                                >
+                                {dateTo ? format(dateTo, "dd-MM-yyyy") : <span>Select date</span>}
+                                <CalendarIcon className="mr-2 h-4 w-4" />
+                                </Button>
+                            </PopoverTrigger>
+                            <PopoverContent className="w-auto p-0">
+                                <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus />
+                            </PopoverContent>
+                        </Popover>
+                    </div>
+                </div>
+
+                <div className="grid grid-cols-3 gap-2">
+                    {statusFilters.map(filter => (
+                         <Button key={filter.label} variant="secondary" className={`h-auto flex flex-col gap-0 p-2 rounded-xl ${filter.color} text-white hover:${filter.color}/90`}>
+                            <span className="font-semibold">{filter.label}</span>
+                            <span className="font-bold text-lg">#{filter.count}</span>
+                        </Button>
+                    ))}
+                </div>
+
+                {isLoading && (
+                    <div className="space-y-4">
+                        {[...Array(3)].map((_, i) => (
+                            <Card key={i} className="rounded-2xl">
+                                <CardContent className="p-4 space-y-3">
+                                    <Skeleton className="h-6 w-1/2" />
+                                    <Skeleton className="h-4 w-3/4" />
+                                    <Skeleton className="h-4 w-full" />
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                )}
+
+                {!isLoading && visitors && visitors.length > 0 && (
+                    <div className="space-y-4">
+                        {visitors.map((visitor) => (
+                            <Card key={visitor.id} className="rounded-2xl shadow-md overflow-hidden">
+                                 <div className="bg-lime-500 text-white text-xs font-bold px-3 py-1 text-center">
+                                    Estimate Shared
+                                </div>
+                                <CardContent className="p-4">
+                                    <Link href={`/visitors/${visitor.id}`} className="block">
+                                        <h3 className="font-bold text-lg">{visitor.name}</h3>
+                                        <p className="text-muted-foreground text-sm">{visitor.phone}</p>
+                                        <p className="text-muted-foreground text-sm truncate">{visitor.email}</p>
+                                    </Link>
+                                    <div className="flex items-center gap-2 mt-2">
+                                        <a href={`tel:${visitor.phone}`} className="flex-shrink-0">
+                                            <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                               <Phone className="h-5 w-5" />
+                                            </div>
+                                        </a>
+                                        <a href={`https://wa.me/${visitor.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
+                                             <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                                <WhatsAppIcon className="h-6 w-6"/>
+                                             </div>
+                                        </a>
+                                    </div>
+                                </CardContent>
+                            </Card>
+                        ))}
+                    </div>
+                )}
+
+                {!isLoading && (!visitors || visitors.length === 0) && (
+                    <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground border-2 border-dashed rounded-lg bg-background">
+                        <p className="text-lg font-semibold">No Visitors Yet</p>
+                        <p className="text-sm">Click "Add Visitor" to get started.</p>
+                    </div>
+                )}
+            </main>
+            <footer className="sticky bottom-0 p-4 bg-muted/0">
+                 <Button asChild size="lg" className="w-full h-14 rounded-full text-lg">
+                    <Link href="/visitors/add">
+                        <Plus className="mr-2 h-5 w-5" />
+                        Add Visitor
+                    </Link>
+                </Button>
+            </footer>
+        </div>
+    );
 }
