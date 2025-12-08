@@ -148,24 +148,24 @@ export default function VisitorsPage() {
                                     </div>
                                  )}
                                 <CardContent className="p-4">
-                                    <div className="flex justify-between items-start">
+                                    <div className="flex justify-between items-center">
                                         <Link href={`/visitors/${visitor.id}`} className="block flex-1">
                                             <h3 className="font-bold text-lg">{visitor.name}</h3>
                                             <p className="text-muted-foreground text-sm">{visitor.phone}</p>
                                             <p className="text-muted-foreground text-sm truncate">{visitor.email}</p>
                                         </Link>
-                                    </div>
-                                    <div className="flex items-center gap-2 mt-2">
-                                        <a href={`tel:${visitor.phone}`} className="flex-shrink-0">
-                                            <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                                               <Phone className="h-5 w-5" />
-                                            </div>
-                                        </a>
-                                        <a href={`https://wa.me/${visitor.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
-                                             <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                                                <WhatsAppIcon className="h-6 w-6"/>
-                                             </div>
-                                        </a>
+                                        <div className="flex items-center gap-2 ml-4">
+                                            <a href={`tel:${visitor.phone}`} className="flex-shrink-0">
+                                                <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                                   <Phone className="h-5 w-5" />
+                                                </div>
+                                            </a>
+                                            <a href={`https://wa.me/${visitor.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
+                                                 <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
+                                                    <WhatsAppIcon className="h-6 w-6"/>
+                                                 </div>
+                                            </a>
+                                        </div>
                                     </div>
                                 </CardContent>
                             </Card>
