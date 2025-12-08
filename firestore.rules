@@ -9,20 +9,18 @@
  * - Materials: `/materials/{materialId}` - Stores publicly available material information.
  * - Furniture Configurations: `/users/{userId}/furnitureConfigurations/{furnitureConfigurationId}` - Stores user-created furniture configurations.
  * - Orders: `/users/{userId}/orders/{orderId}` - Stores user order information.
- * - Visitors: `/users/{userId}/visitors/{visitorId}` - Stores user-created visitor/contact information.
- * - Visitor Furniture Configs: `/users/{userId}/visitors/{visitorId}/furnitureConfigurations/{furnitureConfigurationId}`
  *
  * Key Security Decisions:
  * - Users can only read and write their own profile data.
  * - Material data is publicly readable.
- * - Users can only read, create, update, and delete their own furniture configurations, orders, and visitors.
+ * - Users can only read, create, update, and delete their own furniture configurations and orders.
  * - User listing is disabled.
  *
  * Denormalization for Authorization:
- * - FurnitureConfiguration, Order, and Visitor documents may contain a `userId` field, which is denormalized from the user's document ID. This allows direct ownership checks without additional `get()` calls.
+ * - FurnitureConfiguration and Order documents may contain a `userId` field, which is denormalized from the user's document ID. This allows direct ownership checks without additional `get()` calls.
  *
  * Structural Segregation:
- * - Private user data (FurnitureConfigurations, Orders, Visitors) is stored under the `/users/{userId}` path.
+ * - Private user data (FurnitureConfigurations, Orders) is stored under the `/users/{userId}` path.
  */
 rules_version = '2';
 service cloud.firestore {
@@ -69,30 +67,6 @@ service cloud.firestore {
       allow create: if isOwner(userId) && request.resource.data.id == userId;
       allow update: if isExistingOwner(userId) && request.resource.data.id == resource.data.id;
       allow delete: if isExistingOwner(userId);
-
-      /**
-       * @description Rules for visitors (contacts) belonging to a user.
-       * @path /users/{userId}/visitors/{visitorId}
-       * @allow (create) - A user can create a visitor under their own user ID.
-       * @allow (get, list, update, delete) - A user can only access and modify their own visitors.
-       * @deny (create) - A user cannot create a visitor under another user's ID.
-       * @principle Enforces document ownership for visitors.
-       */
-      match /visitors/{visitorId} {
-        allow get, list, update, delete: if isOwner(userId);
-        allow create: if isOwner(userId);
-        
-        /**
-         * @description Rules for furniture configurations (quotations) for a visitor.
-         * @path /users/{userId}/visitors/{visitorId}/furnitureConfigurations/{furnitureConfigurationId}
-         * @allow (create, list, get) - A user can manage configurations for their own visitors.
-         * @principle Enforces document ownership for visitor-specific quotations.
-         */
-        match /furnitureConfigurations/{furnitureConfigurationId} {
-          allow get, list, create: if isOwner(userId);
-          allow update, delete: if false;
-        }
-      }
     }
 
     /**

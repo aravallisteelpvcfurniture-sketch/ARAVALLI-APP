@@ -42,7 +42,6 @@ const formSchema = z.object({
 });
 
 interface ConfiguratorProps {
-  visitorId?: string;
   initialDimensions?: {
     length?: number;
     width?: number;
@@ -50,7 +49,7 @@ interface ConfiguratorProps {
   }
 }
 
-export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps) {
+export function Configurator({ initialDimensions }: ConfiguratorProps) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
@@ -76,9 +75,10 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
   const [isSaving, setIsSaving] = useState(false);
 
   const furnitureConfigurationsRef = useMemoFirebase(() => {
-    if (!firestore || !user?.uid || !visitorId) return null;
-    return collection(firestore, 'users', user.uid, 'visitors', visitorId, 'furnitureConfigurations');
-  }, [firestore, user?.uid, visitorId]);
+    if (!firestore || !user?.uid) return null;
+    // This is a simplified path for user-specific configurations, not tied to a visitor
+    return collection(firestore, 'users', user.uid, 'furnitureConfigurations');
+  }, [firestore, user?.uid]);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -128,7 +128,7 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
       toast({
         variant: 'destructive',
         title: 'Error',
-        description: 'Could not save quotation. Please make sure you are logged in and a visitor is selected.',
+        description: 'Could not save quotation. Please make sure you are logged in.',
       });
       setIsSaving(false);
       return;
@@ -138,7 +138,6 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
 
     const furnitureConfigurationData = {
         userId: user.uid,
-        visitorId: visitorId,
         material: currentConfig.material,
         ...currentConfig.dimensions,
         features: currentConfig.features || [],
@@ -153,25 +152,13 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
 
         toast({
           title: "Quotation Saved!",
-          description: "The furniture configuration has been saved for this visitor.",
+          description: "The furniture configuration has been saved.",
         });
         
-        // Share functionality
-        const shareUrl = `${window.location.origin}/visitors/${visitorId}/quotation/${newDocRef.id}`;
-        if (navigator.share) {
-            navigator.share({
-                title: 'Furniture Quotation',
-                text: 'Here is the furniture quotation we discussed.',
-                url: shareUrl,
-            }).catch((error) => console.error('Error sharing', error));
-        } else {
-            // Fallback for browsers that don't support navigator.share
-            navigator.clipboard.writeText(shareUrl);
-            toast({
-                title: "Link Copied!",
-                description: "Quotation link copied to clipboard.",
-            });
-        }
+        // This part needs to be re-evaluated as there is no visitor context anymore
+        // For now, let's just log a success message or disable sharing.
+        console.log("Quotation saved with ID:", newDocRef.id);
+
 
     } catch (error) {
         toast({
@@ -291,9 +278,9 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
                   />
 
                   <div className="grid grid-cols-1 gap-4">
-                    <Button type="button" onClick={handleSaveAndShare} size="lg" className="w-full h-14 text-lg" disabled={isLoading || !visitorId}>
-                        {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Share2 className="mr-2 h-5 w-5" />}
-                        Save & Share
+                    <Button type="button" onClick={handleSaveAndShare} size="lg" className="w-full h-14 text-lg" disabled={isLoading}>
+                        {isSaving ? <Loader2 className="mr-2 h-5 w-5 animate-spin" /> : <Save className="mr-2 h-5 w-5" />}
+                        Save Configuration
                     </Button>
                   </div>
                 </form>
@@ -303,5 +290,3 @@ export function Configurator({ visitorId, initialDimensions }: ConfiguratorProps
     </div>
   );
 }
-
-    

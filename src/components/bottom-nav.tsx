@@ -44,18 +44,6 @@ const navItems = [
     )
   },
   { 
-    href: "/visitors", 
-    label: "Visitors",
-    icon: (isActive: boolean) => (
-        <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M17 21V19C17 17.9391 16.5786 16.9217 15.8284 16.1716C15.0783 15.4214 14.0609 15 13 15H5C3.93913 15 2.92172 15.4214 2.17157 16.1716C1.42143 16.9217 1 17.9391 1 19V21" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M9 11C11.2091 11 13 9.20914 13 7C13 4.79086 11.2091 3 9 3C6.79086 3 5 4.79086 5 7C5 9.20914 6.79086 11 9 11Z" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M23 21V19C22.9992 18.1132 22.7054 17.2523 22.1614 16.5523C21.6173 15.8522 20.8545 15.3512 20 15.13" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-            <path d="M16 3.13C16.5052 3.32199 16.9634 3.59865 17.3503 3.94533C17.7372 4.29201 18.0423 4.70054 18.25 5.15" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        </svg>
-    )
-  },
-  { 
     href: "/more", 
     label: "More",
     icon: (isActive: boolean) => (
@@ -73,7 +61,7 @@ export function BottomNav() {
 
   return (
     <footer className="md:hidden sticky bottom-0 left-0 z-50 w-full h-16 bg-card border-t shadow-[0_-1px_4px_rgba(0,0,0,0.05)]">
-      <div className="grid h-full max-w-lg grid-cols-5 mx-auto font-medium">
+      <div className="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
         {navItems.map((item) => {
           const isActive = pathname === item.href;
           const IconComponent = item.icon;

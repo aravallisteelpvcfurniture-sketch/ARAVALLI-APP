@@ -30,7 +30,6 @@ export type FeatureOption = {
 export type QuotationData = {
     id: string;
     userId: string;
-    visitorId: string;
     material: string;
     length: number;
     width: number;
@@ -40,15 +39,3 @@ export type QuotationData = {
     finalPrice: number;
     configurationDate: string;
   };
-
-export type SiteMeasurement = {
-    id: string;
-    productType: string;
-    roomType: string;
-    width: number;
-    height: number;
-    depth?: number;
-    totalSqFt: number;
-    totalInch: number;
-    createdAt: string;
-};
