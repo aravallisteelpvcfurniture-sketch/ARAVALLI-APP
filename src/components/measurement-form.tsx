@@ -55,7 +55,7 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
       roomType: '',
       width: 0,
       height: 0,
-      depth: undefined,
+      depth: 0,
     },
   });
   
@@ -186,7 +186,7 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
                 render={({ field }) => (
                 <FormItem>
                     <FormControl>
-                        <Input type="number" placeholder="Depth" {...field} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
+                        <Input type="number" placeholder="Depth" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
