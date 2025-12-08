@@ -17,9 +17,9 @@ import { useRouter } from 'next/navigation';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
 
 const statusFilters = [
-    { label: 'Created', count: 1, color: 'bg-yellow-400' },
-    { label: 'Assigned', count: 1, color: 'bg-orange-500' },
-    { label: 'Requirement Gathered', count: 1, color: 'bg-blue-500' },
+    { label: 'Created', count: 0, color: 'bg-yellow-400' },
+    { label: 'Assigned', count: 0, color: 'bg-red-600' },
+    { label: 'Requirement Gathered', count: 0, color: 'bg-green-700' },
     { label: 'Estimate', count: 1, color: 'bg-cyan-500' },
     { label: 'Quotation Shared', count: 1, color: 'bg-green-500' },
     { label: 'Follow up', count: 1, color: 'bg-indigo-500' },
@@ -28,10 +28,8 @@ const statusFilters = [
 ];
 
 const WhatsAppIcon = (props: React.SVGProps<SVGSVGElement>) => (
-    <svg {...props} xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="currentColor">
-        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm4.21 13.66a5.46 5.46 0 0 1-7.72 0 5.46 5.46 0 0 1 0-7.72 5.46 5.46 0 0 1 7.72 0 5.46 5.46 0 0 1 0 7.72z" opacity=".1"/>
-        <path d="M16.6 14.21a1 1 0 0 0-1.35-.35l-1.3 1.08a.69.69 0 0 1-.72 0l-2.73-2.05a.69.69 0 0 1-.3-1L11.55 9.8a1 1 0 0 0-.42-1.36l-1.5-1a1 1 0 0 0-1.4.3L7.17 9.1a.69.69 0 0 0 0 .72l2.4 3.21a.69.69 0 0 0 .72 0l2.74-2.05a.69.69 0 0 0 .3-1l-1.34-2.24a1 1 0 0 0-1.35-.42L8.9 9.17" />
-        <path d="M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 18a8 8 0 1 1 8-8 8 8 0 0 1-8 8z" />
+    <svg {...props} viewBox="0 0 24 24" fill="currentColor">
+        <path d="M16.75 13.96c-.25-.12-1.47-.72-1.7-.8-.22-.08-.39-.12-.55.12-.16.25-.64.8-.79.96-.15.16-.3.18-.55.06-.25-.12-1.06-.39-2-1.23-.74-.66-1.23-1.47-1.38-1.72-.15-.25-.02-.38.1-.5.11-.11.25-.28.37-.42.12-.14.16-.25.25-.41.08-.16.04-.3-.02-.42-.06-.12-.55-1.32-.75-1.82-.2-.48-.4-.42-.55-.42-.15,0-.3,0-.45,0-.15,0-.39.06-.6.3-.2.25-.78.76-.78,1.88,0,1.11.8,2.18.91,2.33.12.15,1.58,2.4,3.82,3.36.55.24.97.38,1.31.48.55.16,1.05.14,1.44.09.44-.06,1.47-.6,1.68-1.18.21-.58.21-1.07.15-1.18-.06-.11-.22-.17-.47-.29zM12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8z" />
     </svg>
 );
 
@@ -86,30 +84,33 @@ export default function VisitorsPage() {
                                 <Calendar mode="single" selected={dateFrom} onSelect={setDateFrom} initialFocus />
                             </PopoverContent>
                         </Popover>
-                        <Popover>
-                            <PopoverTrigger asChild>
-                                <Button
-                                variant={"outline"}
-                                className={cn(
-                                    "w-full justify-between text-left font-normal h-12 rounded-xl",
-                                    !dateTo && "text-muted-foreground"
-                                )}
-                                >
-                                {dateTo ? format(dateTo, "dd-MM-yyyy") : <span>To</span>}
-                                <CalendarIcon className="mr-2 h-4 w-4" />
-                                </Button>
-                            </PopoverTrigger>
-                            <PopoverContent className="w-auto p-0">
-                                <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus />
-                            </PopoverContent>
-                        </Popover>
+                         <div className="flex items-center gap-2">
+                             <span className="text-sm text-muted-foreground">To</span>
+                            <Popover>
+                                <PopoverTrigger asChild>
+                                    <Button
+                                    variant={"outline"}
+                                    className={cn(
+                                        "w-full justify-between text-left font-normal h-12 rounded-xl",
+                                        !dateTo && "text-muted-foreground"
+                                    )}
+                                    >
+                                    {dateTo ? format(dateTo, "dd-MM-yyyy") : <span>Select date</span>}
+                                    <CalendarIcon className="mr-2 h-4 w-4" />
+                                    </Button>
+                                </PopoverTrigger>
+                                <PopoverContent className="w-auto p-0">
+                                    <Calendar mode="single" selected={dateTo} onSelect={setDateTo} initialFocus />
+                                </PopoverContent>
+                            </Popover>
+                        </div>
                     </div>
                 </div>
 
                 <ScrollArea className="w-full whitespace-nowrap">
                     <div className="flex w-max space-x-2 pb-2">
                         {statusFilters.map(filter => (
-                            <Button key={filter.label} variant="secondary" className={`h-auto flex-col gap-0 p-2 rounded-xl text-white hover:text-white/90 ${filter.color} hover:bg-opacity-90`} style={{backgroundColor: filter.color}}>
+                            <Button key={filter.label} variant="secondary" className={`h-auto flex-col gap-0 p-2 rounded-xl text-white hover:text-white/90`} style={{backgroundColor: filter.color}}>
                                 <span className="font-semibold text-sm">{filter.label}</span>
                                 <span className="font-bold text-lg">#{filter.count}</span>
                             </Button>
@@ -136,37 +137,33 @@ export default function VisitorsPage() {
                 {!isLoading && visitors && visitors.length > 0 && (
                     <div className="space-y-4">
                         {visitors.map((visitor) => (
-                            <Card key={visitor.id} className="rounded-2xl shadow-md overflow-hidden">
+                            <Card key={visitor.id} className="rounded-2xl shadow-md overflow-hidden relative">
                                  {visitor.status && (
-                                     <div className={cn("text-white text-xs font-bold px-3 py-1 text-center",
+                                     <div className={cn("absolute top-2 right-2 text-white text-[10px] font-bold px-2 py-0.5 rounded-full z-10",
                                         visitor.status === 'Hot' && 'bg-red-500',
                                         visitor.status === 'Warm' && 'bg-yellow-500',
                                         visitor.status === 'Cold' && 'bg-blue-500',
-                                        !['Hot', 'Warm', 'Cold'].includes(visitor.status) && 'bg-gray-500'
+                                        !['Hot', 'Warm', 'Cold'].includes(visitor.status) && 'bg-green-500'
                                      )}>
-                                        {visitor.status}
+                                        {visitor.status === 'Quotation' ? 'Estimate Shared' : visitor.status}
                                     </div>
                                  )}
                                 <CardContent className="p-4">
-                                    <div className="flex justify-between items-center">
-                                        <Link href={`/visitors/${visitor.id}`} className="block flex-1">
-                                            <h3 className="font-bold text-lg">{visitor.name}</h3>
-                                            <p className="text-muted-foreground text-sm">{visitor.phone}</p>
-                                            <p className="text-muted-foreground text-sm truncate">{visitor.email}</p>
-                                        </Link>
-                                        <div className="flex items-center gap-2 ml-4">
-                                            <a href={`tel:${visitor.phone}`} className="flex-shrink-0">
-                                                <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                                                   <Phone className="h-5 w-5" />
-                                                </div>
-                                            </a>
-                                            <a href={`https://wa.me/${visitor.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex-shrink-0">
-                                                 <div className="h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600">
-                                                    <WhatsAppIcon className="h-6 w-6"/>
-                                                 </div>
-                                            </a>
+                                    <Link href={`/visitors/${visitor.id}`} className="block">
+                                        <h3 className="font-bold text-xl mb-1">{visitor.name}</h3>
+                                        <div className="flex items-center gap-2 text-muted-foreground text-sm">
+                                            <span>{visitor.phone}</span>
+                                            <div className="flex items-center gap-2">
+                                                <a href={`tel:${visitor.phone}`} onClick={e => e.stopPropagation()} className="flex-shrink-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 hover:bg-green-200 transition-colors">
+                                                    <Phone className="h-4 w-4" />
+                                                </a>
+                                                <a href={`https://wa.me/${visitor.phone.replace(/[^0-9]/g, '')}`} onClick={e => e.stopPropagation()} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 h-8 w-8 rounded-full bg-green-100 flex items-center justify-center text-green-600 hover:bg-green-200 transition-colors">
+                                                    <WhatsAppIcon className="h-5 w-5"/>
+                                                </a>
+                                            </div>
                                         </div>
-                                    </div>
+                                        <p className="text-muted-foreground text-sm truncate mt-1">{visitor.email}</p>
+                                    </Link>
                                 </CardContent>
                             </Card>
                         ))}
