@@ -5,8 +5,8 @@ import Link from 'next/link';
 import { useUser, useFirestore, useCollection, useMemoFirebase } from '@/firebase';
 import { collection } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Card, CardContent } from '@/components/ui/card';
-import { Plus, Phone, Bell, Calendar as CalendarIcon } from 'lucide-react';
+import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Plus, Phone, Bell, Calendar as CalendarIcon, MapPin, Building } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import type { Visitor } from '@/lib/types';
 import { Popover, PopoverContent, PopoverTrigger } from '@/components/ui/popover';
@@ -15,6 +15,7 @@ import { format } from 'date-fns';
 import { cn } from '@/lib/utils';
 import { useRouter } from 'next/navigation';
 import { ScrollArea, ScrollBar } from '@/components/ui/scroll-area';
+import { Separator } from '@/components/ui/separator';
 
 const statusFilters = [
     { label: 'Created', count: 0, color: 'bg-yellow-400' },
@@ -137,34 +138,43 @@ export default function VisitorsPage() {
                 {!isLoading && visitors && visitors.length > 0 && (
                     <div className="space-y-4">
                         {visitors.map((visitor) => (
-                            <Card key={visitor.id} className="rounded-2xl shadow-md overflow-hidden">
-                                <CardContent className="p-4 flex justify-between items-center">
-                                    <div className="flex-grow">
-                                        <Link href={`/visitors/${visitor.id}`} className="block">
-                                            {visitor.status && (
-                                                <div className={cn("inline-block text-white text-[10px] font-bold px-2 py-0.5 rounded-full mb-2",
-                                                    visitor.status === 'Hot' && 'bg-red-500',
-                                                    visitor.status === 'Warm' && 'bg-yellow-500',
-                                                    visitor.status === 'Cold' && 'bg-blue-500',
-                                                    !['Hot', 'Warm', 'Cold'].includes(visitor.status) && 'bg-green-500'
-                                                )}>
-                                                    {visitor.status === 'Quotation' ? 'Estimate Shared' : visitor.status}
-                                                </div>
-                                            )}
-                                            <h3 className="font-bold text-xl mb-1">{visitor.name}</h3>
-                                            <p className="text-muted-foreground text-sm">{visitor.phone}</p>
-                                            <p className="text-muted-foreground text-sm truncate mt-1">{visitor.email}</p>
+                             <Card key={visitor.id} className="rounded-2xl shadow-md overflow-hidden bg-card">
+                                <CardContent className="p-4">
+                                    <div className="flex justify-between items-start">
+                                        <Link href={`/visitors/${visitor.id}`} className="flex-grow">
+                                            <div className="flex items-center gap-3 mb-2">
+                                                <h3 className="font-bold text-xl">{visitor.name}</h3>
+                                                {visitor.status && (
+                                                    <div className={cn("text-white text-xs font-bold px-2.5 py-1 rounded-full",
+                                                        visitor.status === 'Hot' && 'bg-red-500',
+                                                        visitor.status === 'Warm' && 'bg-yellow-500',
+                                                        visitor.status === 'Cold' && 'bg-blue-500',
+                                                        !['Hot', 'Warm', 'Cold'].includes(visitor.status) && 'bg-green-500'
+                                                    )}>
+                                                        {visitor.status === 'Quotation' ? 'Estimate Shared' : visitor.status}
+                                                    </div>
+                                                )}
+                                            </div>
+                                            <p className="text-muted-foreground text-sm flex items-center gap-2"><Phone className="h-4 w-4"/> {visitor.phone}</p>
+                                            {visitor.address && <p className="text-muted-foreground text-sm flex items-center gap-2 mt-1"><MapPin className="h-4 w-4"/> {visitor.address}</p>}
+                                            {visitor.city && <p className="text-muted-foreground text-sm flex items-center gap-2 mt-1"><Building className="h-4 w-4"/> {visitor.city}</p>}
                                         </Link>
                                     </div>
-                                    <div className="flex flex-col items-center gap-4 ml-4">
-                                        <a href={`tel:${visitor.phone}`} className="flex-shrink-0 h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 hover:bg-green-200 transition-colors">
-                                            <Phone className="h-5 w-5" />
-                                        </a>
-                                        <a href={`https://wa.me/${visitor.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex-shrink-0 h-10 w-10 rounded-full bg-green-100 flex items-center justify-center text-green-600 hover:bg-green-200 transition-colors">
-                                            <WhatsAppIcon className="h-6 w-6"/>
-                                        </a>
-                                    </div>
                                 </CardContent>
+                                <CardFooter className="bg-muted/50 p-2 flex justify-end gap-2">
+                                     <a href={`tel:${visitor.phone}`} className="flex-1">
+                                        <Button variant="outline" size="sm" className="w-full bg-white">
+                                            <Phone className="mr-2 h-4 w-4 text-green-600"/>
+                                            Call
+                                        </Button>
+                                    </a>
+                                     <a href={`https://wa.me/${visitor.phone.replace(/[^0-9]/g, '')}`} target="_blank" rel="noopener noreferrer" className="flex-1">
+                                        <Button variant="outline" size="sm" className="w-full bg-white">
+                                            <WhatsAppIcon className="mr-2 h-4 w-4 text-green-600"/>
+                                            WhatsApp
+                                        </Button>
+                                    </a>
+                                </CardFooter>
                             </Card>
                         ))}
                     </div>
