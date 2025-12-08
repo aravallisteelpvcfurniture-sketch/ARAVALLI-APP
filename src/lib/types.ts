@@ -39,3 +39,27 @@ export type QuotationData = {
     finalPrice: number;
     configurationDate: string;
   };
+
+export type Visitor = {
+  id: string;
+  name: string;
+  phone: string;
+  email?: string;
+  address?: string;
+  city?: string;
+  assignTo?: string;
+  purpose?: string;
+  status?: 'Hot' | 'Warm' | 'Cold';
+};
+
+export type SiteMeasurement = {
+  id: string;
+  productType: string;
+  roomType: string;
+  width: number;
+  height: number;
+  depth?: number;
+  totalSqFt: number;
+  totalInch: number;
+  createdAt: string;
+};

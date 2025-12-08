@@ -4,6 +4,7 @@ import React from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
+import { Users } from "lucide-react";
 
 const navItems = [
   { 
@@ -21,13 +22,10 @@ const navItems = [
     )
   },
   { 
-    href: "/catalogue", 
-    label: "Catalogue",
+    href: "/visitors", 
+    label: "Visitors",
     icon: (isActive: boolean) => (
-      <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M2 3H8C9.65685 3 11 4.34315 11 6V21H4C2.89543 21 2 20.1046 2 19V3Z" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M22 3H16C14.3431 3 13 4.34315 13 6V21H20C21.1046 21 22 20.1046 22 19V3Z" stroke="#9ca3af" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-      </svg>
+      <Users className={cn("h-6 w-6", isActive ? "text-primary" : "text-gray-400")} />
     )
   },
   { 
@@ -63,7 +61,7 @@ export function BottomNav() {
     <footer className="md:hidden sticky bottom-0 left-0 z-50 w-full h-16 bg-card border-t shadow-[0_-1px_4px_rgba(0,0,0,0.05)]">
       <div className="grid h-full max-w-lg grid-cols-4 mx-auto font-medium">
         {navItems.map((item) => {
-          const isActive = pathname === item.href;
+          const isActive = pathname.startsWith(item.href);
           const IconComponent = item.icon;
 
           return (
