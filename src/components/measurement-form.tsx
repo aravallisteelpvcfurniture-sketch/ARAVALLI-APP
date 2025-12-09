@@ -25,14 +25,15 @@ import { ScrollArea } from './ui/scroll-area';
 const measurementSchema = z.object({
   title: z.string().optional(),
   productType: z.string().min(1, 'Product type is required.'),
-  roomType: z.string().optional(),
-  width: z.coerce.number().min(1, 'Width is required'),
-  height: z.coerce.number().min(1, 'Height is required'),
+  quantity: z.coerce.number().min(1, 'Quantity is required'),
+  pricePerQuantity: z.coerce.number().min(1, 'Price is required'),
 });
 
 interface MeasurementFormProps {
   visitorId: string;
   onSave: () => void;
+  title?: string;
+  buttonText?: string;
 }
 
 const productTypes = [
@@ -46,12 +47,12 @@ const productTypes = [
     { value: 'tv-unit', label: 'TV UNIT' },
 ];
 
-export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
+export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonText }: MeasurementFormProps) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
-  const [totalSqFt, setTotalSqFt] = useState(0);
+  const [totalPrice, setTotalPrice] = useState(0);
   const [isProductSelectorOpen, setIsProductSelectorOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
 
@@ -65,20 +66,19 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
     defaultValues: {
       title: '',
       productType: '',
-      roomType: '',
-      width: undefined,
-      height: undefined,
+      quantity: undefined,
+      pricePerQuantity: undefined,
     },
   });
   
   const watchedValues = form.watch();
 
   useEffect(() => {
-    const { width, height } = watchedValues;
-    const w = width || 0;
-    const h = height || 0;
-    const sqft = (w * h) / 144;
-    setTotalSqFt(sqft);
+    const { quantity, pricePerQuantity } = watchedValues;
+    const q = quantity || 0;
+    const p = pricePerQuantity || 0;
+    const total = q * p;
+    setTotalPrice(total);
   }, [watchedValues]);
 
 
@@ -86,13 +86,10 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
     if (!measurementsCollectionRef) return;
 
     setIsSaving(true);
-    
-    const totalInch = (values.width || 0) * (values.height || 0);
 
     const measurementData: any = {
       ...values,
-      totalSqFt,
-      totalInch,
+      totalPrice,
       createdAt: new Date().toISOString(),
     };
 
@@ -120,7 +117,7 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
             control={form.control}
             name="productType"
@@ -128,13 +125,19 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
                 <FormItem>
                     <Dialog open={isProductSelectorOpen} onOpenChange={setIsProductSelectorOpen}>
                         <DialogTrigger asChild>
-                             <Button variant="outline" className="w-full h-12 rounded-lg bg-muted border-gray-300 justify-start text-left font-normal">
+                             <Button variant="outline" className="w-full h-12 rounded-lg bg-muted border-gray-300 justify-between text-left font-normal text-base">
                                 {field.value ? productTypes.find(p => p.value === field.value)?.label : "Select Product"}
+                                <ChevronDown className="h-4 w-4 opacity-50" />
                             </Button>
                         </DialogTrigger>
                         <DialogContent className="sm:max-w-[425px] p-0">
-                            <DialogHeader className="p-4 border-b">
+                            <DialogHeader className="p-4 border-b flex flex-row items-center justify-between">
                                 <DialogTitle>Select Product</DialogTitle>
+                                 <DialogClose asChild>
+                                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7">
+                                        <X className="h-4 w-4" />
+                                    </Button>
+                                </DialogClose>
                             </DialogHeader>
                             <div className="p-4">
                                 <div className="relative">
@@ -180,56 +183,68 @@ export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
             render={({ field }) => (
             <FormItem>
                 <FormControl>
-                    <Input placeholder="Title" {...field} className="h-12 rounded-lg bg-muted border-gray-300"/>
+                    <Input placeholder="Title" {...field} className="h-12 rounded-lg bg-muted border-gray-300 text-base"/>
                 </FormControl>
                 <FormMessage />
             </FormItem>
             )}
         />
         
-        <div>
-          <FormLabel>Measurement in Inch</FormLabel>
-          <div className="grid grid-cols-2 gap-4 mt-2">
-            <FormField
-                control={form.control}
-                name="height"
-                render={({ field }) => (
-                <FormItem>
-                    <FormControl>
-                        <Input type="number" placeholder="Height" {...field} className="h-12 rounded-lg bg-muted border-gray-300 text-center" />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-            <FormField
-                control={form.control}
-                name="width"
-                render={({ field }) => (
-                <FormItem>
-                    <FormControl>
-                        <Input type="number" placeholder="Width" {...field} className="h-12 rounded-lg bg-muted border-gray-300 text-center" />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-          </div>
-        </div>
+        <FormField
+            control={form.control}
+            name="quantity"
+            render={({ field }) => (
+            <FormItem>
+                <FormControl>
+                    <Input type="number" placeholder="Product Quantity" {...field} className="h-12 rounded-lg bg-muted border-gray-300 text-base" />
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+            )}
+        />
+        <FormField
+            control={form.control}
+            name="pricePerQuantity"
+            render={({ field }) => (
+            <FormItem>
+                <FormControl>
+                    <Input type="number" placeholder="Product Price Per Quantity" {...field} className="h-12 rounded-lg bg-muted border-gray-300 text-base" />
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+            )}
+        />
         
         <div className="relative">
-             <FormLabel className="sr-only">Total SqFt</FormLabel>
             <Input 
-                value={`Total sqft : ${totalSqFt.toFixed(2)}`} 
+                value={`Total Price : ${totalPrice.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}`} 
                 readOnly 
-                className="h-12 rounded-lg bg-muted border-gray-300 font-medium"
+                className="h-12 rounded-lg bg-muted border-gray-300 font-medium text-base"
             />
         </div>
         
         <Button type="submit" size="lg" className="w-full h-14 rounded-full text-lg bg-green-500 hover:bg-green-600" disabled={isSaving}>
-          {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Add Now"}
+          {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (buttonText || "Add Now")}
         </Button>
       </form>
     </Form>
   );
 }
+
+// Dummy ChevronDown icon if not available elsewhere
+const ChevronDown = (props: React.SVGProps<SVGSVGElement>) => (
+  <svg
+    xmlns="http://www.w3.org/2000/svg"
+    width="24"
+    height="24"
+    viewBox="0 0 24 24"
+    fill="none"
+    stroke="currentColor"
+    strokeWidth="2"
+    strokeLinecap="round"
+    strokeLinejoin="round"
+    {...props}
+  >
+    <path d="m6 9 6 6 6-6" />
+  </svg>
+);

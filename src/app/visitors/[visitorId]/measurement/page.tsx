@@ -78,12 +78,12 @@ export default function SiteMeasurementPage() {
               <Card key={m.id} className="relative">
                 <CardHeader>
                     <CardTitle className="capitalize">{m.title || m.productType.replace('-', ' ')}</CardTitle>
-                    <CardDescription className="capitalize">Room: {m.roomType} | Type: {m.productType.replace('-', ' ')}</CardDescription>
+                    <CardDescription className="capitalize">Type: {m.productType.replace('-', ' ')}</CardDescription>
                 </CardHeader>
                 <CardContent className="text-sm">
-                    <p><strong>Dimensions (WxH):</strong> {m.width}" x {m.height}"</p>
-                    <p><strong>Total Inch:</strong> {m.totalInch ? m.totalInch.toFixed(2) : 'N/A'} in²</p>
-                    <p><strong>Total SqFt:</strong> {m.totalSqFt ? m.totalSqFt.toFixed(2) : 'N/A'} ft²</p>
+                    <p><strong>Quantity:</strong> {m.quantity}</p>
+                    <p><strong>Price/Qty:</strong> {m.pricePerQuantity.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</p>
+                    <p><strong>Total Price:</strong> {m.totalPrice.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</p>
                 </CardContent>
                 <div className="absolute top-2 right-2">
                    <AlertDialog>

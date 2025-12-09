@@ -56,12 +56,8 @@ export type SiteMeasurement = {
   id: string;
   title?: string;
   productType: string;
-  roomType: string;
-  width: number;
-  height: number;
-  totalSqFt: number;
-  totalInch: number;
+  quantity: number;
+  pricePerQuantity: number;
+  totalPrice: number;
   createdAt: string;
 };
-
-    
