@@ -25,8 +25,11 @@ import { ScrollArea } from './ui/scroll-area';
 const measurementSchema = z.object({
   title: z.string().optional(),
   productType: z.string().min(1, 'Product type is required.'),
-  quantity: z.coerce.number().min(1, 'Quantity is required'),
-  pricePerQuantity: z.coerce.number().min(1, 'Price is required'),
+  width: z.coerce.number().min(1, 'Width is required').optional(),
+  height: z.coerce.number().min(1, 'Height is required').optional(),
+  depth: z.coerce.number().min(1, 'Depth is required').optional(),
+  quantity: z.coerce.number().min(1, 'Quantity is required').optional(),
+  pricePerQuantity: z.coerce.number().min(1, 'Price is required').optional(),
 });
 
 interface MeasurementFormProps {
@@ -45,6 +48,7 @@ const productTypes = [
     { value: 'box', label: 'BOX' },
     { value: 'wardrobe', label: 'WARDROBE' },
     { value: 'tv-unit', label: 'TV UNIT' },
+    { value: 'drawers', label: 'DRAWERS' },
 ];
 
 export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonText }: MeasurementFormProps) {
@@ -52,35 +56,35 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
-  const [totalPrice, setTotalPrice] = useState(0);
   const [isProductSelectorOpen, setIsProductSelectorOpen] = useState(false);
   const [searchTerm, setSearchTerm] = useState('');
-
-  const measurementsCollectionRef = useMemoFirebase(() => {
-    if (!firestore || !user?.uid || !visitorId) return null;
-    return collection(firestore, 'users', user.uid, 'visitors', visitorId, 'measurements');
-  }, [firestore, user?.uid, visitorId]);
-
+  
   const form = useForm<z.infer<typeof measurementSchema>>({
     resolver: zodResolver(measurementSchema),
     defaultValues: {
       title: '',
       productType: '',
-      quantity: undefined,
-      pricePerQuantity: undefined,
     },
   });
   
-  const watchedValues = form.watch();
+  const watchedProductType = form.watch('productType');
+  const watchedDimensions = form.watch(['width', 'height']);
+  
+  const [totalSqFt, setTotalSqFt] = useState(0);
 
   useEffect(() => {
-    const { quantity, pricePerQuantity } = watchedValues;
-    const q = quantity || 0;
-    const p = pricePerQuantity || 0;
-    const total = q * p;
-    setTotalPrice(total);
-  }, [watchedValues]);
+    const [width, height] = watchedDimensions;
+    if (width && height) {
+      setTotalSqFt(Math.round((width * height) / 144 * 100) / 100);
+    } else {
+      setTotalSqFt(0);
+    }
+  }, [watchedDimensions]);
 
+  const measurementsCollectionRef = useMemoFirebase(() => {
+    if (!firestore || !user?.uid || !visitorId) return null;
+    return collection(firestore, 'users', user.uid, 'visitors', visitorId, 'measurements');
+  }, [firestore, user?.uid, visitorId]);
 
   const onSubmit = async (values: z.infer<typeof measurementSchema>) => {
     if (!measurementsCollectionRef) return;
@@ -89,7 +93,8 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
 
     const measurementData: any = {
       ...values,
-      totalPrice,
+      totalSqFt: (values.width && values.height) ? (values.width * values.height) / 144 : undefined,
+      totalInch: (values.width && values.height) ? values.width * values.height : undefined,
       createdAt: new Date().toISOString(),
     };
 
@@ -115,68 +120,62 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
   
   const filteredProducts = productTypes.filter(p => p.label.toLowerCase().includes(searchTerm.toLowerCase()));
 
+  const formType = ['baskets', 'drawers'].includes(watchedProductType) ? 'quantity' : 'dimensions';
+
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-            control={form.control}
-            name="productType"
-            render={({ field }) => (
-                <FormItem>
-                    <Dialog open={isProductSelectorOpen} onOpenChange={setIsProductSelectorOpen}>
-                        <DialogTrigger asChild>
-                             <Button variant="outline" className="w-full h-12 rounded-lg bg-muted border-gray-300 justify-between text-left font-normal text-base">
-                                {field.value ? productTypes.find(p => p.value === field.value)?.label : "Select Product"}
-                                <ChevronDown className="h-4 w-4 opacity-50" />
-                            </Button>
-                        </DialogTrigger>
-                        <DialogContent className="sm:max-w-[425px] p-0">
-                            <DialogHeader className="p-4 border-b flex flex-row items-center justify-between">
-                                <DialogTitle>Select Product</DialogTitle>
-                                 <DialogClose asChild>
-                                    <Button type="button" variant="ghost" size="icon" className="h-7 w-7">
-                                        <X className="h-4 w-4" />
-                                    </Button>
-                                </DialogClose>
-                            </DialogHeader>
-                            <div className="p-4">
-                                <div className="relative">
-                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                                    <Input 
-                                        placeholder="Search" 
-                                        className="pl-9 h-12 rounded-lg"
-                                        value={searchTerm}
-                                        onChange={(e) => setSearchTerm(e.target.value)}
-                                    />
-                                </div>
-                            </div>
-                            <ScrollArea className="h-72">
-                                <div className="p-4 pt-0">
-                                {filteredProducts.map(product => (
-                                    <div 
-                                        key={product.value}
-                                        onClick={() => {
-                                            field.onChange(product.value);
-                                            setIsProductSelectorOpen(false);
-                                        }}
-                                        className="py-3 border-b cursor-pointer hover:bg-muted"
-                                    >
-                                        {product.label}
-                                    </div>
-                                ))}
-                                </div>
-                            </ScrollArea>
-                            <div className="p-4 border-t flex justify-end">
-                                <DialogClose asChild>
-                                    <Button type="button" variant="ghost">Close</Button>
-                                </DialogClose>
-                            </div>
-                        </DialogContent>
-                    </Dialog>
-                    <FormMessage />
-                </FormItem>
-            )}
-        />
+        <Dialog open={isProductSelectorOpen} onOpenChange={setIsProductSelectorOpen}>
+          <DialogTrigger asChild>
+              <Button variant="outline" className="w-full h-12 rounded-lg bg-muted border-gray-300 justify-between text-left font-normal text-base">
+                {watchedProductType ? productTypes.find(p => p.value === watchedProductType)?.label : "Select Product"}
+                <ChevronDown className="h-4 w-4 opacity-50" />
+              </Button>
+          </DialogTrigger>
+          <DialogContent className="sm:max-w-[425px] p-0">
+              <DialogHeader className="p-4 border-b flex flex-row items-center justify-between">
+                  <DialogTitle>Select Product</DialogTitle>
+                    <DialogClose asChild>
+                      <Button type="button" variant="ghost" size="icon" className="h-7 w-7">
+                          <X className="h-4 w-4" />
+                      </Button>
+                  </DialogClose>
+              </DialogHeader>
+              <div className="p-4">
+                  <div className="relative">
+                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                      <Input 
+                          placeholder="Search" 
+                          className="pl-9 h-12 rounded-lg"
+                          value={searchTerm}
+                          onChange={(e) => setSearchTerm(e.target.value)}
+                      />
+                  </div>
+              </div>
+              <ScrollArea className="h-72">
+                  <div className="p-4 pt-0">
+                  {filteredProducts.map(product => (
+                      <div 
+                          key={product.value}
+                          onClick={() => {
+                              form.setValue('productType', product.value);
+                              setIsProductSelectorOpen(false);
+                          }}
+                          className="py-3 border-b cursor-pointer hover:bg-muted"
+                      >
+                          {product.label}
+                      </div>
+                  ))}
+                  </div>
+              </ScrollArea>
+              <div className="p-4 border-t flex justify-end">
+                  <DialogClose asChild>
+                      <Button type="button" variant="ghost">Close</Button>
+                  </DialogClose>
+              </div>
+          </DialogContent>
+        </Dialog>
+        
         <FormField
             control={form.control}
             name="title"
@@ -190,41 +189,34 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
             )}
         />
         
-        <FormField
-            control={form.control}
-            name="quantity"
-            render={({ field }) => (
-            <FormItem>
-                <FormControl>
-                    <Input type="number" placeholder="Product Quantity" {...field} className="h-12 rounded-lg bg-muted border-gray-300 text-base" />
-                </FormControl>
-                <FormMessage />
-            </FormItem>
-            )}
-        />
-        <FormField
-            control={form.control}
-            name="pricePerQuantity"
-            render={({ field }) => (
-            <FormItem>
-                <FormControl>
-                    <Input type="number" placeholder="Product Price Per Quantity" {...field} className="h-12 rounded-lg bg-muted border-gray-300 text-base" />
-                </FormControl>
-                <FormMessage />
-            </FormItem>
-            )}
-        />
+        <div className='space-y-2'>
+            <div className='flex justify-between items-center'>
+                <FormLabel className='text-sm font-medium'>Measurement in Inch</FormLabel>
+                <FormLabel className='text-sm font-medium'>In Feet</FormLabel>
+            </div>
+            <div className="grid grid-cols-3 gap-2">
+                <FormField control={form.control} name="height" render={({ field }) => (
+                    <FormItem><FormControl><Input placeholder="Height" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="width" render={({ field }) => (
+                    <FormItem><FormControl><Input placeholder="Width" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
+                )} />
+                <FormField control={form.control} name="depth" render={({ field }) => (
+                    <FormItem><FormControl><Input placeholder="Depth" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
+                )} />
+            </div>
+        </div>
         
         <div className="relative">
             <Input 
-                value={`Total Price : ${totalPrice.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}`} 
+                value={`Total sqft : ${totalSqFt}`} 
                 readOnly 
                 className="h-12 rounded-lg bg-muted border-gray-300 font-medium text-base"
             />
         </div>
         
         <Button type="submit" size="lg" className="w-full h-14 rounded-full text-lg bg-green-500 hover:bg-green-600" disabled={isSaving}>
-          {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : (buttonText || "Add Now")}
+          {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Add Now"}
         </Button>
       </form>
     </Form>
@@ -248,3 +240,5 @@ const ChevronDown = (props: React.SVGProps<SVGSVGElement>) => (
     <path d="m6 9 6 6 6-6" />
   </svg>
 );
+
+    
