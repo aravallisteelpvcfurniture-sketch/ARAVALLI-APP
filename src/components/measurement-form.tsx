@@ -41,13 +41,13 @@ interface MeasurementFormProps {
 
 const productTypes = [
     { value: 'modular-kitchen', label: 'MODULAR KITCHEN' },
+    { value: 'wardrobe', label: 'WARDROBE' },
+    { value: 'tv-unit', label: 'TV UNIT' },
     { value: 'baskets', label: 'BASKETS' },
     { value: 'self-partition', label: 'SELF/PARTITION' },
     { value: 'crockery', label: 'CROCKERY' },
     { value: 'framing', label: 'FRAMING' },
     { value: 'box', label: 'BOX' },
-    { value: 'wardrobe', label: 'WARDROBE' },
-    { value: 'tv-unit', label: 'TV UNIT' },
     { value: 'drawers', label: 'DRAWERS' },
 ];
 
@@ -64,6 +64,11 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
     defaultValues: {
       title: '',
       productType: '',
+      width: null,
+      height: null,
+      depth: null,
+      quantity: null,
+      pricePerQuantity: null,
     },
   });
   
@@ -123,7 +128,15 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
             title: 'Measurement Saved',
             description: 'The new site measurement has been added.',
         });
-        form.reset({ productType: '', title: '' });
+        form.reset({
+          title: '',
+          productType: '',
+          width: null,
+          height: null,
+          depth: null,
+          quantity: null,
+          pricePerQuantity: null,
+        });
         onSave();
     } catch (e) {
         toast({
@@ -215,7 +228,7 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
             render={({ field }) => (
             <FormItem>
                 <FormControl>
-                    <Input placeholder="Title" {...field} className="h-12 rounded-lg bg-muted border-gray-300 text-base"/>
+                    <Input placeholder="Title" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-muted border-gray-300 text-base"/>
                 </FormControl>
                 <FormMessage />
             </FormItem>
@@ -231,13 +244,13 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
                     </div>
                     <div className="grid grid-cols-3 gap-2">
                         <FormField control={form.control} name="height" render={({ field }) => (
-                            <FormItem><FormControl><Input placeholder="Height" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormControl><Input placeholder="Height" {...field} value={field.value ?? ''} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="width" render={({ field }) => (
-                            <FormItem><FormControl><Input placeholder="Width" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormControl><Input placeholder="Width" {...field} value={field.value ?? ''} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
                         )} />
                         <FormField control={form.control} name="depth" render={({ field }) => (
-                            <FormItem><FormControl><Input placeholder="Depth" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
+                            <FormItem><FormControl><Input placeholder="Depth" {...field} value={field.value ?? ''} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
                         )} />
                     </div>
                 </div>
@@ -254,14 +267,14 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
                 <FormField control={form.control} name="quantity" render={({ field }) => (
                     <FormItem>
                         <FormLabel>Product Quantity</FormLabel>
-                        <FormControl><Input placeholder="e.g. 5" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl>
+                        <FormControl><Input placeholder="e.g. 5" {...field} value={field.value ?? ''} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
                 <FormField control={form.control} name="pricePerQuantity" render={({ field }) => (
                      <FormItem>
                         <FormLabel>Product Price Per Quantity</FormLabel>
-                        <FormControl><Input placeholder="e.g. 1500" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl>
+                        <FormControl><Input placeholder="e.g. 1500" {...field} value={field.value ?? ''} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl>
                         <FormMessage />
                     </FormItem>
                 )} />
