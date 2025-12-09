@@ -25,7 +25,7 @@ export default function VisitorDetailPage() {
   const { data: visitor, isLoading } = useDoc<Visitor>(visitorDocRef);
 
   const menuItems = [
-    { name: 'Site Measurement', href: `/visitors/${visitorId}/measurement`, icon: Ruler, description: 'Take and view measurements', bgColor: 'bg-blue-100', textColor: 'text-blue-600' },
+    { name: 'Site Measurement', href: `/visitors/${visitorId}/quotation`, icon: Ruler, description: 'Take and view measurements', bgColor: 'bg-blue-100', textColor: 'text-blue-600' },
     { name: 'Quotation', href: `/visitors/${visitorId}/quotation`, icon: FileText, description: 'Create and manage quotations', bgColor: 'bg-green-100', textColor: 'text-green-600' },
     { name: 'Site Photo', href: `/visitors/${visitorId}/photos`, icon: Camera, description: 'Upload and view site photos', bgColor: 'bg-orange-100', textColor: 'text-orange-600' },
     { name: 'Edit Details', href: `/visitors/${visitorId}/edit`, icon: Edit, description: 'Edit client information', bgColor: 'bg-purple-100', textColor: 'text-purple-600' },

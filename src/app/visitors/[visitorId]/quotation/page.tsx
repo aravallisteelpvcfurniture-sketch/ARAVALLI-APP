@@ -8,7 +8,7 @@ import { Header } from '@/components/header';
 import { BottomNav } from '@/components/bottom-nav';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { PlusCircle, Trash2, Edit } from 'lucide-react';
+import { PlusCircle, Trash2 } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { MeasurementForm } from '@/components/measurement-form';
@@ -26,7 +26,7 @@ import {
   AlertDialogTrigger,
 } from "@/components/ui/alert-dialog"
 
-export default function SiteMeasurementPage() {
+export default function QuotationPage() {
   const { visitorId } = useParams();
   const { user } = useUser();
   const firestore = useFirestore();
@@ -54,7 +54,7 @@ export default function SiteMeasurementPage() {
 
   return (
     <div className="flex flex-col min-h-dvh bg-muted/40">
-      <Header title="Site Measurements" />
+      <Header title="Quotation" />
       <main className="flex-1 flex flex-col p-4 gap-4">
         {isLoading && (
           <div className="space-y-4">
@@ -81,9 +81,20 @@ export default function SiteMeasurementPage() {
                     <CardDescription className="capitalize">Type: {m.productType.replace('-', ' ')}</CardDescription>
                 </CardHeader>
                 <CardContent className="text-sm">
-                    <p><strong>Quantity:</strong> {m.quantity}</p>
-                    <p><strong>Price/Qty:</strong> {m.pricePerQuantity?.toLocaleString('en-IN', { style: 'currency', currency: 'INR' }) ?? 'N/A'}</p>
-                    <p><strong>Total Price:</strong> {m.totalPrice?.toLocaleString('en-IN', { style: 'currency', currency: 'INR' }) ?? 'N/A'}</p>
+                  {m.quantity ? (
+                    <>
+                      <p><strong>Quantity:</strong> {m.quantity}</p>
+                      <p><strong>Price/Qty:</strong> {m.pricePerQuantity?.toLocaleString('en-IN', { style: 'currency', currency: 'INR' }) ?? 'N/A'}</p>
+                      <p><strong>Total Price:</strong> {m.totalPrice?.toLocaleString('en-IN', { style: 'currency', currency: 'INR' }) ?? 'N/A'}</p>
+                    </>
+                  ) : (
+                    <>
+                      <p><strong>Width:</strong> {m.width} in</p>
+                      <p><strong>Height:</strong> {m.height} in</p>
+                      {m.depth && <p><strong>Depth:</strong> {m.depth} in</p>}
+                      <p><strong>Total SqFt:</strong> {m.totalSqFt}</p>
+                    </>
+                  )}
                 </CardContent>
                 <div className="absolute top-2 right-2">
                    <AlertDialog>
@@ -118,8 +129,8 @@ export default function SiteMeasurementPage() {
         
         {!isLoading && (!measurements || measurements.length === 0) && (
             <div className="flex-1 flex flex-col items-center justify-center text-center text-muted-foreground border-2 border-dashed rounded-lg bg-background">
-                <p className="text-lg font-semibold">No Measurements Recorded</p>
-                <p className="text-sm">Add a new measurement to get started.</p>
+                <p className="text-lg font-semibold">No Products in Quotation</p>
+                <p className="text-sm">Add a new product to get started.</p>
             </div>
         )}
 
@@ -139,8 +150,6 @@ export default function SiteMeasurementPage() {
             <MeasurementForm 
                 visitorId={visitorId as string}
                 onSave={() => setIsFormOpen(false)}
-                title="Save Measurement"
-                buttonText="Add Now"
             />
           </DialogContent>
         </Dialog>
