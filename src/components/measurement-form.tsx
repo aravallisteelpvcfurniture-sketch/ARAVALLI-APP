@@ -200,7 +200,7 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
         </div>
          <div className="relative">
             <Input 
-                value={`Total Inch : ${totalInch}`} 
+                value={`Total Inch : ${totalInch.toFixed(2)}`} 
                 readOnly 
                 className="h-12 rounded-full bg-white border-gray-300 font-medium text-center"
             />
