@@ -82,8 +82,8 @@ export default function SiteMeasurementPage() {
                 </CardHeader>
                 <CardContent className="text-sm">
                     <p><strong>Quantity:</strong> {m.quantity}</p>
-                    <p><strong>Price/Qty:</strong> {m.pricePerQuantity.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</p>
-                    <p><strong>Total Price:</strong> {m.totalPrice.toLocaleString('en-IN', { style: 'currency', currency: 'INR' })}</p>
+                    <p><strong>Price/Qty:</strong> {m.pricePerQuantity?.toLocaleString('en-IN', { style: 'currency', currency: 'INR' }) ?? 'N/A'}</p>
+                    <p><strong>Total Price:</strong> {m.totalPrice?.toLocaleString('en-IN', { style: 'currency', currency: 'INR' }) ?? 'N/A'}</p>
                 </CardContent>
                 <div className="absolute top-2 right-2">
                    <AlertDialog>
