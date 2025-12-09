@@ -35,13 +35,12 @@ interface MeasurementFormProps {
   buttonText: string;
 }
 
-export function MeasurementForm({ visitorId, onSave, title, buttonText }: MeasurementFormProps) {
+export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonText }: MeasurementFormProps) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
   const [totalSqFt, setTotalSqFt] = useState(0);
-  const [totalInch, setTotalInch] = useState(0);
 
   const measurementsCollectionRef = useMemoFirebase(() => {
     if (!firestore || !user?.uid || !visitorId) return null;
@@ -64,9 +63,7 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
     const w = width || 0;
     const h = height || 0;
     const sqft = (w * h) / 144;
-    const inch = w * h;
     setTotalSqFt(sqft);
-    setTotalInch(inch);
   }, [watchedValues]);
 
 
@@ -75,6 +72,8 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
 
     setIsSaving(true);
     
+    const totalInch = (values.width || 0) * (values.height || 0);
+
     const measurementData: any = {
       ...values,
       totalSqFt,
@@ -104,19 +103,7 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
 
   return (
     <Form {...form}>
-      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <FormField
-            control={form.control}
-            name="title"
-            render={({ field }) => (
-            <FormItem>
-                <FormControl>
-                    <Input placeholder="Title (e.g. Main Kitchen Wall)" {...field} className="h-12 rounded-full bg-white border-gray-300"/>
-                </FormControl>
-                <FormMessage />
-            </FormItem>
-            )}
-        />
+      <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-6">
         <FormField
             control={form.control}
             name="productType"
@@ -124,8 +111,8 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
                 <FormItem>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
-                            <SelectTrigger className="h-12 rounded-full bg-white border-gray-300">
-                                <SelectValue placeholder="Product Type" />
+                            <SelectTrigger className="h-12 rounded-lg bg-muted border-gray-300">
+                                <SelectValue placeholder="Select Product" />
                             </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -138,38 +125,29 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
                 </FormItem>
             )}
         />
-         <FormField
+        <FormField
             control={form.control}
-            name="roomType"
+            name="title"
             render={({ field }) => (
-                <FormItem>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                            <SelectTrigger className="h-12 rounded-full bg-white border-gray-300">
-                                <SelectValue placeholder="Room Type" />
-                            </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                            <SelectItem value="kitchen">Kitchen</SelectItem>
-                            <SelectItem value="bedroom">Bedroom</SelectItem>
-                            <SelectItem value="living-room">Living Room</SelectItem>
-                        </SelectContent>
-                    </Select>
-                    <FormMessage />
-                </FormItem>
+            <FormItem>
+                <FormControl>
+                    <Input placeholder="Title" {...field} className="h-12 rounded-lg bg-muted border-gray-300"/>
+                </FormControl>
+                <FormMessage />
+            </FormItem>
             )}
         />
         
         <div>
-          <div className="grid grid-cols-2 gap-2">
+          <FormLabel>Measurement in Inch</FormLabel>
+          <div className="grid grid-cols-2 gap-4 mt-2">
             <FormField
                 control={form.control}
-                name="width"
+                name="height"
                 render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Width (Inch)</FormLabel>
                     <FormControl>
-                        <Input type="number" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
+                        <Input type="number" placeholder="Height" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-muted border-gray-300 text-center" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -177,12 +155,11 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
             />
             <FormField
                 control={form.control}
-                name="height"
+                name="width"
                 render={({ field }) => (
                 <FormItem>
-                    <FormLabel>Height (Inch)</FormLabel>
                     <FormControl>
-                        <Input type="number" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
+                        <Input type="number" placeholder="Width" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-muted border-gray-300 text-center" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -192,27 +169,18 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
         </div>
         
         <div className="relative">
+             <FormLabel className="sr-only">Total SqFt</FormLabel>
             <Input 
                 value={`Total sqft : ${totalSqFt.toFixed(2)}`} 
                 readOnly 
-                className="h-12 rounded-full bg-white border-gray-300 font-medium text-center"
-            />
-        </div>
-         <div className="relative">
-            <Input 
-                value={`Total Inch : ${totalInch.toFixed(2)}`} 
-                readOnly 
-                className="h-12 rounded-full bg-white border-gray-300 font-medium text-center"
+                className="h-12 rounded-lg bg-muted border-gray-300 font-medium"
             />
         </div>
         
-        <Button type="submit" size="lg" className="w-full h-12 rounded-full text-lg bg-green-500 hover:bg-green-600" disabled={isSaving}>
-          {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
-          {buttonText}
+        <Button type="submit" size="lg" className="w-full h-14 rounded-full text-lg bg-green-500 hover:bg-green-600" disabled={isSaving}>
+          {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Add Now"}
         </Button>
       </form>
     </Form>
   );
 }
-
-    

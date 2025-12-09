@@ -134,13 +134,13 @@ export default function SiteMeasurementPage() {
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add New Measurement</DialogTitle>
+              <DialogTitle>Add Product</DialogTitle>
             </DialogHeader>
             <MeasurementForm 
                 visitorId={visitorId as string}
                 onSave={() => setIsFormOpen(false)}
                 title="Save Measurement"
-                buttonText="Add Measurement"
+                buttonText="Add Now"
             />
           </DialogContent>
         </Dialog>
@@ -149,5 +149,3 @@ export default function SiteMeasurementPage() {
     </div>
   );
 }
-
-    
