@@ -58,7 +58,6 @@ export type SiteMeasurement = {
   roomType: string;
   width: number;
   height: number;
-  depth?: number;
   totalSqFt: number;
   totalInch: number;
   createdAt: string;

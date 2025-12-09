@@ -25,7 +25,6 @@ const measurementSchema = z.object({
   roomType: z.string().min(1, 'Room type is required.'),
   width: z.coerce.number().min(1, 'Width is required'),
   height: z.coerce.number().min(1, 'Height is required'),
-  depth: z.coerce.number().optional(),
 });
 
 interface MeasurementFormProps {
@@ -76,7 +75,6 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
     
     const measurementData: any = {
       ...values,
-      depth: values.depth || undefined,
       totalSqFt,
       totalInch,
       createdAt: new Date().toISOString(),
@@ -148,7 +146,7 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
         />
         
         <div>
-          <div className="grid grid-cols-3 gap-2">
+          <div className="grid grid-cols-2 gap-2">
             <FormField
                 control={form.control}
                 name="width"
@@ -170,19 +168,6 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
                     <FormLabel>Height (Inch)</FormLabel>
                     <FormControl>
                         <Input type="number" placeholder="100" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
-                    </FormControl>
-                    <FormMessage />
-                </FormItem>
-                )}
-            />
-            <FormField
-                control={form.control}
-                name="depth"
-                render={({ field }) => (
-                <FormItem>
-                    <FormLabel>Depth (Inch)</FormLabel>
-                    <FormControl>
-                        <Input type="number" placeholder="Depth" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>

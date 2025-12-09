@@ -81,7 +81,7 @@ export default function SiteMeasurementPage() {
                     <CardDescription className="capitalize">Room: {m.roomType}</CardDescription>
                 </CardHeader>
                 <CardContent className="text-sm">
-                    <p><strong>Dimensions (WxH):</strong> {m.width}" x {m.height}" {m.depth ? `x ${m.depth}"` : ''}</p>
+                    <p><strong>Dimensions (WxH):</strong> {m.width}" x {m.height}"</p>
                     <p><strong>Total Inch:</strong> {m.totalInch ? m.totalInch.toFixed(2) : 'N/A'} in²</p>
                     <p><strong>Total SqFt:</strong> {m.totalSqFt ? m.totalSqFt.toFixed(2) : 'N/A'} ft²</p>
                 </CardContent>
