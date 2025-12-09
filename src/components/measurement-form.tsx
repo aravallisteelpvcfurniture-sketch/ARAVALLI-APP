@@ -18,7 +18,7 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Search, X } from 'lucide-react';
+import { Loader2, Search, X, ChevronDown } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
 import { ScrollArea } from './ui/scroll-area';
 
@@ -27,7 +27,7 @@ const measurementSchema = z.object({
   productType: z.string().min(1, 'Product type is required.'),
   width: z.coerce.number().min(1, 'Width is required').optional(),
   height: z.coerce.number().min(1, 'Height is required').optional(),
-  depth: z.coerce.number().min(1, 'Depth is required').optional(),
+  depth: z.coerce.number().optional(),
   quantity: z.coerce.number().min(1, 'Quantity is required').optional(),
   pricePerQuantity: z.coerce.number().min(1, 'Price is required').optional(),
 });
@@ -69,7 +69,6 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
   
   const watchedProductType = form.watch('productType');
   const watchedDimensions = form.watch(['width', 'height']);
-  
   const [totalSqFt, setTotalSqFt] = useState(0);
 
   useEffect(() => {
@@ -90,13 +89,32 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
     if (!measurementsCollectionRef) return;
 
     setIsSaving(true);
+    
+    let measurementData: any = {};
+    const formType = ['baskets', 'drawers'].includes(values.productType) ? 'quantity' : 'dimensions';
 
-    const measurementData: any = {
-      ...values,
-      totalSqFt: (values.width && values.height) ? (values.width * values.height) / 144 : undefined,
-      totalInch: (values.width && values.height) ? values.width * values.height : undefined,
-      createdAt: new Date().toISOString(),
-    };
+    if (formType === 'quantity') {
+      measurementData = {
+        productType: values.productType,
+        title: values.title,
+        quantity: values.quantity,
+        pricePerQuantity: values.pricePerQuantity,
+        totalPrice: (values.quantity || 0) * (values.pricePerQuantity || 0),
+        createdAt: new Date().toISOString(),
+      };
+    } else {
+       measurementData = {
+        productType: values.productType,
+        title: values.title,
+        width: values.width,
+        height: values.height,
+        depth: values.depth,
+        totalSqFt: (values.width && values.height) ? (values.width * values.height) / 144 : undefined,
+        totalInch: (values.width && values.height) ? values.width * values.height : undefined,
+        createdAt: new Date().toISOString(),
+      };
+    }
+
 
     try {
         await addDocumentNonBlocking(measurementsCollectionRef, measurementData);
@@ -105,7 +123,7 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
             title: 'Measurement Saved',
             description: 'The new site measurement has been added.',
         });
-        form.reset();
+        form.reset({ productType: '', title: '' });
         onSave();
     } catch (e) {
         toast({
@@ -127,10 +145,12 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <Dialog open={isProductSelectorOpen} onOpenChange={setIsProductSelectorOpen}>
           <DialogTrigger asChild>
-              <Button variant="outline" className="w-full h-12 rounded-lg bg-muted border-gray-300 justify-between text-left font-normal text-base">
-                {watchedProductType ? productTypes.find(p => p.value === watchedProductType)?.label : "Select Product"}
-                <ChevronDown className="h-4 w-4 opacity-50" />
-              </Button>
+             <div className="relative">
+                <Button variant="outline" className="w-full h-12 rounded-lg bg-muted border-gray-300 justify-start text-left font-normal text-base">
+                    <span className='truncate'>{watchedProductType ? productTypes.find(p => p.value === watchedProductType)?.label : "Select Product"}</span>
+                </Button>
+                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
+             </div>
           </DialogTrigger>
           <DialogContent className="sm:max-w-[425px] p-0">
               <DialogHeader className="p-4 border-b flex flex-row items-center justify-between">
@@ -159,6 +179,7 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
                           key={product.value}
                           onClick={() => {
                               form.setValue('productType', product.value);
+                              form.trigger('productType');
                               setIsProductSelectorOpen(false);
                           }}
                           className="py-3 border-b cursor-pointer hover:bg-muted"
@@ -175,6 +196,18 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
               </div>
           </DialogContent>
         </Dialog>
+        <FormField
+            control={form.control}
+            name="productType"
+            render={({ field }) => (
+            <FormItem>
+                <FormControl>
+                    <Input type="hidden" {...field} />
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+            )}
+        />
         
         <FormField
             control={form.control}
@@ -189,31 +222,58 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
             )}
         />
         
-        <div className='space-y-2'>
-            <div className='flex justify-between items-center'>
-                <FormLabel className='text-sm font-medium'>Measurement in Inch</FormLabel>
-                <FormLabel className='text-sm font-medium'>In Feet</FormLabel>
+        {formType === 'dimensions' ? (
+             <div className='space-y-4'>
+                <div className='space-y-2'>
+                    <div className='flex justify-between items-center'>
+                        <FormLabel className='text-sm font-medium'>Measurement in Inch</FormLabel>
+                        <FormLabel className='text-sm font-medium'>In Feet</FormLabel>
+                    </div>
+                    <div className="grid grid-cols-3 gap-2">
+                        <FormField control={form.control} name="height" render={({ field }) => (
+                            <FormItem><FormControl><Input placeholder="Height" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="width" render={({ field }) => (
+                            <FormItem><FormControl><Input placeholder="Width" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
+                        )} />
+                        <FormField control={form.control} name="depth" render={({ field }) => (
+                            <FormItem><FormControl><Input placeholder="Depth" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
+                        )} />
+                    </div>
+                </div>
+                <div className="relative">
+                    <Input 
+                        value={`Total sqft : ${totalSqFt}`} 
+                        readOnly 
+                        className="h-12 rounded-lg bg-muted border-gray-300 font-medium text-base"
+                    />
+                </div>
             </div>
-            <div className="grid grid-cols-3 gap-2">
-                <FormField control={form.control} name="height" render={({ field }) => (
-                    <FormItem><FormControl><Input placeholder="Height" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
+        ) : (
+            <div className='space-y-4'>
+                <FormField control={form.control} name="quantity" render={({ field }) => (
+                    <FormItem>
+                        <FormLabel>Product Quantity</FormLabel>
+                        <FormControl><Input placeholder="e.g. 5" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl>
+                        <FormMessage />
+                    </FormItem>
                 )} />
-                <FormField control={form.control} name="width" render={({ field }) => (
-                    <FormItem><FormControl><Input placeholder="Width" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
+                <FormField control={form.control} name="pricePerQuantity" render={({ field }) => (
+                     <FormItem>
+                        <FormLabel>Product Price Per Quantity</FormLabel>
+                        <FormControl><Input placeholder="e.g. 1500" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl>
+                        <FormMessage />
+                    </FormItem>
                 )} />
-                <FormField control={form.control} name="depth" render={({ field }) => (
-                    <FormItem><FormControl><Input placeholder="Depth" {...field} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
-                )} />
+                <div className="relative">
+                    <Input 
+                        value={`Total Price : ${((form.watch('quantity') || 0) * (form.watch('pricePerQuantity') || 0)).toLocaleString('en-IN')}`} 
+                        readOnly 
+                        className="h-12 rounded-lg bg-muted border-gray-300 font-medium text-base"
+                    />
+                </div>
             </div>
-        </div>
-        
-        <div className="relative">
-            <Input 
-                value={`Total sqft : ${totalSqFt}`} 
-                readOnly 
-                className="h-12 rounded-lg bg-muted border-gray-300 font-medium text-base"
-            />
-        </div>
+        )}
         
         <Button type="submit" size="lg" className="w-full h-14 rounded-full text-lg bg-green-500 hover:bg-green-600" disabled={isSaving}>
           {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Add Now"}
@@ -222,23 +282,3 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
     </Form>
   );
 }
-
-// Dummy ChevronDown icon if not available elsewhere
-const ChevronDown = (props: React.SVGProps<SVGSVGElement>) => (
-  <svg
-    xmlns="http://www.w3.org/2000/svg"
-    width="24"
-    height="24"
-    viewBox="0 0 24 24"
-    fill="none"
-    stroke="currentColor"
-    strokeWidth="2"
-    strokeLinecap="round"
-    strokeLinejoin="round"
-    {...props}
-  >
-    <path d="m6 9 6 6 6-6" />
-  </svg>
-);
-
-    
