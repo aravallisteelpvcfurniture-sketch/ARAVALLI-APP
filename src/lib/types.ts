@@ -54,6 +54,7 @@ export type Visitor = {
 
 export type SiteMeasurement = {
   id: string;
+  title?: string;
   productType: string;
   roomType: string;
   width: number;
@@ -62,3 +63,5 @@ export type SiteMeasurement = {
   totalInch: number;
   createdAt: string;
 };
+
+    

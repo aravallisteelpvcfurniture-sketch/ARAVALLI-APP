@@ -77,8 +77,8 @@ export default function SiteMeasurementPage() {
             {measurements.map((m) => (
               <Card key={m.id} className="relative">
                 <CardHeader>
-                    <CardTitle className="capitalize">{m.productType ? m.productType.replace('-', ' ') : ''}</CardTitle>
-                    <CardDescription className="capitalize">Room: {m.roomType}</CardDescription>
+                    <CardTitle className="capitalize">{m.title || m.productType.replace('-', ' ')}</CardTitle>
+                    <CardDescription className="capitalize">Room: {m.roomType} | Type: {m.productType.replace('-', ' ')}</CardDescription>
                 </CardHeader>
                 <CardContent className="text-sm">
                     <p><strong>Dimensions (WxH):</strong> {m.width}" x {m.height}"</p>
@@ -149,3 +149,5 @@ export default function SiteMeasurementPage() {
     </div>
   );
 }
+
+    

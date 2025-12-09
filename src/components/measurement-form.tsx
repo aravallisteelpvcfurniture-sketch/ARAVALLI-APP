@@ -21,6 +21,7 @@ import { useToast } from '@/hooks/use-toast';
 import { Loader2 } from 'lucide-react';
 
 const measurementSchema = z.object({
+  title: z.string().optional(),
   productType: z.string().min(1, 'Product type is required.'),
   roomType: z.string().min(1, 'Room type is required.'),
   width: z.coerce.number().min(1, 'Width is required'),
@@ -50,6 +51,7 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
   const form = useForm<z.infer<typeof measurementSchema>>({
     resolver: zodResolver(measurementSchema),
     defaultValues: {
+      title: '',
       productType: '',
       roomType: '',
     },
@@ -87,6 +89,7 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
             title: 'Measurement Saved',
             description: 'The new site measurement has been added.',
         });
+        form.reset();
         onSave();
     } catch (e) {
         toast({
@@ -104,13 +107,25 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
         <FormField
             control={form.control}
+            name="title"
+            render={({ field }) => (
+            <FormItem>
+                <FormControl>
+                    <Input placeholder="Title (e.g. Main Kitchen Wall)" {...field} className="h-12 rounded-full bg-white border-gray-300"/>
+                </FormControl>
+                <FormMessage />
+            </FormItem>
+            )}
+        />
+        <FormField
+            control={form.control}
             name="productType"
             render={({ field }) => (
                 <FormItem>
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                             <SelectTrigger className="h-12 rounded-full bg-white border-gray-300">
-                                <SelectValue placeholder="MODULAR KITCHEN" />
+                                <SelectValue placeholder="Product Type" />
                             </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -131,7 +146,7 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
                     <Select onValueChange={field.onChange} defaultValue={field.value}>
                         <FormControl>
                             <SelectTrigger className="h-12 rounded-full bg-white border-gray-300">
-                                <SelectValue placeholder="room" />
+                                <SelectValue placeholder="Room Type" />
                             </SelectTrigger>
                         </FormControl>
                         <SelectContent>
@@ -199,3 +214,5 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
     </Form>
   );
 }
+
+    
