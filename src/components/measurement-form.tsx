@@ -1,13 +1,6 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from '@/components/ui/select';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
@@ -15,56 +8,18 @@ import { useUser, useFirestore, useMemoFirebase } from '@/firebase';
 import { addDocumentNonBlocking }from '@/firebase/non-blocking-updates';
 import { collection } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
-import { Form, FormControl, FormField, FormItem, FormMessage, FormLabel } from '@/components/ui/form';
+import { Form, FormControl, FormField, FormItem, FormMessage } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2, Search, X, ChevronDown } from 'lucide-react';
-import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
-import { ScrollArea } from './ui/scroll-area';
+import { Loader2 } from 'lucide-react';
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from './ui/select';
 
-const measurementBaseSchema = z.object({
-  title: z.string().optional(),
+const measurementSchema = z.object({
   productType: z.string().min(1, 'Product type is required.'),
-  width: z.coerce.number().optional(),
-  height: z.coerce.number().optional(),
+  roomType: z.string().min(1, 'Room type is required.'),
+  width: z.coerce.number().min(1, 'Width is required.'),
+  height: z.coerce.number().min(1, 'Height is required.'),
   depth: z.coerce.number().optional(),
-  quantity: z.coerce.number().optional(),
-  pricePerQuantity: z.coerce.number().optional(),
-});
-
-const measurementSchema = measurementBaseSchema.superRefine((data, ctx) => {
-  const isQuantityProduct = ['baskets', 'drawers'].includes(data.productType);
-  if (isQuantityProduct) {
-    if (!data.quantity || data.quantity < 1) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['quantity'],
-        message: 'Quantity is required',
-      });
-    }
-    if (!data.pricePerQuantity || data.pricePerQuantity < 1) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['pricePerQuantity'],
-        message: 'Price is required',
-      });
-    }
-  } else {
-    if (!data.width || data.width < 1) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['width'],
-        message: 'Width is required',
-      });
-    }
-    if (!data.height || data.height < 1) {
-      ctx.addIssue({
-        code: z.ZodIssueCode.custom,
-        path: ['height'],
-        message: 'Height is required',
-      });
-    }
-  }
 });
 
 
@@ -75,51 +30,22 @@ interface MeasurementFormProps {
   buttonText?: string;
 }
 
-const productTypes = [
-    { value: 'modular-kitchen', label: 'MODULAR KITCHEN' },
-    { value: 'wardrobe', label: 'WARDROBE' },
-    { value: 'tv-unit', label: 'TV UNIT' },
-    { value: 'baskets', label: 'BASKETS' },
-    { value: 'self-partition', label: 'SELF/PARTITION' },
-    { value: 'crockery', label: 'CROCKERY' },
-    { value: 'framing', label: 'FRAMING' },
-    { value: 'box', label: 'BOX' },
-    { value: 'drawers', label: 'DRAWERS' },
-];
-
 export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonText }: MeasurementFormProps) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
-  const [isProductSelectorOpen, setIsProductSelectorOpen] = useState(false);
-  const [searchTerm, setSearchTerm] = useState('');
   
   const form = useForm<z.infer<typeof measurementSchema>>({
     resolver: zodResolver(measurementSchema),
     defaultValues: {
-      title: '',
       productType: '',
-      width: null,
-      height: null,
-      depth: null,
-      quantity: null,
-      pricePerQuantity: null,
+      roomType: '',
+      width: undefined,
+      height: undefined,
+      depth: undefined,
     },
   });
-  
-  const watchedProductType = form.watch('productType');
-  const watchedDimensions = form.watch(['width', 'height']);
-  const [totalSqFt, setTotalSqFt] = useState(0);
-
-  useEffect(() => {
-    const [width, height] = watchedDimensions;
-    if (width && height) {
-      setTotalSqFt(Math.round((width * height) / 144 * 100) / 100);
-    } else {
-      setTotalSqFt(0);
-    }
-  }, [watchedDimensions]);
 
   const measurementsCollectionRef = useMemoFirebase(() => {
     if (!firestore || !user?.uid || !visitorId) return null;
@@ -131,31 +57,12 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
 
     setIsSaving(true);
     
-    let measurementData: any = {};
-    const formType = ['baskets', 'drawers'].includes(values.productType) ? 'quantity' : 'dimensions';
-
-    if (formType === 'quantity') {
-      measurementData = {
-        productType: values.productType,
-        title: values.title || '',
-        quantity: values.quantity,
-        pricePerQuantity: values.pricePerQuantity,
-        totalPrice: (values.quantity || 0) * (values.pricePerQuantity || 0),
+    const measurementData = {
+        ...values,
+        totalSqFt: (values.width * values.height) / 144,
+        totalInch: values.width * values.height,
         createdAt: new Date().toISOString(),
-      };
-    } else {
-       measurementData = {
-        productType: values.productType,
-        title: values.title || '',
-        width: values.width,
-        height: values.height,
-        depth: values.depth || null,
-        totalSqFt: (values.width && values.height) ? (values.width * values.height) / 144 : 0,
-        totalInch: (values.width && values.height) ? values.width * values.height : 0,
-        createdAt: new Date().toISOString(),
-      };
-    }
-
+    };
 
     try {
         await addDocumentNonBlocking(measurementsCollectionRef, measurementData);
@@ -164,15 +71,7 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
             title: 'Measurement Saved',
             description: 'The new site measurement has been added.',
         });
-        form.reset({
-          title: '',
-          productType: '',
-          width: null,
-          height: null,
-          depth: null,
-          quantity: null,
-          pricePerQuantity: null,
-        });
+        form.reset();
         onSave();
     } catch (e) {
         toast({
@@ -185,147 +84,92 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
     }
   };
   
-  const filteredProducts = productTypes.filter(p => p.label.toLowerCase().includes(searchTerm.toLowerCase()));
-
-  const formType = ['baskets', 'drawers'].includes(watchedProductType) ? 'quantity' : 'dimensions';
-
   return (
     <Form {...form}>
       <form onSubmit={form.handleSubmit(onSubmit)} className="space-y-4">
-        <Dialog open={isProductSelectorOpen} onOpenChange={setIsProductSelectorOpen}>
-          <DialogTrigger asChild>
-             <div className="relative">
-                <Button variant="outline" className="w-full h-12 rounded-lg bg-muted border-gray-300 justify-start text-left font-normal text-base">
-                    <span className='truncate'>{watchedProductType ? productTypes.find(p => p.value === watchedProductType)?.label : "Select Product"}</span>
-                </Button>
-                <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 h-4 w-4 opacity-50" />
-             </div>
-          </DialogTrigger>
-          <DialogContent className="sm:max-w-[425px] p-0">
-              <DialogHeader className="p-4 border-b flex flex-row items-center justify-between">
-                  <DialogTitle>Select Product</DialogTitle>
-                    <DialogClose asChild>
-                      <Button type="button" variant="ghost" size="icon" className="h-7 w-7">
-                          <X className="h-4 w-4" />
-                      </Button>
-                  </DialogClose>
-              </DialogHeader>
-              <div className="p-4">
-                  <div className="relative">
-                      <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-                      <Input 
-                          placeholder="Search" 
-                          className="pl-9 h-12 rounded-lg"
-                          value={searchTerm}
-                          onChange={(e) => setSearchTerm(e.target.value)}
-                      />
-                  </div>
-              </div>
-              <ScrollArea className="h-72">
-                  <div className="p-4 pt-0">
-                  {filteredProducts.map(product => (
-                      <div 
-                          key={product.value}
-                          onClick={() => {
-                              form.setValue('productType', product.value);
-                              form.trigger('productType');
-                              setIsProductSelectorOpen(false);
-                          }}
-                          className="py-3 border-b cursor-pointer hover:bg-muted"
-                      >
-                          {product.label}
-                      </div>
-                  ))}
-                  </div>
-              </ScrollArea>
-              <div className="p-4 border-t flex justify-end">
-                  <DialogClose asChild>
-                      <Button type="button" variant="ghost">Close</Button>
-                  </DialogClose>
-              </div>
-          </DialogContent>
-        </Dialog>
         <FormField
-            control={form.control}
-            name="productType"
-            render={({ field }) => (
+          control={form.control}
+          name="productType"
+          render={({ field }) => (
             <FormItem>
+              <Select onValueChange={field.onChange} value={field.value}>
                 <FormControl>
-                    <Input type="hidden" {...field} />
+                  <SelectTrigger className="h-12 text-base">
+                    <SelectValue placeholder="Product Type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="modular-kitchen">Modular Kitchen</SelectItem>
+                  <SelectItem value="wardrobe">Wardrobe</SelectItem>
+                  <SelectItem value="tv-unit">TV Unit</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <FormField
+          control={form.control}
+          name="roomType"
+          render={({ field }) => (
+            <FormItem>
+               <Select onValueChange={field.onChange} value={field.value}>
+                <FormControl>
+                  <SelectTrigger className="h-12 text-base">
+                    <SelectValue placeholder="Room Type" />
+                  </SelectTrigger>
+                </FormControl>
+                <SelectContent>
+                  <SelectItem value="kitchen">Kitchen</SelectItem>
+                  <SelectItem value="bedroom">Bedroom</SelectItem>
+                  <SelectItem value="living-room">Living Room</SelectItem>
+                </SelectContent>
+              </Select>
+              <FormMessage />
+            </FormItem>
+          )}
+        />
+        <div className="grid grid-cols-3 gap-4">
+          <FormField
+            control={form.control}
+            name="width"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Width (in)" {...field} type="number" className="h-12 text-base" />
                 </FormControl>
                 <FormMessage />
-            </FormItem>
+              </FormItem>
             )}
-        />
-        
-        <FormField
+          />
+          <FormField
             control={form.control}
-            name="title"
+            name="height"
             render={({ field }) => (
-            <FormItem>
+              <FormItem>
                 <FormControl>
-                    <Input placeholder="Title" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-muted border-gray-300 text-base"/>
+                  <Input placeholder="Height (in)" {...field} type="number" className="h-12 text-base" />
                 </FormControl>
                 <FormMessage />
-            </FormItem>
+              </FormItem>
             )}
-        />
-        
-        {formType === 'dimensions' ? (
-             <div className='space-y-4'>
-                <div className='space-y-2'>
-                    <div className='flex justify-between items-center'>
-                        <FormLabel className='text-sm font-medium'>Measurement in Inch</FormLabel>
-                        <FormLabel className='text-sm font-medium'>In Feet</FormLabel>
-                    </div>
-                    <div className="grid grid-cols-3 gap-2">
-                        <FormField control={form.control} name="height" render={({ field }) => (
-                            <FormItem><FormControl><Input placeholder="Height" {...field} value={field.value ?? ''} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="width" render={({ field }) => (
-                            <FormItem><FormControl><Input placeholder="Width" {...field} value={field.value ?? ''} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
-                        )} />
-                        <FormField control={form.control} name="depth" render={({ field }) => (
-                            <FormItem><FormControl><Input placeholder="Depth" {...field} value={field.value ?? ''} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl><FormMessage /></FormItem>
-                        )} />
-                    </div>
-                </div>
-                <div className="relative">
-                    <Input 
-                        value={`Total sqft : ${totalSqFt}`} 
-                        readOnly 
-                        className="h-12 rounded-lg bg-muted border-gray-300 font-medium text-base"
-                    />
-                </div>
-            </div>
-        ) : (
-            <div className='space-y-4'>
-                <FormField control={form.control} name="quantity" render={({ field }) => (
-                    <FormItem>
-                        <FormLabel>Product Quantity</FormLabel>
-                        <FormControl><Input placeholder="e.g. 5" {...field} value={field.value ?? ''} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )} />
-                <FormField control={form.control} name="pricePerQuantity" render={({ field }) => (
-                     <FormItem>
-                        <FormLabel>Product Price Per Quantity</FormLabel>
-                        <FormControl><Input placeholder="e.g. 1500" {...field} value={field.value ?? ''} type="number" className="h-12 rounded-lg bg-muted border-gray-300 text-base" /></FormControl>
-                        <FormMessage />
-                    </FormItem>
-                )} />
-                <div className="relative">
-                    <Input 
-                        value={`Total Price : ${((form.watch('quantity') || 0) * (form.watch('pricePerQuantity') || 0)).toLocaleString('en-IN')}`} 
-                        readOnly 
-                        className="h-12 rounded-lg bg-muted border-gray-300 font-medium text-base"
-                    />
-                </div>
-            </div>
-        )}
-        
-        <Button type="submit" size="lg" className="w-full h-14 rounded-full text-lg bg-green-500 hover:bg-green-600" disabled={isSaving}>
-          {isSaving ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : "Add Now"}
+          />
+           <FormField
+            control={form.control}
+            name="depth"
+            render={({ field }) => (
+              <FormItem>
+                <FormControl>
+                  <Input placeholder="Depth (in)" {...field} type="number" className="h-12 text-base" />
+                </FormControl>
+                <FormMessage />
+              </FormItem>
+            )}
+          />
+        </div>
+        <Button type="submit" size="lg" className="w-full h-14" disabled={isSaving}>
+          {isSaving && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
+          {buttonText || 'Add Measurement'}
         </Button>
       </form>
     </Form>
