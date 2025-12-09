@@ -22,15 +22,51 @@ import { Loader2, Search, X, ChevronDown } from 'lucide-react';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
 import { ScrollArea } from './ui/scroll-area';
 
-const measurementSchema = z.object({
+const measurementBaseSchema = z.object({
   title: z.string().optional(),
   productType: z.string().min(1, 'Product type is required.'),
-  width: z.coerce.number().min(1, 'Width is required').optional(),
-  height: z.coerce.number().min(1, 'Height is required').optional(),
+  width: z.coerce.number().optional(),
+  height: z.coerce.number().optional(),
   depth: z.coerce.number().optional(),
-  quantity: z.coerce.number().min(1, 'Quantity is required').optional(),
-  pricePerQuantity: z.coerce.number().min(1, 'Price is required').optional(),
+  quantity: z.coerce.number().optional(),
+  pricePerQuantity: z.coerce.number().optional(),
 });
+
+const measurementSchema = measurementBaseSchema.superRefine((data, ctx) => {
+  const isQuantityProduct = ['baskets', 'drawers'].includes(data.productType);
+  if (isQuantityProduct) {
+    if (!data.quantity || data.quantity < 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['quantity'],
+        message: 'Quantity is required',
+      });
+    }
+    if (!data.pricePerQuantity || data.pricePerQuantity < 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['pricePerQuantity'],
+        message: 'Price is required',
+      });
+    }
+  } else {
+    if (!data.width || data.width < 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['width'],
+        message: 'Width is required',
+      });
+    }
+    if (!data.height || data.height < 1) {
+      ctx.addIssue({
+        code: z.ZodIssueCode.custom,
+        path: ['height'],
+        message: 'Height is required',
+      });
+    }
+  }
+});
+
 
 interface MeasurementFormProps {
   visitorId: string;
@@ -101,7 +137,7 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
     if (formType === 'quantity') {
       measurementData = {
         productType: values.productType,
-        title: values.title,
+        title: values.title || '',
         quantity: values.quantity,
         pricePerQuantity: values.pricePerQuantity,
         totalPrice: (values.quantity || 0) * (values.pricePerQuantity || 0),
@@ -110,12 +146,12 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
     } else {
        measurementData = {
         productType: values.productType,
-        title: values.title,
+        title: values.title || '',
         width: values.width,
         height: values.height,
-        depth: values.depth,
-        totalSqFt: (values.width && values.height) ? (values.width * values.height) / 144 : undefined,
-        totalInch: (values.width && values.height) ? values.width * values.height : undefined,
+        depth: values.depth || null,
+        totalSqFt: (values.width && values.height) ? (values.width * values.height) / 144 : 0,
+        totalInch: (values.width && values.height) ? values.width * values.height : 0,
         createdAt: new Date().toISOString(),
       };
     }
