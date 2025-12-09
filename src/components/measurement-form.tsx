@@ -18,12 +18,14 @@ import { Button } from '@/components/ui/button';
 import { Form, FormControl, FormField, FormItem, FormMessage, FormLabel } from '@/components/ui/form';
 import { Input } from '@/components/ui/input';
 import { useToast } from '@/hooks/use-toast';
-import { Loader2 } from 'lucide-react';
+import { Loader2, Search, X } from 'lucide-react';
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger, DialogClose } from '@/components/ui/dialog';
+import { ScrollArea } from './ui/scroll-area';
 
 const measurementSchema = z.object({
   title: z.string().optional(),
   productType: z.string().min(1, 'Product type is required.'),
-  roomType: z.string().min(1, 'Room type is required.'),
+  roomType: z.string().optional(),
   width: z.coerce.number().min(1, 'Width is required'),
   height: z.coerce.number().min(1, 'Height is required'),
 });
@@ -31,16 +33,27 @@ const measurementSchema = z.object({
 interface MeasurementFormProps {
   visitorId: string;
   onSave: () => void;
-  title: string;
-  buttonText: string;
 }
 
-export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonText }: MeasurementFormProps) {
+const productTypes = [
+    { value: 'modular-kitchen', label: 'MODULAR KITCHEN' },
+    { value: 'baskets', label: 'BASKETS' },
+    { value: 'self-partition', label: 'SELF/PARTITION' },
+    { value: 'crockery', label: 'CROCKERY' },
+    { value: 'framing', label: 'FRAMING' },
+    { value: 'box', label: 'BOX' },
+    { value: 'wardrobe', label: 'WARDROBE' },
+    { value: 'tv-unit', label: 'TV UNIT' },
+];
+
+export function MeasurementForm({ visitorId, onSave }: MeasurementFormProps) {
   const { user } = useUser();
   const firestore = useFirestore();
   const { toast } = useToast();
   const [isSaving, setIsSaving] = useState(false);
   const [totalSqFt, setTotalSqFt] = useState(0);
+  const [isProductSelectorOpen, setIsProductSelectorOpen] = useState(false);
+  const [searchTerm, setSearchTerm] = useState('');
 
   const measurementsCollectionRef = useMemoFirebase(() => {
     if (!firestore || !user?.uid || !visitorId) return null;
@@ -53,6 +66,8 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
       title: '',
       productType: '',
       roomType: '',
+      width: undefined,
+      height: undefined,
     },
   });
   
@@ -100,6 +115,8 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
         setIsSaving(false);
     }
   };
+  
+  const filteredProducts = productTypes.filter(p => p.label.toLowerCase().includes(searchTerm.toLowerCase()));
 
   return (
     <Form {...form}>
@@ -109,18 +126,50 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
             name="productType"
             render={({ field }) => (
                 <FormItem>
-                    <Select onValueChange={field.onChange} defaultValue={field.value}>
-                        <FormControl>
-                            <SelectTrigger className="h-12 rounded-lg bg-muted border-gray-300">
-                                <SelectValue placeholder="Select Product" />
-                            </SelectTrigger>
-                        </FormControl>
-                        <SelectContent>
-                            <SelectItem value="modular-kitchen">Modular Kitchen</SelectItem>
-                            <SelectItem value="wardrobe">Wardrobe</SelectItem>
-                            <SelectItem value="tv-unit">TV Unit</SelectItem>
-                        </SelectContent>
-                    </Select>
+                    <Dialog open={isProductSelectorOpen} onOpenChange={setIsProductSelectorOpen}>
+                        <DialogTrigger asChild>
+                             <Button variant="outline" className="w-full h-12 rounded-lg bg-muted border-gray-300 justify-start text-left font-normal">
+                                {field.value ? productTypes.find(p => p.value === field.value)?.label : "Select Product"}
+                            </Button>
+                        </DialogTrigger>
+                        <DialogContent className="sm:max-w-[425px] p-0">
+                            <DialogHeader className="p-4 border-b">
+                                <DialogTitle>Select Product</DialogTitle>
+                            </DialogHeader>
+                            <div className="p-4">
+                                <div className="relative">
+                                    <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+                                    <Input 
+                                        placeholder="Search" 
+                                        className="pl-9 h-12 rounded-lg"
+                                        value={searchTerm}
+                                        onChange={(e) => setSearchTerm(e.target.value)}
+                                    />
+                                </div>
+                            </div>
+                            <ScrollArea className="h-72">
+                                <div className="p-4 pt-0">
+                                {filteredProducts.map(product => (
+                                    <div 
+                                        key={product.value}
+                                        onClick={() => {
+                                            field.onChange(product.value);
+                                            setIsProductSelectorOpen(false);
+                                        }}
+                                        className="py-3 border-b cursor-pointer hover:bg-muted"
+                                    >
+                                        {product.label}
+                                    </div>
+                                ))}
+                                </div>
+                            </ScrollArea>
+                            <div className="p-4 border-t flex justify-end">
+                                <DialogClose asChild>
+                                    <Button type="button" variant="ghost">Close</Button>
+                                </DialogClose>
+                            </div>
+                        </DialogContent>
+                    </Dialog>
                     <FormMessage />
                 </FormItem>
             )}
@@ -147,7 +196,7 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
                 render={({ field }) => (
                 <FormItem>
                     <FormControl>
-                        <Input type="number" placeholder="Height" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-muted border-gray-300 text-center" />
+                        <Input type="number" placeholder="Height" {...field} className="h-12 rounded-lg bg-muted border-gray-300 text-center" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -159,7 +208,7 @@ export function MeasurementForm({ visitorId, onSave, title: formTitle, buttonTex
                 render={({ field }) => (
                 <FormItem>
                     <FormControl>
-                        <Input type="number" placeholder="Width" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-muted border-gray-300 text-center" />
+                        <Input type="number" placeholder="Width" {...field} className="h-12 rounded-lg bg-muted border-gray-300 text-center" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
