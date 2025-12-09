@@ -154,7 +154,7 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
                 <FormItem>
                     <FormLabel>Width (Inch)</FormLabel>
                     <FormControl>
-                        <Input type="number" placeholder="50" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
+                        <Input type="number" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
@@ -167,7 +167,7 @@ export function MeasurementForm({ visitorId, onSave, title, buttonText }: Measur
                 <FormItem>
                     <FormLabel>Height (Inch)</FormLabel>
                     <FormControl>
-                        <Input type="number" placeholder="100" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
+                        <Input type="number" {...field} value={field.value ?? ''} className="h-12 rounded-lg bg-white border-gray-300 text-center" />
                     </FormControl>
                     <FormMessage />
                 </FormItem>
