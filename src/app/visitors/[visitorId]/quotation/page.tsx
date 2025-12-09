@@ -3,14 +3,15 @@
 import React, { useState, useMemo } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import Image from 'next/image';
-import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking } from '@/firebase';
+import { useUser, useFirestore, useCollection, useMemoFirebase, deleteDocumentNonBlocking, updateDocumentNonBlocking } from '@/firebase';
 import { collection, doc } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent } from '@/components/ui/card';
-import { PlusCircle, Trash2, ArrowLeft, Bell } from 'lucide-react';
+import { PlusCircle, Trash2, ArrowLeft, Bell, Edit } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
 import { MeasurementForm } from '@/components/measurement-form';
+import { UpdateMeasurementForm } from '@/components/update-measurement-form';
 import type { SiteMeasurement } from '@/lib/types';
 import { useToast } from '@/hooks/use-toast';
 import {
@@ -32,7 +33,8 @@ export default function QuotationPage() {
   const { user } = useUser();
   const firestore = useFirestore();
   const router = useRouter();
-  const [isFormOpen, setIsFormOpen] = useState(false);
+  const [isAddFormOpen, setIsAddFormOpen] = useState(false);
+  const [editingMeasurement, setEditingMeasurement] = useState<SiteMeasurement | null>(null);
   const { toast } = useToast();
 
   const [showRate, setShowRate] = useState('yes');
@@ -56,10 +58,17 @@ export default function QuotationPage() {
       description: "The site measurement has been removed.",
     });
   };
+  
+  const handleEditClick = (measurement: SiteMeasurement) => {
+    setEditingMeasurement(measurement);
+  };
 
   const totalPrice = useMemo(() => {
     if (!measurements) return 0;
-    return measurements.reduce((acc, m) => acc + (m.totalPrice || 0), 0);
+    return measurements.reduce((acc, m) => {
+      const price = m.totalPrice || 0;
+      return acc + price;
+    }, 0);
   }, [measurements]);
 
   return (
@@ -133,35 +142,41 @@ export default function QuotationPage() {
                             ) : (
                                 <>
                                     {showDimension === 'yes' && <span>{m.totalSqFt?.toFixed(2)} sqft</span>}
-                                    {showRate === 'yes' && <span> @ ₹{((m.totalPrice || 0) / (m.totalSqFt || 1)).toFixed(2)} = ₹{m.totalPrice?.toFixed(2)}</span>}
+                                    {showRate === 'yes' && m.pricePerSqFt && <span> @ ₹{m.pricePerSqFt.toFixed(2)} = ₹{m.totalPrice?.toFixed(2)}</span>}
+                                    {showRate === 'yes' && !m.pricePerSqFt && m.totalPrice && m.totalSqFt && <span> @ ₹{((m.totalPrice || 0) / (m.totalSqFt || 1)).toFixed(2)} = ₹{m.totalPrice?.toFixed(2)}</span>}
                                 </>
                             )}
                         </p>
                     </div>
-                    <AlertDialog>
-                        <AlertDialogTrigger asChild>
-                          <Button variant="ghost" size="icon" className="h-9 w-9 text-destructive/70 hover:text-destructive hover:bg-destructive/10">
-                            <Trash2 className="h-5 w-5" />
-                          </Button>
-                        </AlertDialogTrigger>
-                        <AlertDialogContent>
-                          <AlertDialogHeader>
-                            <AlertDialogTitle>Are you sure?</AlertDialogTitle>
-                            <AlertDialogDescription>
-                              This action will permanently delete this measurement.
-                            </AlertDialogDescription>
-                          </AlertDialogHeader>
-                          <AlertDialogFooter>
-                            <AlertDialogCancel>Cancel</AlertDialogCancel>
-                            <AlertDialogAction
-                              onClick={() => handleDeleteMeasurement(m.id)}
-                              className="bg-destructive hover:bg-destructive/90"
-                            >
-                              Delete
-                            </AlertDialogAction>
-                          </AlertDialogFooter>
-                        </AlertDialogContent>
-                      </AlertDialog>
+                     <div className="flex flex-col gap-2">
+                        <Button variant="ghost" size="icon" className="h-9 w-9 text-primary/70 hover:text-primary hover:bg-primary/10" onClick={() => handleEditClick(m)}>
+                            <Edit className="h-5 w-5" />
+                        </Button>
+                        <AlertDialog>
+                            <AlertDialogTrigger asChild>
+                              <Button variant="ghost" size="icon" className="h-9 w-9 text-destructive/70 hover:text-destructive hover:bg-destructive/10">
+                                <Trash2 className="h-5 w-5" />
+                              </Button>
+                            </AlertDialogTrigger>
+                            <AlertDialogContent>
+                              <AlertDialogHeader>
+                                <AlertDialogTitle>Are you sure?</AlertDialogTitle>
+                                <AlertDialogDescription>
+                                  This action will permanently delete this measurement.
+                                </AlertDialogDescription>
+                              </AlertDialogHeader>
+                              <AlertDialogFooter>
+                                <AlertDialogCancel>Cancel</AlertDialogCancel>
+                                <AlertDialogAction
+                                  onClick={() => handleDeleteMeasurement(m.id)}
+                                  className="bg-destructive hover:bg-destructive/90"
+                                >
+                                  Delete
+                                </AlertDialogAction>
+                              </AlertDialogFooter>
+                            </AlertDialogContent>
+                        </AlertDialog>
+                    </div>
                  </CardContent>
               </Card>
             ))}
@@ -175,6 +190,21 @@ export default function QuotationPage() {
             </div>
         )}
 
+        <Dialog open={!!editingMeasurement} onOpenChange={(isOpen) => !isOpen && setEditingMeasurement(null)}>
+            <DialogContent>
+                <DialogHeader>
+                    <DialogTitle>Update Product</DialogTitle>
+                </DialogHeader>
+                {editingMeasurement && (
+                    <UpdateMeasurementForm
+                        visitorId={visitorId as string}
+                        measurement={editingMeasurement}
+                        onSave={() => setEditingMeasurement(null)}
+                    />
+                )}
+            </DialogContent>
+        </Dialog>
+
       </main>
       <footer className="fixed bottom-0 left-0 w-full p-4 bg-background border-t-2 shadow-inner z-20">
         <div className='space-y-3'>
@@ -183,7 +213,7 @@ export default function QuotationPage() {
                 <span className='text-2xl font-bold'>₹{totalPrice.toLocaleString('en-IN', { minimumFractionDigits: 0, maximumFractionDigits: 0 })} /-</span>
             </div>
             <div className='grid grid-cols-2 gap-3'>
-                 <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
+                 <Dialog open={isAddFormOpen} onOpenChange={setIsAddFormOpen}>
                     <DialogTrigger asChild>
                         <Button variant='outline' size="lg" className="h-12 text-base border-dashed border-2 font-semibold">
                             Add More Product
@@ -195,7 +225,7 @@ export default function QuotationPage() {
                         </DialogHeader>
                         <MeasurementForm 
                             visitorId={visitorId as string}
-                            onSave={() => setIsFormOpen(false)}
+                            onSave={() => setIsAddFormOpen(false)}
                         />
                     </DialogContent>
                 </Dialog>

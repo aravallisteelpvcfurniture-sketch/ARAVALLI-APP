@@ -54,10 +54,21 @@ export type Visitor = {
 
 export type SiteMeasurement = {
   id: string;
-  title?: string;
   productType: string;
-  quantity: number;
-  pricePerQuantity: number;
-  totalPrice: number;
   createdAt: string;
+  title?: string;
+  
+  // For dimension-based products
+  width?: number;
+  height?: number;
+  depth?: number;
+  totalSqFt?: number;
+  pricePerSqFt?: number;
+
+  // For quantity-based products
+  quantity?: number;
+  pricePerQuantity?: number;
+  
+  // Universal
+  totalPrice?: number;
 };
