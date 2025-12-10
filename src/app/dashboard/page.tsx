@@ -59,9 +59,7 @@ export default function DashboardPage() {
           ))}
         </div>
         
-        <div>
-          <GoogleAd />
-        </div>
+        <GoogleAd />
 
         <div className="grid grid-cols-3 gap-4">
           {bottomTools.map((tool) => (
@@ -83,3 +81,5 @@ export default function DashboardPage() {
     </div>
   );
 }
+
+    
