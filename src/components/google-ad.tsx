@@ -1,7 +1,7 @@
 
 'use client';
 
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 declare global {
   interface Window {
@@ -10,9 +10,16 @@ declare global {
 }
 
 export const GoogleAd = () => {
+  const adPushed = useRef(false);
+
   useEffect(() => {
+    if (adPushed.current) {
+      return;
+    }
+    
     try {
       (window.adsbygoogle = window.adsbygoogle || []).push({});
+      adPushed.current = true;
     } catch (err) {
       console.error(err);
     }
