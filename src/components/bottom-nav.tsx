@@ -33,11 +33,11 @@ const navItems = [
     label: "Scan",
     icon: (isActive: boolean) => (
       <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-        <path d="M3 7V4C3 3.44772 3.44772 3 4 3H7" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M17 3H20C20.5523 3 21 3.44772 21 4V7" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M21 17V20C21 20.5523 20.5523 21 20 21H17" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M7 21H4C3.44772 21 3 20.5523 3 20V17" stroke="#6b7280" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
-        <path d="M7 12H17" stroke="#6b7280" strokeWidth="2" strokeLinecap="round"/>
+        <path d="M3 7V4C3 3.44772 3.44772 3 4 3H7" stroke={isActive ? "white" : "#6b7280"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M17 3H20C20.5523 3 21 3.44772 21 4V7" stroke={isActive ? "white" : "#6b7280"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M21 17V20C21 20.5523 20.5523 21 20 21H17" stroke={isActive ? "white" : "#6b7280"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M7 21H4C3.44772 21 3 20.5523 3 20V17" stroke={isActive ? "white" : "#6b7280"} strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"/>
+        <path d="M7 12H17" stroke={isActive ? "white" : "#6b7280"} strokeWidth="2" strokeLinecap="round"/>
       </svg>
     )
   },
@@ -46,9 +46,9 @@ const navItems = [
     label: "More",
     icon: (isActive: boolean) => (
         <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <circle cx="12" cy="12" r="1" stroke="#6b7280" strokeWidth="2" strokeLinecap="round"/>
-            <circle cx="19" cy="12" r="1" stroke="#6b7280" strokeWidth="2" strokeLinecap="round"/>
-            <circle cx="5" cy="12" r="1" stroke="#6b7280" strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="12" cy="12" r="1" stroke={isActive ? "white" : "#6b7280"} strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="19" cy="12" r="1" stroke={isActive ? "white" : "#6b7280"} strokeWidth="2" strokeLinecap="round"/>
+            <circle cx="5" cy="12" r="1" stroke={isActive ? "white" : "#6b7280"} strokeWidth="2" strokeLinecap="round"/>
         </svg>
     )
   },
@@ -63,7 +63,7 @@ export function BottomNav() {
         {navItems.map((item) => {
           const isActive = pathname.startsWith(item.href);
           const IconComponent = item.icon;
-          const isSpecial = item.href === "/dashboard" || item.href === "/visitors";
+          const isSpecial = ["/dashboard", "/visitors", "/scan", "/more"].includes(item.href);
 
           return (
             <Link
