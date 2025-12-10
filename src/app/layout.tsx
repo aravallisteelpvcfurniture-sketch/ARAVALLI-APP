@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase';
 import Script from 'next/script';
+import { GoogleAd } from '@/components/google-ad';
 
 export const metadata: Metadata = {
   title: 'Aravalli Configurator',
