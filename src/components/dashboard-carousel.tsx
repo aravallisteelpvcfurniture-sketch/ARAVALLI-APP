@@ -12,6 +12,11 @@ import { Card, CardContent } from './ui/card';
 
 const carouselImages = [
   {
+    src: 'https://i.ibb.co/hKxSPYp/gettyimages-1201199341-612x612.jpg',
+    alt: 'Beautiful festive background',
+    'data-ai-hint': 'festive background'
+  },
+  {
     src: 'https://picsum.photos/seed/carousel1/1200/900',
     alt: 'Promotional banner for furniture',
     'data-ai-hint': 'furniture sale'
