@@ -18,8 +18,21 @@ export default function Home() {
 
   if (isUserLoading || user) {
     return (
-      <div className="flex flex-col min-h-dvh bg-background text-foreground items-center justify-center">
-        <AravalliLogo className="h-24 animate-pulse" />
+       <div className="relative flex flex-col h-dvh w-full items-center justify-center overflow-hidden">
+        <video
+          autoPlay
+          loop
+          muted
+          playsInline
+          className="absolute z-0 w-full h-full object-cover"
+        >
+          <source src="https://storage.googleapis.com/studio-hosting-assets/temp-assets/aravalli-splash.mp4" type="video/mp4" />
+          Your browser does not support the video tag.
+        </video>
+        <div className="absolute inset-0 bg-black/50 z-10" />
+        <div className="z-20">
+            <AravalliLogo className="w-64 h-auto" />
+        </div>
       </div>
     );
   }
