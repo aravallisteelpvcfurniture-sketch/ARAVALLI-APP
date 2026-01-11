@@ -3,7 +3,6 @@
 import { useUser } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
-import { Skeleton } from '@/components/ui/skeleton';
 import { AuthComponent } from '@/components/auth-component';
 import { AravalliLogo } from '@/components/aravalli-logo';
 
@@ -19,19 +18,8 @@ export default function Home() {
 
   if (isUserLoading || user) {
     return (
-      <div className="flex flex-col min-h-dvh bg-background text-foreground">
-        <header className="px-4 lg:px-6 h-16 flex items-center border-b shrink-0 bg-card">
-          <div className="flex items-center justify-start gap-2">
-            <AravalliLogo className="h-10" />
-          </div>
-        </header>
-        <main className="flex-1 flex items-center justify-center">
-          <div className="space-y-4 w-full max-w-md p-4">
-            <Skeleton className="h-10 w-48" />
-            <Skeleton className="h-4 w-full" />
-            <Skeleton className="h-4 w-4/5" />
-          </div>
-        </main>
+      <div className="flex flex-col min-h-dvh bg-background text-foreground items-center justify-center">
+        <AravalliLogo className="h-24 animate-pulse" />
       </div>
     );
   }
