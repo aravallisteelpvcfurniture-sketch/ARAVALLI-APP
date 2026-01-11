@@ -22,6 +22,11 @@ const carouselImages = [
     'data-ai-hint': 'festive background'
   },
   {
+    src: 'https://i.ibb.co/gJF2YfW/360-F-473254957-bx-G9-So-Fvk-O5-KISs-L-G9-Ua-I-Vf-Cnd-My-Pa-R.jpg',
+    alt: 'Beautiful festive background',
+    'data-ai-hint': 'festive background'
+  },
+  {
     src: 'https://picsum.photos/seed/carousel1/1200/900',
     alt: 'Promotional banner for furniture',
     'data-ai-hint': 'furniture sale'
