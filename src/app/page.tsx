@@ -5,7 +5,6 @@ import { useRouter } from 'next/navigation';
 import { useEffect } from 'react';
 import { AuthComponent } from '@/components/auth-component';
 import { AravalliLogo } from '@/components/aravalli-logo';
-import Image from 'next/image';
 
 export default function Home() {
   const { user, isUserLoading } = useUser();
@@ -19,17 +18,7 @@ export default function Home() {
 
   if (isUserLoading || user) {
     return (
-       <div className="relative flex flex-col h-dvh w-full items-center justify-center overflow-hidden">
-        <Image
-          src="https://i.ibb.co/3s6t9sL/a.jpg"
-          alt="Modern kitchen background"
-          layout="fill"
-          objectFit="cover"
-          className="absolute z-0"
-          data-ai-hint="modern kitchen"
-        />
-        <div className="absolute inset-0 bg-black/50 z-10" />
-      </div>
+       <div className="relative flex flex-col h-dvh w-full items-center justify-center overflow-hidden bg-primary" />
     );
   }
 
