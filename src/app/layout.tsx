@@ -3,7 +3,6 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase';
 import Script from 'next/script';
-import { GoogleAd } from '@/components/google-ad';
 
 export const metadata: Metadata = {
   title: 'Aravalli Configurator',
@@ -35,12 +34,6 @@ export default function RootLayout({
     <html lang="en" suppressHydrationWarning>
        <head>
         <meta name="theme-color" content="#16A34A" />
-         <Script
-          async
-          src={`https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=${process.env.NEXT_PUBLIC_GOOGLE_ADSENSE_ID}`}
-          crossOrigin="anonymous"
-          strategy="afterInteractive"
-        />
       </head>
       <body>
         <FirebaseClientProvider>
