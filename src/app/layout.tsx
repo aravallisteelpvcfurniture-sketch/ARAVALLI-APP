@@ -4,13 +4,15 @@ import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase';
 import Script from 'next/script';
 
+const THEME_COLOR = '#00FFFA';
+
 export const metadata: Metadata = {
   title: 'Aravalli Configurator',
   description: 'Customize and order your steel and PVC furniture.',
   applicationName: 'Aravalli Configurator',
   authors: [{ name: 'Aravalli Steel' }],
   keywords: ['furniture', 'configurator', 'steel', 'pvc', 'custom'],
-  themeColor: '#16A34A',
+  themeColor: THEME_COLOR,
   other: {
     "google-site-verification": "tLL_35h2I3fC5p2w-p0wK1aL8_4Oq2r_2s5X0jE",
   },
@@ -22,7 +24,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: '#16A34A',
+  themeColor: THEME_COLOR,
 };
 
 export default function RootLayout({
@@ -33,7 +35,7 @@ export default function RootLayout({
   return (
     <html lang="en" suppressHydrationWarning>
        <head>
-        <meta name="theme-color" content="#16A34A" />
+        <meta name="theme-color" content={THEME_COLOR} />
       </head>
       <body>
         <FirebaseClientProvider>

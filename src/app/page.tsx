@@ -29,9 +29,6 @@ export default function Home() {
           data-ai-hint="modern kitchen"
         />
         <div className="absolute inset-0 bg-black/50 z-10" />
-        <div className="z-20">
-            <AravalliLogo className="w-64 h-auto" />
-        </div>
       </div>
     );
   }
