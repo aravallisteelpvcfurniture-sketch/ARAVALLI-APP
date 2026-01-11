@@ -6,6 +6,7 @@ import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BottomNav } from '@/components/bottom-nav';
 import { DashboardCarousel } from '@/components/dashboard-carousel';
+import { useLoading } from '@/components/global-loader';
 
 const topTools = [
   { name: 'Estimate', href: '/estimate', icon: <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg"><rect x="11" y="8" width="18" height="24" rx="2" fill="white" fillOpacity="0.8"/><path d="M14 13H26" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/><path d="M14 17H26" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/><path d="M14 21H20" stroke="#EF4444" strokeWidth="2" strokeLinecap="round"/><rect x="19" y="24" width="8" height="8" rx="1" fill="white" fillOpacity="0.8"/><path d="M23 25C22.4477 25 22 25.4477 22 26V26.5M23 31C23.5523 31 24 30.5523 24 30V29.5M21 27.5H25M22.5 29H24.5" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round"/><circle cx="23" cy="28" r="3.5" stroke="#EF4444" strokeWidth="1.5"/><path d="M23 26.5V28C23 28.2761 22.7761 28.5 22.5 28.5H22" stroke="#EF4444" strokeWidth="1.5" strokeLinecap="round"/></svg>, bgColor: 'bg-red-500' },
@@ -31,6 +32,7 @@ const bottomTools = [
 ];
 
 export default function DashboardPage() {
+  const { showLoader } = useLoading();
   return (
     <div className="flex flex-col min-h-dvh bg-muted">
       <header className="sticky top-0 z-40 bg-primary text-primary-foreground p-4">
@@ -48,7 +50,7 @@ export default function DashboardPage() {
 
         <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
           {topTools.map((tool) => (
-            <Link href={tool.href} key={tool.name} className="relative">
+            <Link href={tool.href} key={tool.name} className="relative" onClick={showLoader}>
               <div className={`rounded-xl shadow-sm p-4 flex flex-col items-center justify-center gap-2 h-28 ${tool.bgColor}`}>
                 <div className="text-primary-foreground">{tool.icon}</div>
                 <span className="text-sm font-semibold text-primary-foreground">{tool.name}</span>
@@ -60,7 +62,7 @@ export default function DashboardPage() {
         
         <div className="grid grid-cols-3 gap-4">
           {bottomTools.map((tool) => (
-            <Link href={tool.href} key={tool.name} className="relative">
+            <Link href={tool.href} key={tool.name} className="relative" onClick={showLoader}>
               <Card className="bg-card hover:bg-card/90 transition-colors h-full rounded-xl shadow-sm aspect-square">
                 <CardContent className="flex flex-col items-center justify-center p-2 gap-2 h-full">
                   <div className="w-12 h-12 flex items-center justify-center">

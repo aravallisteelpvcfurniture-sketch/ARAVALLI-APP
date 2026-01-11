@@ -1,13 +1,13 @@
-
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BottomNav } from '@/components/bottom-nav';
 import { ArrowLeft } from 'lucide-react';
+import { useLoading } from '@/components/global-loader';
 
 const galleryImages = [
   { src: 'https://images.unsplash.com/photo-1588854337236-6889d631f379?q=80&w=2070&auto=format&fit=crop', alt: 'Living room interior', 'data-ai-hint': 'living room' },
@@ -20,6 +20,11 @@ const galleryImages = [
 
 export default function PhotoGalleryPage() {
   const router = useRouter();
+  const { hideLoader } = useLoading();
+
+  useEffect(() => {
+    hideLoader();
+  }, [hideLoader]);
 
   return (
     <div className="flex flex-col min-h-dvh bg-muted/40">

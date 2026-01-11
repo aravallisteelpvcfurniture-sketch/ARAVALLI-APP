@@ -1,7 +1,6 @@
-
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
@@ -14,6 +13,7 @@ import {
   FileText,
   ChevronRight
 } from 'lucide-react';
+import { useLoading } from '@/components/global-loader';
 
 const menuItems = [
   { name: 'Photo Gallery', href: '/photo-gallery', icon: ImageIcon, bgColor: 'bg-indigo-100', textColor: 'text-indigo-600' },
@@ -23,6 +23,11 @@ const menuItems = [
 
 export default function MorePage() {
   const router = useRouter();
+  const { showLoader, hideLoader } = useLoading();
+
+  useEffect(() => {
+    hideLoader();
+  }, [hideLoader]);
 
   return (
     <div className="flex flex-col min-h-dvh bg-muted/40">
@@ -37,7 +42,7 @@ export default function MorePage() {
         {menuItems.map((item) => {
           const Icon = item.icon;
           return (
-            <Link href={item.href} key={item.name} className="flex">
+            <Link href={item.href} key={item.name} className="flex" onClick={showLoader}>
               <Card className="w-full hover:bg-muted transition-colors shadow-md hover:shadow-lg rounded-2xl">
                 <CardContent className="p-4 flex items-center justify-between text-center gap-3">
                   <div className="flex items-center gap-4">

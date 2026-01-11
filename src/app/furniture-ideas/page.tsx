@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
@@ -19,6 +19,7 @@ import {
   Container,
   Wrench,
 } from 'lucide-react';
+import { useLoading } from '@/components/global-loader';
 
 const furnitureCategories = [
   { name: 'Modular Kitchen', href: '#', icon: CookingPot, bgColor: 'bg-red-100', textColor: 'text-red-600' },
@@ -35,6 +36,12 @@ const furnitureCategories = [
 
 export default function FurnitureIdeasPage() {
   const router = useRouter();
+  const { showLoader, hideLoader } = useLoading();
+
+  useEffect(() => {
+    hideLoader();
+  }, [hideLoader]);
+
 
   return (
     <div className="flex flex-col min-h-dvh bg-muted/40">
@@ -49,7 +56,7 @@ export default function FurnitureIdeasPage() {
         {furnitureCategories.map((category) => {
           const Icon = category.icon;
           return (
-            <Link href={category.href} key={category.name} className="flex">
+            <Link href={category.href} key={category.name} className="flex" onClick={showLoader}>
               <Card className="w-full h-full hover:bg-muted transition-colors shadow-md hover:shadow-lg rounded-2xl">
                 <CardContent className="p-4 flex flex-col items-center justify-center text-center gap-3 h-full">
                   <div className={`flex items-center justify-center ${category.bgColor} ${category.textColor} h-16 w-16 rounded-full mb-2`}>

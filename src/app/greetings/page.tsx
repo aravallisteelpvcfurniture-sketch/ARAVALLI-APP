@@ -1,10 +1,11 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { Header } from '@/components/header';
 import { BottomNav } from '@/components/bottom-nav';
 import { Card, CardContent } from '@/components/ui/card';
+import { useLoading } from '@/components/global-loader';
 
 const images = [
   {
@@ -22,6 +23,12 @@ const images = [
 ];
 
 export default function GreetingsPage() {
+  const { hideLoader } = useLoading();
+
+  useEffect(() => {
+    hideLoader();
+  }, [hideLoader]);
+
   return (
     <div className="flex flex-col min-h-dvh bg-background text-foreground">
       <Header title="Greetings" />

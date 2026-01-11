@@ -1,13 +1,13 @@
-
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BottomNav } from '@/components/bottom-nav';
 import { ArrowLeft, FileText, Download } from 'lucide-react';
+import { useLoading } from '@/components/global-loader';
 
 const pdfFiles = [
   { id: '1', title: 'Furniture Catalogue 2024', url: 'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf' },
@@ -18,6 +18,11 @@ const pdfFiles = [
 
 export default function PdfViewerPage() {
   const router = useRouter();
+  const { hideLoader } = useLoading();
+
+  useEffect(() => {
+    hideLoader();
+  }, [hideLoader]);
 
   return (
     <div className="flex flex-col min-h-dvh bg-muted/40">

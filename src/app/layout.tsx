@@ -3,6 +3,7 @@ import './globals.css';
 import { Toaster } from "@/components/ui/toaster";
 import { FirebaseClientProvider } from '@/firebase';
 import Script from 'next/script';
+import { LoadingProvider } from '@/components/global-loader';
 
 const THEME_COLOR = '#00FFFA';
 
@@ -39,7 +40,9 @@ export default function RootLayout({
       </head>
       <body>
         <FirebaseClientProvider>
-          {children}
+          <LoadingProvider>
+            {children}
+          </LoadingProvider>
         </FirebaseClientProvider>
         <Toaster />
       </body>

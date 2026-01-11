@@ -1,12 +1,13 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import Image from 'next/image';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BottomNav } from '@/components/bottom-nav';
 import { ArrowLeft } from 'lucide-react';
+import { useLoading } from '@/components/global-loader';
 
 const catalogueImages = [
   {
@@ -43,6 +44,12 @@ const catalogueImages = [
 
 export default function CataloguePage() {
   const router = useRouter();
+  const { hideLoader } = useLoading();
+
+  useEffect(() => {
+    hideLoader();
+  }, [hideLoader]);
+
 
   return (
     <div className="flex flex-col min-h-dvh bg-muted/40">
@@ -74,5 +81,3 @@ export default function CataloguePage() {
     </div>
   );
 }
-
-    

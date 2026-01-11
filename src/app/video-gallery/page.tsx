@@ -1,12 +1,12 @@
-
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { Card, CardContent } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { BottomNav } from '@/components/bottom-nav';
 import { ArrowLeft, PlayCircle } from 'lucide-react';
+import { useLoading } from '@/components/global-loader';
 
 const videos = [
   { id: '1', title: 'Modular Kitchen Showcase', thumbnailUrl: 'https://picsum.photos/seed/vid1/800/600', 'data-ai-hint': 'kitchen showcase' },
@@ -17,6 +17,11 @@ const videos = [
 
 export default function VideoGalleryPage() {
   const router = useRouter();
+  const { hideLoader } = useLoading();
+
+  useEffect(() => {
+    hideLoader();
+  }, [hideLoader]);
 
   return (
     <div className="flex flex-col min-h-dvh bg-muted/40">
