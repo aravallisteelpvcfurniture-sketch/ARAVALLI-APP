@@ -12,21 +12,6 @@ import { Card, CardContent } from './ui/card';
 
 const carouselImages = [
   {
-    src: 'https://i.ibb.co/vxQWBCbr/10321192.jpg',
-    alt: 'Beautiful festive background',
-    'data-ai-hint': 'festive background'
-  },
-  {
-    src: 'https://i.ibb.co/hKxSPYp/gettyimages-1201199341-612x612.jpg',
-    alt: 'Beautiful festive background',
-    'data-ai-hint': 'festive background'
-  },
-  {
-    src: 'https://i.ibb.co/gJF2YfW/360-F-473254957-bx-G9-So-Fvk-O5-KISs-L-G9-Ua-I-Vf-Cnd-My-Pa-R.jpg',
-    alt: 'Beautiful festive background',
-    'data-ai-hint': 'festive background'
-  },
-  {
     src: 'https://i.ibb.co/ymNknXtf/Aravalli-1.png',
     alt: 'Aravalli furniture design',
     'data-ai-hint': 'furniture design'
