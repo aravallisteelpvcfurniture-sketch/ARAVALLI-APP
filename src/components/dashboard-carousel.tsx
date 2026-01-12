@@ -27,20 +27,30 @@ const carouselImages = [
     'data-ai-hint': 'festive background'
   },
   {
-    src: 'https://picsum.photos/seed/carousel1/1200/900',
-    alt: 'Promotional banner for furniture',
-    'data-ai-hint': 'furniture sale'
+    src: 'https://i.ibb.co/ymNknXtf/Aravalli-1.png',
+    alt: 'Aravalli furniture design',
+    'data-ai-hint': 'furniture design'
   },
   {
-    src: 'https://picsum.photos/seed/carousel2/1200/900',
-    alt: 'Modern interior design',
-    'data-ai-hint': 'modern interior'
+    src: 'https://i.ibb.co/WWKXqK0x/image-17140447488244.jpg',
+    alt: 'Modern interior railing',
+    'data-ai-hint': 'modern railing'
   },
   {
-    src: 'https://picsum.photos/seed/carousel3/1200/900',
-    alt: 'Custom steel furniture',
-    'data-ai-hint': 'steel furniture'
+    src: 'https://i.ibb.co/zWH2HRz7/1000-F-1457835281-2-Jeg-Zczfrmp-Z8-Xb2-H0kv-Yo-Kipf-Jgryzb.jpg',
+    alt: 'Steel staircase design',
+    'data-ai-hint': 'steel staircase'
   },
+  {
+    src: 'https://i.ibb.co/Kx9G6tVM/best-design-railing-in-india-buy-railing-fitting.jpg',
+    alt: 'Railing design India',
+    'data-ai-hint': 'railing design'
+  },
+  {
+    src: 'https://i.ibb.co/dsms6v7f/staircase-baluster-railing-steel-balustrade-design-balustrade-railing-500x500.jpg',
+    alt: 'Steel balustrade design',
+    'data-ai-hint': 'steel balustrade'
+  }
 ];
 
 export function DashboardCarousel() {
